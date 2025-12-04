@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Country Search</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+            background: #111;
+            color: #eee;
+        }
+
+        input {
+            padding: 0.4rem 0.6rem;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 0.4rem 0.8rem;
+            margin-left: 0.5rem;
+            font-size: 1rem;
+        }
+
+        ul {
+            margin-top: 1rem;
+            padding-left: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+<h1>Country search</h1>
+
+<input id="searchInput" placeholder="Type country name..." />
+<button onclick="search()">Search</button>
+
+<ul id="results"></ul>
+
+<script>
+    async function search() {
+        const q = document.getElementById('searchInput').value.trim();
+        const url = q
+            ? `/countries/search?name=${encodeURIComponent(q)}`
+            : '/countries';
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const list = document.getElementById('results');
+        list.innerHTML = '';
+
+        data.forEach(c => {
+            const li = document.createElement('li');
+            li.textContent = `${c.id} – ${c.countryName}`;
+            list.appendChild(li);
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', search);
+</script>
+</body>
+</html>

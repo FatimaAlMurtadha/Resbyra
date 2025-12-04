@@ -1,0 +1,7 @@
+﻿POST http://localhost:5132/users
+Content-Type: application/json
+
+{
+  "email": "fredags",
+  "password": "standup"
+}
