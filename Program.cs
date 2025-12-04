@@ -28,6 +28,11 @@ app.MapPost("/users", Users.Post);
 app.MapPut("/users/{id}", Users.Put);
 app.MapDelete("/users/{id}", Users.Delete);
 
+app.MapGet("/countries", Countries.GetAll);
+app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
+app.MapGet("/countries/search", Countries.Search);
+
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
