@@ -1,13 +1,15 @@
 ﻿namespace server;
 
 using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.Http; // för IResult and Results
 
 class Countries
 {
-    // DTO for list results: GET /countries and /countries/search
+    // DTO för list results: GET /countries and /countries/search
     public record GetAll_Data(int Id, string CountryName);
 
-    // GET /countries
+    // GET /countries<
+    //Vi hämtar länder för databasen
     public static List<GetAll_Data> GetAll(Config config)
     {
         List<GetAll_Data> result = new();
@@ -29,11 +31,12 @@ class Countries
     }
 
 
-    // DTO for single result: GET /countries/{id}
+    // DTO för single result
     public record Get_Data(string CountryName);
 
     // GET /countries/{id}
-    public static Get_Data? Get(int id, Config config)
+    //specifikt land baserat på ID
+    public static IResult Get(int id, Config config)
     {
         Get_Data? result = null;
 
@@ -52,14 +55,25 @@ class Countries
             }
         }
 
-        return result;
+        if (result is null)
+        {
+            // Om inget land hittas returnera felkod 404
+            return Results.NotFound(new
+            {
+                message = $"Country with id {id} was not found."
+            });
+        }
+
+        // Om det är ok returnera 200 med landet
+        return Results.Ok(result);
     }
 
 
     // GET /countries/search?name=...
+    //Checkar efter länder baserat på namn, SQl
     public static List<GetAll_Data> Search(string? name, Config config)
     {
-        // If no search term → just return everything
+        // Om ingen search term -> visa ALLT
         if (string.IsNullOrWhiteSpace(name))
         {
             return GetAll(config);
