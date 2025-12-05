@@ -3,7 +3,7 @@ using server;
 
 var builder = WebApplication.CreateBuilder(args);
 // 127.0.0.1:3306 (default port)
-Config config = new("server=127.0.0.1;uid=resbyra;pwd=resbyrat;database=resbyra");
+Config config = new("server=127.0.0.1;uid=resbyra;pwd=resbyra;database=resbyra");
 builder.Services.AddSingleton<Config>(config);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
