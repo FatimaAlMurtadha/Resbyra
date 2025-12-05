@@ -83,8 +83,8 @@ async Task db_reset_to_default(Config config)
   string countries_table = """
         CREATE TABLE countries (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(150) NOT NULL,
-            code VARCHAR(10) NOT NULL
+            country_name VARCHAR(150) NOT NULL
+            
         );
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, countries_table);
