@@ -32,6 +32,21 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
+// CRUD Cities 
+
+app.MapGet("/cities", Cities.GetAll);
+app.MapGet("/cities/{id}", Cities.Get);
+app.MapPost("/cities", Cities.Post);
+app.MapPut("/cities/{id}", Cities.Put);
+app.MapDelete("/cities/{id}", Cities.Delete);
+
+// GRUD Destinations
+app.MapGet("/destinations", Destinations.GetAll);
+app.MapGet("/destinations/{id}", Destinations.Get);
+app.MapPost("/destinations", Destinations.Post);
+app.MapPut("/destinations/{id}", Destinations.Put);
+app.MapDelete("/destinations/{id}", Destinations.Delete);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -140,7 +155,15 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (activity_id) REFERENCES activities(id)
         );
     """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_activities_table);
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_activities_table);
+
+    // Amenities' table
+    string amenities_table = """
+         CREATE TABLE amenities(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            amenity_name VARCHAR(300)
+         );
+  """;
 
   // Hotels' table
   string hotels_table = """
@@ -157,8 +180,8 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, hotels_table);
 
-  // Rooms' table
-  string rooms_table = """
+    // Rooms' table
+    string rooms_table = """
         CREATE TABLE rooms (
             id INT AUTO_INCREMENT PRIMARY KEY,
             type VARCHAR(100) NOT NULL,
@@ -169,7 +192,18 @@ async Task db_reset_to_default(Config config)
         );
     """;
 
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
+    // The relation between the amenities and hotels
+    string amenities_hotels = """
+         CREATE TABLE amenities_hotels(
+            amenity_id INT NOT NULL,
+            hotel_id INT NOT NULL,
+            PRIMARY KEY (amenity_id, hotel_id),
+            FOREIGN KEY (amenity_id) REFERENCES amenities(id),
+            FOREIGN KEY (hotel_id) REFERENCES hotels(id) 
+         );
+  """;
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
 
   // Packages' table
   string packages_table = """
