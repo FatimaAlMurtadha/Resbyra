@@ -1,7 +1,7 @@
 namespace server;
 
 using MySql.Data.MySqlClient;
-using Microsoft.AspNetCore.Http; /
+using Microsoft.AspNetCore.Http; 
 
 /*
             id INT AUTO_INCREMENT PRIMARY KEY,
