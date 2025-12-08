@@ -77,10 +77,13 @@ async Task db_reset_to_default(Config config)
             password TEXT
         )
     """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
+    // TEST
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('fatima@gmail.com','123')");
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('ahmed@gmail.com','123')");
 
-  // Countries' table
-  string countries_table = """
+    // Countries' table
+    string countries_table = """
         CREATE TABLE countries (
             id INT AUTO_INCREMENT PRIMARY KEY,
             country_name VARCHAR(150) NOT NULL
