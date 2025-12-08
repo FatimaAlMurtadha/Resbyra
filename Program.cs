@@ -40,6 +40,13 @@ app.MapPost("/cities", Cities.Post);
 app.MapPut("/cities/{id}", Cities.Put);
 app.MapDelete("/cities/{id}", Cities.Delete);
 
+// GRUD Destinations
+app.MapGet("/destinations", Destinations.GetAll);
+app.MapGet("/destinations/{id}", Destinations.Get);
+app.MapPost("/destinations", Destinations.Post);
+app.MapPut("/destinations/{id}", Destinations.Put);
+app.MapDelete("/destinations/{id}", Destinations.Delete);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
