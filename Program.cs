@@ -161,6 +161,7 @@ async Task db_reset_to_default(Config config)
   string rooms_table = """
         CREATE TABLE rooms (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            number INT NOT NULL,
             type VARCHAR(100) NOT NULL,
             price_per_night DECIMAL(10,2) NOT NULL,
             capacity INT NOT NULL,
