@@ -4,6 +4,16 @@ using MySql.Data.MySqlClient;
 
 class Login
 {
+  // Logout 
+  public static void Delete(HttpContext ctx)
+  {
+    if (ctx.Session.IsAvailable)
+    {
+      ctx.Session.Clear();
+    }
+  }
+
+  // Login
   public static bool
   Get(HttpContext ctx)
   {
@@ -36,9 +46,7 @@ class Login
     return result;
   }
 
-  public static void Delete(HttpContext ctx)
-  {
-    ctx.Session.Clear();
-  }
 
 }
+
+//
