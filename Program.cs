@@ -32,6 +32,12 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
+app.MapGet("/bookings", Bookings.GetAll);
+app.MapGet("/bookings/{id:int}", Bookings.Get);
+app.MapPost("/bookings", Bookings.Post);
+app.MapPut("/bookings/{id:int}", Bookings.Put);
+app.MapDelete("/bookings/{id:int}", Bookings.Delete);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -52,7 +58,7 @@ async Task db_reset_to_default(Config config)
   // Drop all tables from database
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS booking_rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS travelers");
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS bookings");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS Bookings");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_cards");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS package_activities");
@@ -212,8 +218,8 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_activities_table);
 
   // Bookings' table
-  string bookings_table = """
-        CREATE TABLE bookings (
+  string Bookings_table = """
+        CREATE TABLE Bookings (
             id INT AUTO_INCREMENT PRIMARY KEY,
             total_price DECIMAL(10,2) NOT NULL,
             date DATETIME NOT NULL,
@@ -223,7 +229,7 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (package_id) REFERENCES packages(id)
         );
     """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, bookings_table);
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, Bookings_table);
 
   // Travelers' table
   string travelers_table = """
