@@ -15,105 +15,220 @@ using Microsoft.AspNetCore.Http;
 
 class Rooms
 {
-    public record GetAll_Data(int Id, int Number, string Type , decimal Price_Per_Night, int Capacity, int Hotel_Id);
+    public record GetAll_Data(int Id, int RoomNumber, string Type , decimal PricePerNight, int Capacity, int HotelId);
 
-    public static List<GetAll_Data> GetAll(Config config)
+    public static async Task<IResult> GetAll(Config config)
     {
         List<GetAll_Data> result = new();
 
-        string query = "SELECT id, number, type, price_per_night, capacity, hotel_id FROM Rooms";
+        string query = "SELECT id, room_number, type, price_per_night, capacity, hotel_id FROM rooms";
 
-        using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query))
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
         {
             while (reader.Read())
             {
                 result.Add(new(
-                    reader.GetInt32(0), // id
-                    reader.GetInt32(1),  //number
-                    reader.GetString(2), //type
-                    reader.GetDecimal(3), //price
-                    reader.GetInt32(4),  //capacity
-                    reader.GetInt32(5)  //hotel id
+                    reader.GetInt32("id"), // id
+                    reader.GetInt32("room_number"),  //room number
+                    reader.GetString("type"), //type
+                    reader.GetDecimal("price_per_night"), //price
+                    reader.GetInt32("capacity"),  //capacity
+                    reader.GetInt32("hotel_id")  //hotel id
 
                 ));
             }
         }
-
-        return result;
+        return Results.Ok(result);
     }
-    
-    public record Get_Data(int Number);
 
-    
-    public static IResult Get(int id, Config config)
+    public static async Task<IResult> Get(int id, Config config)
     {
-        Get_Data? result = null;
 
-        string query = "SELECT number FROM Rooms WHERE id = @id";
+        string query = "SELECT room_number, type, price_per_night, capacity, hotel_id FROM rooms WHERE id = @id";
 
         var parameters = new MySqlParameter[]
         {
             new("@id", id)
         };
 
-        using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query, parameters))
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
         {
             if (reader.Read())
             {
-                result = new(reader.GetInt32(0));
+                var result = new
+                {
+                    RoomNumber = reader.GetString("room_number"),
+                    Type = reader.GetString("type"),
+                    PricePerNight = reader.GetDecimal("price_per_night"),
+                    Capacity = reader.GetInt32("capacity"),
+                    HotelId = reader.GetInt32("hotel_id")
+
+                };
+                return Results.Ok(result);
+                
             }
         }
-
-        if (result is null)
-        {
-            
-            return Results.NotFound(new
-            {
-                message = $"Room with id {id} was not found."
-            });
-        }
-
-        
-        return Results.Ok(result);
+        return Results.NotFound(new {message = $"Room was not found."});        
     }
 
+    public record RoomCreate(string RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
 
-
-    public static List<GetAll_Data> Search(int? number, Config config)
+    public static async Task<IResult> Post(RoomCreate room, Config config)
     {
-      
-        if (number == null)
-        {
-            return GetAll(config);
-        }
-
-        List<GetAll_Data> result = new();
-
         string query = """
-            SELECT id, number, type, price_per_night, capacity, hotel_id FROM Rooms
-            WHERE name LIKE CONCAT('%', @name, '%')
+            INSERT INTO rooms (room_number, type, price_per_night, capacity, hotel_id)
+            VALUES (@room_number, @type, @price_per_night, @capacity, @hotel_id)
         """;
 
         var parameters = new MySqlParameter[]
         {
-            new("@number", number)
+            new("@room_number", room.RoomNumber), 
+            new("@type", room.Type),
+            new("@price_per_night", room.PricePerNight),
+            new("@capacity", room.Capacity),
+            new("@hotel_id", room.HotelId)
         };
 
-        using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query, parameters))
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Room created." });
+
+    }
+
+    public record RoomUpdate(int Id, string RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
+
+    public static async Task<IResult> Put(RoomUpdate room, Config config)
+    {
+        string query = """
+            UPDATE rooms
+            SET 
+            room_number = @room_number, type = @type, price_per_night = @price_per_night, capacity = @capacity, hotel_id = @hotel_id
+            WHERE id = @id
+        """;
+
+        var parameters = new MySqlParameter[]
+        {
+            new("@id", room.Id),
+            new("@room_number", room.RoomNumber),
+            new("@type", room.Type),
+            new("@price_per_night", room.PricePerNight),
+            new("@capacity", room.Capacity),
+            new("@hotel_id", room.HotelId)
+        };
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Room updated." });
+    }
+
+    public static async Task<IResult> Delete(int id, Config config)
+    {
+        string query = "DELETE FROM rooms WHERE id = @id";
+
+
+        var parameters = new MySqlParameter[] { new("@id", id) };
+
+
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+
+        return Results.Ok(new { message = "Room deleted." });
+    }
+    public static async Task<IResult> Search(string? sok, Config config)
+    {
+        List<GetAll_Data> result = new();
+
+
+        if (string.IsNullOrWhiteSpace(sok))
+        {
+            return await GetAll(config);
+        }
+
+
+        string query = """
+            SELECT id, room_number, type, price_per_night, capacity, hotel_id
+            FROM rooms WHERE room_number LIKE CONCAT('%', @sok, '%') OR type LIKE CONCAT('%', @sok, '%')
+            ORDER BY room_number ASC
+        """;
+
+
+        var parameters = new MySqlParameter[] { new("@sok", sok) };
+
+
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
         {
             while (reader.Read())
             {
                 result.Add(new(
-                    reader.GetInt32(0), // id
-                    reader.GetInt32(1),  //number
-                    reader.GetString(2), //type
-                    reader.GetDecimal(3), //price
-                    reader.GetInt32(4),  //capacity
-                    reader.GetInt32(5)  //hotel id
+                    reader.GetInt32("id"),
+                    reader.GetInt32("room_number"),
+                    reader.GetString("type"),
+                    reader.GetDecimal("price_per_night"),
+                    reader.GetInt32("capacity"),
+                    reader.GetInt32("hotel_id")
                 ));
             }
         }
+        return Results.Ok(result);
+    }
 
-        return result;
+    public static async Task<IResult> ByHotel(int hotelId, Config config)
+    {
+        List<GetAll_Data> result = new();
+
+        string query = """
+            SELECT id, room_number, type, price_per_night, capacity, hotel_id
+            FROM rooms WHERE hotel_id = @hotelId
+            ORDER BY room_number ASC
+        """;
+
+        var parameters = new MySqlParameter[] { new("@hotelId", hotelId) };
+
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+        {
+            while (reader.Read())
+            {
+                result.Add(new(
+                    reader.GetInt32("id"),
+                    reader.GetInt32("room_number"),
+                    reader.GetString("type"),
+                    reader.GetDecimal("price_per_night"),
+                    reader.GetInt32("capacity"),
+                    reader.GetInt32("hotel_id")
+                ));
+            }
+        }
+        return Results.Ok(result);
+    }
+
+    public static async Task<IResult> ByRoomNumber(int hotelId, string roomNumber, Config config)
+    {
+        string query = """
+            SELECT id, room_number, type, price_per_night, capacity, hotel_id FROM rooms
+            WHERE hotel_id = @hotelId AND room_number = @roomNumber
+        """;
+
+        var parameters = new MySqlParameter[]
+        {
+            new("@hotelId", hotelId),
+            new("@roomNumber", roomNumber)
+        };
+
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+        {
+            if (reader.Read())
+            {
+                var result = new
+                {
+                    Id = reader.GetInt32("id"),
+                    RoomNumber = reader.GetString("room_number"),
+                    Type = reader.GetString("type"),
+                    PricePerNight = reader.GetDecimal("price_per_night"),
+                    Capacity = reader.GetInt32("capacity"),
+                    HotelId = reader.GetInt32("hotel_id")
+                };
+                return Results.Ok(result);
+            }
+        }
+        return Results.NotFound(new { message = $"Room not found." });
     }
 }

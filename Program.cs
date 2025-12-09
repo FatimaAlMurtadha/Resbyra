@@ -32,6 +32,10 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
+app.MapGet("/hotels", Hotels.GetAll);
+app.MapGet("/hotels/{id:int}", Hotels.Get);     
+app.MapGet("/hotels/search", Hotels.Search);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
