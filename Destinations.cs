@@ -83,7 +83,7 @@ class Destinations
   {
     string query = """
             INSERT INTO destinations(description, climate, average_cost, city_id)
-            VALUES (@description. @climate, @average_cost, @city_id)
+            VALUES (@description, @climate, @average_cost, @city_id)
         """;
 
     var parameters = new MySqlParameter[]
