@@ -131,7 +131,7 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_table);
 
-  // Activities' table
+  // Food Activities' table
   string activities_table = """
         CREATE TABLE activities (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -141,7 +141,32 @@ async Task db_reset_to_default(Config config)
             description TEXT NOT NULL
         );
     """;
+  
+  
+  //Test
 
+  string insertPizza = """
+                           INSERT INTO activities (name, type, price, description)
+                           VALUES ('Neapolitan Pizza Masterclass', 'food', 0.00,
+                                   'Learn to make authentic Neapolitan pizza with hand-stretched dough and wood-fired baking.');
+                       """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertPizza);
+
+  string insertBibimbap = """
+                              INSERT INTO activities (name, type, price, description)
+                              VALUES ('Korean Bibimbap Cooking Workshop', 'food', 0.00,
+                                      'Prepare traditional bibimbap with seasoned vegetables, rice, and gochujang.');
+                          """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertBibimbap);
+
+  string insertRamen = """
+                           INSERT INTO activities (name, type, price, description)
+                           VALUES ('Japanese Ramen Broth & Noodle Session', 'food', 0.00,
+                                   'Hands-on experience crafting ramen broth and fresh noodles.');
+                       """;
+  
+  
+  
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, activities_table);
 
   // The relation between the destinations and the activities M:N
