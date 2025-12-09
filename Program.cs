@@ -92,7 +92,8 @@ async Task db_reset_to_default(Config config)
         (
             id INT PRIMARY KEY AUTO_INCREMENT,
             email varchar(256) NOT NULL UNIQUE,
-            password TEXT
+            password TEXT NOT NULL, 
+            role VARCHAR(50) NOT NULL DEFAULTR 'user'
         )
     """;
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
