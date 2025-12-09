@@ -3,7 +3,7 @@ namespace server;
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
 
-public class Bookings
+class Bookings
 {
     // DTOs
     public record GetAll_Data(int Id, decimal TotalPrice, DateTime Date, int UserId, int PackageId);
