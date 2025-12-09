@@ -287,4 +287,3 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_activities_table);
 }
 
----dotnet------
