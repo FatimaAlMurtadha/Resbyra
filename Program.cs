@@ -47,6 +47,10 @@ app.MapPost("/destinations", Destinations.Post);
 app.MapPut("/destinations/{id}", Destinations.Put);
 app.MapDelete("/destinations/{id}", Destinations.Delete);
 
+app.MapGet("/activities", () => FoodActivities.GetAll(config));
+app.MapGet("/activities/{id:int}", (int id) => FoodActivities.Get(id, config));
+app.MapGet("/activities/search", (string? term) => FoodActivities.Search(term, config));
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -133,41 +137,40 @@ async Task db_reset_to_default(Config config)
 
   // Food Activities' table
   string activities_table = """
-        CREATE TABLE activities (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(200) NOT NULL,
-            type VARCHAR(100) NOT NULL,
-            price DECIMAL(10,2) NOT NULL,
-            description TEXT NOT NULL
-        );
-    """;
-  
-  
-  //Test
+                                CREATE TABLE IF NOT EXISTS activities (
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    name VARCHAR(200) NOT NULL,
+                                    description TEXT NOT NULL
+                                );
+                            """;
 
-  string insertPizza = """
-                           INSERT INTO activities (name, type, price, description)
-                           VALUES ('Neapolitan Pizza Masterclass', 'food', 0.00,
-                                   'Learn to make authentic Neapolitan pizza with hand-stretched dough and wood-fired baking.');
-                       """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertPizza);
-
-  string insertBibimbap = """
-                              INSERT INTO activities (name, type, price, description)
-                              VALUES ('Korean Bibimbap Cooking Workshop', 'food', 0.00,
-                                      'Prepare traditional bibimbap with seasoned vegetables, rice, and gochujang.');
-                          """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertBibimbap);
-
-  string insertRamen = """
-                           INSERT INTO activities (name, type, price, description)
-                           VALUES ('Japanese Ramen Broth & Noodle Session', 'food', 0.00,
-                                   'Hands-on experience crafting ramen broth and fresh noodles.');
-                       """;
-  
-  
-  
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, activities_table);
+  
+  
+  string insertItalianPizza = """
+                                  INSERT INTO activities (name, description)
+                                  VALUES ('Italian Pizza Tasting', 'Taste authentic Italian pizzas prepared using traditional regional techniques.');
+                              """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertItalianPizza);
+
+  string insertSwedishMushroom = """
+                                     INSERT INTO activities (name, description)
+                                     VALUES ('Swedish Mushroom Bonanza', 'Join a guided forest tour and sample classic Swedish mushroom dishes.');
+                                 """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertSwedishMushroom);
+
+  string insertIndianFeast = """
+                                 INSERT INTO activities (name, description)
+                                 VALUES ('Indian Spice Feast', 'Experience a rich selection of Indian dishes featuring diverse spices and regional flavors.');
+                             """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertIndianFeast);
+
+  string insertAmericanBurger = """
+                                    INSERT INTO activities (name, description)
+                                    VALUES ('American 15kg Burger Buffet', 'A wildly irresponsible buffet featuring oversized burgers, fries, and enough calories to frighten your doctor.');
+                                """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertAmericanBurger);
+
 
   // The relation between the destinations and the activities M:N
 
