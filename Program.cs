@@ -16,6 +16,9 @@ var app = builder.Build();
 app.UseSession();
 
 // REST routes
+// Registeration feature
+app.MapPost("/registeration", Registerations.Post);
+
 // session / login / logout examples (auth resource)
 app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
@@ -89,7 +92,8 @@ async Task db_reset_to_default(Config config)
         (
             id INT PRIMARY KEY AUTO_INCREMENT,
             email varchar(256) NOT NULL UNIQUE,
-            password TEXT
+            password TEXT NOT NULL, 
+            role VARCHAR(50) NOT NULL DEFAULT 'user'
         )
     """;
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
