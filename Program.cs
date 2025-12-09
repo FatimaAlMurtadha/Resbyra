@@ -16,6 +16,9 @@ var app = builder.Build();
 app.UseSession();
 
 // REST routes
+// Registeration feature
+app.MapPost("/registeration", Registerations.Post);
+
 // session / login / logout examples (auth resource)
 app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
