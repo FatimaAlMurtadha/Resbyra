@@ -37,4 +37,21 @@ class Authentication
   }
 
   // No need for a user role GetRolr function, because we have this role as a default role
+
+  // A function or method to define the role and authentications
+
+  public static IResult? RequireAdmin(HttpContext ctx)
+  {
+    if (!IsLoggedIn(ctx))
+    {
+      return Results.Unauthorized();
+    }
+    if (!IsAdmin(ctx))
+    {
+      return Results.Forbid();
+    }
+
+    return null;
+  }
+
 }
