@@ -6,13 +6,13 @@ using System.Security.Cryptography;
 // import the library of text encoding utilities
 using System.Text;
 
-class Registerations
+class Register // Matching the class name / Fatima
 {
   // DTO for registration data
-  public record Registerations_Data(string Email, string Password, string? Role);
+  public record Register_Data(string Email, string Password, string? Role); // Matching with the class name / Fatima
 
   // POST /register
-  public static async Task<bool> Post(Registerations_Data data, Config config)
+  public static async Task<bool> Post(Register_Data data, Config config) // Matching with the class name / Fatima
   {
     // Check if email already exists
 

@@ -17,14 +17,14 @@ app.UseSession();
 
 // REST routes
 // Registeration feature
-app.MapPost("/register", Registerations.Post); //Consistency in spelling change /oskar
+app.MapPost("/register", Register.Post); //Consistency in spelling change /oskar // Matching name of the class / Fatima
 
 // session / login / logout examples (auth resource)
 app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
 app.MapDelete("/login", Login.Delete);
 
-app.MapPost("/register", Registerations.Post);
+app.MapPost("/register", Register.Post); // Matching name of the class / Fatima
 
 // CRUD examples (user resource)
 app.MapGet("/users", Users.GetAll);
