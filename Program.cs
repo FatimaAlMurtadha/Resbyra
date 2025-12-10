@@ -33,8 +33,22 @@ app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
 app.MapGet("/hotels", Hotels.GetAll);
-app.MapGet("/hotels/{id:int}", Hotels.Get);     
+app.MapGet("/hotels/{id}/", Hotels.Get);     
 app.MapGet("/hotels/search", Hotels.Search);
+app.MapGet("/hotels/{id}", Hotels.Delete);
+app.MapGet("/hotels/", Hotels.Post);
+app.MapGet("/hotels/{id:int}", Hotels.Put);
+app.MapGet("/hoetls/{destinationId}", Hotels.ByDestination);
+
+
+app.MapGet("/rooms", Rooms.GetAll);
+app.MapGet("/rooms/{id:}/", Rooms.Get);
+app.MapGet("/rooms/", Rooms.Post);
+app.MapGet("/rooms/{id:int}", Rooms.Put);
+app.MapGet("/rooms/{id:int}/", Rooms.Delete);
+app.MapGet("/rooms/search", Rooms.Search);
+app.MapGet("/rooms/{hotelId}", Rooms.ByHotel);
+app.MapGet("/rooms/{hotelId}/", Rooms.ByRoomNumber);
 
 
 // special, reset db

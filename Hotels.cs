@@ -147,7 +147,7 @@ class Hotels
         return Results.Ok(new {message= "Hotel deleted."});
     }
 
-    public static async Task<IResult> Seaarch(string? sok, Config config)
+    public static async Task<IResult> Search(string? sok, Config config)
     {
         List<GetAll_Data> result = new();
 
@@ -172,7 +172,7 @@ class Hotels
             while(reader.Read())
             {
                 result.Add(new(
-                    reader.GetInt32("id"), /
+                    reader.GetInt32("id"), 
                     reader.GetString("name"),  
                     reader.GetString("phone_number"), 
                     reader.GetDecimal("rating"),  
