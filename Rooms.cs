@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 /*
             id INT AUTO_INCREMENT PRIMARY KEY,'
-            number INT NOT NULL,
+            room_number INT NOT NULL,
             type VARCHAR(100) NOT NULL,
             price_per_night DECIMAL(10,2) NOT NULL,
             capacity INT NOT NULL,

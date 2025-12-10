@@ -35,23 +35,27 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
+/*
 app.MapGet("/hotels", Hotels.GetAll);
-app.MapGet("/hotels/{id}/", Hotels.Get);     
+app.MapGet("/hotels/{id}", Hotels.Get);     
 app.MapGet("/hotels/search", Hotels.Search);
 app.MapGet("/hotels/{id}", Hotels.Delete);
 app.MapGet("/hotels/", Hotels.Post);
-app.MapGet("/hotels/{id:int}", Hotels.Put);
-app.MapGet("/hoetls/{destinationId}", Hotels.ByDestination);
+app.MapGet("/hotels/{id}", Hotels.Put);
+app.MapGet("/hotels/{destinationId}", Hotels.ByDestination);
 
 
 app.MapGet("/rooms", Rooms.GetAll);
-app.MapGet("/rooms/{id:}/", Rooms.Get);
+app.MapGet("/rooms/{id}", Rooms.Get);
 app.MapGet("/rooms/", Rooms.Post);
-app.MapGet("/rooms/{id:int}", Rooms.Put);
-app.MapGet("/rooms/{id:int}/", Rooms.Delete);
+app.MapGet("/rooms/{id}", Rooms.Put);
+app.MapGet("/rooms/{id}", Rooms.Delete);
 app.MapGet("/rooms/search", Rooms.Search);
 app.MapGet("/rooms/{hotelId}", Rooms.ByHotel);
 app.MapGet("/rooms/{hotelId}/", Rooms.ByRoomNumber);
+*/
+
+
 // fatima // post, put and delete
 app.MapPost("/countries", Countries.Post);
 app.MapPost("/countries/{id:int}", Countries.Put);
@@ -240,7 +244,7 @@ async Task db_reset_to_default(Config config)
     string rooms_table = """
         CREATE TABLE rooms (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            number INT NOT NULL,
+            room_number INT NOT NULL,
             type VARCHAR(100) NOT NULL,
             price_per_night DECIMAL(10,2) NOT NULL,
             capacity INT NOT NULL,
