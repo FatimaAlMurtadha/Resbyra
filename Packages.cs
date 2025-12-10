@@ -17,7 +17,7 @@ namespace server;
 class Packages
 {
    public record GetAll_Data(int Id, string Name, string type, decimal TotalPrice, int Duration, int UserId)
-
+{
     public static async Task<IResult>GetAll(Config config)
     {
         List<GetAll_Data>result = new();
@@ -104,7 +104,13 @@ class Packages
             return Results.Ok(new {message ="Package created."});
     }
    
+    public record UpdateP(string Name, string Type, decimal Price, int Duration, int UserId)
+    
+    public static async Task<IResult> Put(UpdateP packages, Config config)
+    {
+        
+    }
 
     
 
-}
+}}
