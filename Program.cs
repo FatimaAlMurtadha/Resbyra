@@ -24,8 +24,6 @@ app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
 app.MapDelete("/login", Login.Delete);
 
-app.MapPost("/register", Register.Post); // Matching name of the class / Fatima
-
 // CRUD examples (user resource)
 app.MapGet("/users", Users.GetAll);
 app.MapGet("/users/{id}", Users.Get);
@@ -36,6 +34,11 @@ app.MapDelete("/users/{id}", Users.Delete);
 app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
+
+// fatima // post, put and delete
+app.MapPost("/countries", Countries.Post);
+app.MapPost("/countries/{id:int}", Countries.Put);
+app.MapPost("/countries/{id}", Countries.Delete);
 
 // CRUD Cities 
 
