@@ -64,7 +64,6 @@ class Countries
   }
 
   // GET /countries/search?term=...
-  // FoodActivity-style search
   public static async Task<IResult> Search(string? term, Config config)
   {
     List<GetAll_Data> result = new();
@@ -74,7 +73,7 @@ class Countries
 
     if (string.IsNullOrWhiteSpace(term))
     {
-      // Ingen term -> visa alla länder
+      // Ingen term -> alla länder
       query = "SELECT id, country_name FROM countries";
     }
     else
@@ -119,5 +118,85 @@ class Countries
     }
 
     return Results.Ok(result);
+  }
+
+  // DTO för POST
+  public record Post_Args(string CountryName);
+
+  // POST /countries
+  // Skapa nytt land  snälla dubbel kolla så jag gjorde rätt Fatima, justera det annars så det blir bra :) /Oskar
+  public static async Task<IResult> Post(Post_Args country, Config config, HttpContext ctx)
+  {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+
+    string query = """
+            INSERT INTO countries (country_name)
+            VALUES (@name)
+        """;
+
+    var parameters = new MySqlParameter[]
+    {
+      new("@name", country.CountryName)
+    };
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+    return Results.Ok(new { message = "Country created successfully." });
+  }
+
+  // DTO för PUT
+  public record Put_Args(int Id, string CountryName);
+
+  // PUT /countries/{id}
+  // Uppdatera land –  snälla dubbel kolla så jag gjorde rätt Fatima, justera det annars så det blir bra :) /Oskar
+  public static async Task<IResult> Put(Put_Args country, Config config, HttpContext ctx)
+  {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+
+    string query = """
+            UPDATE countries
+            SET country_name = @name
+            WHERE id = @id
+        """;
+
+    var parameters = new MySqlParameter[]
+    {
+      new("@id", country.Id),
+      new("@name", country.CountryName)
+    };
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+    return Results.Ok(new { message = "Country updated successfully." });
+  }
+
+  // DELETE /countries/{id}
+  // Ta bort land – bara admin, snälla dubbel kolla så jag gjorde rätt Fatima, justera det annars så det blir bra :) /Oskar
+  public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
+  {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+
+    string query = "DELETE FROM countries WHERE id = @id";
+
+    var parameters = new MySqlParameter[]
+    {
+      new("@id", id)
+    };
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+    return Results.Ok(new { message = "Country deleted successfully." });
   }
 }

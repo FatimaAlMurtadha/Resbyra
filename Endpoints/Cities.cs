@@ -206,4 +206,3 @@ class Cities
     return Results.Ok(result);
   }
 }
-	
