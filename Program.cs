@@ -35,29 +35,23 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
-// fatima // post, put and delete
-app.MapPost("/countries", Countries.Post);
-app.MapPost("/countries/{id:int}", Countries.Put);
-app.MapPost("/countries/{id}", Countries.Delete);
+app.MapGet("/hotels", Hotels.GetAll);
+app.MapGet("/hotels/{id}/", Hotels.Get);     
+app.MapGet("/hotels/search", Hotels.Search);
+app.MapGet("/hotels/{id}", Hotels.Delete);
+app.MapGet("/hotels/", Hotels.Post);
+app.MapGet("/hotels/{id:int}", Hotels.Put);
+app.MapGet("/hoetls/{destinationId}", Hotels.ByDestination);
 
-// CRUD Cities 
 
-app.MapGet("/cities", Cities.GetAll);
-app.MapGet("/cities/{id}", Cities.Get);
-app.MapPost("/cities", Cities.Post);
-app.MapPut("/cities/{id}", Cities.Put);
-app.MapDelete("/cities/{id}", Cities.Delete);
-
-// GRUD Destinations
-app.MapGet("/destinations", Destinations.GetAll);
-app.MapGet("/destinations/{id}", Destinations.Get);
-app.MapPost("/destinations", Destinations.Post);
-app.MapPut("/destinations/{id}", Destinations.Put);
-app.MapDelete("/destinations/{id}", Destinations.Delete);
-
-app.MapGet("/activities", () => Activities.GetAll(config));
-app.MapGet("/activities/{id:int}", (int id) => Activities.Get(id, config));
-app.MapGet("/activities/search", (string? term) => Activities.Search(term, config));
+app.MapGet("/rooms", Rooms.GetAll);
+app.MapGet("/rooms/{id:}/", Rooms.Get);
+app.MapGet("/rooms/", Rooms.Post);
+app.MapGet("/rooms/{id:int}", Rooms.Put);
+app.MapGet("/rooms/{id:int}/", Rooms.Delete);
+app.MapGet("/rooms/search", Rooms.Search);
+app.MapGet("/rooms/{hotelId}", Rooms.ByHotel);
+app.MapGet("/rooms/{hotelId}/", Rooms.ByRoomNumber);
 
 
 // special, reset db
@@ -223,6 +217,7 @@ async Task db_reset_to_default(Config config)
     string rooms_table = """
         CREATE TABLE rooms (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            number INT NOT NULL,
             type VARCHAR(100) NOT NULL,
             price_per_night DECIMAL(10,2) NOT NULL,
             capacity INT NOT NULL,
