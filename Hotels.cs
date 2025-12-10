@@ -218,17 +218,3 @@ class Hotels
         return Results.Ok(result);
     }
 }
-
-
-/*
-
-System.InvalidOperationException: Body was inferred but the method does not allow inferred body parameters.
-Below is the list of parameters that we found: 
-
-Parameter           | Source                        
----------------------------------------------------------------------------------
-hotel               | Body (Inferred)
-config              | Services (Inferred)
-
-
-*/
