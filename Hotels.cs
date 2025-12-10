@@ -22,7 +22,7 @@ class Hotels
     {
         List<GetAll_Data> result = new();
 
-        string query = "SELECT id, name, phone_number, rating, address, description, destination_id FROM Hotels";
+        string query = "SELECT id, name, phone_number, rating, address, description, destination_id FROM hotels";
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
         {
@@ -45,13 +45,13 @@ class Hotels
     }
 
                                             // för ett specefik hotel
-    public record Get_Data(string Name, string PhoneNumber, decimal Rating, string Address, string Description, int Destination_Id);
+    public record Get_Data(string Name, string PhoneNumber, decimal Rating, string Address, string Description, int DestinationId);
 
     public static async Task<IResult> Get(int id, Config config)
     {
         Get_Data? result = null;
 
-        string query = "SELECT name, phone_number, address, description, destination_id FROM Hotels WHERE id = @id";
+        string query = "SELECT name, phone_number, address, description, destination_id FROM hotels WHERE id = @id";
 
         var parameters = new MySqlParameter[]
         {
