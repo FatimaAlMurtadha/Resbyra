@@ -37,6 +37,15 @@ class Authentication
   }
 
   // No need for a user role GetRolr function, because we have this role as a default role
+  // Now IsUser needed in order to allow just "inloggad" users to handel their bookings 
+
+  // Check if user is admin
+  public static bool IsUser(HttpContext ctx)
+  {
+    string? role = GetRole(ctx);
+    return role == "user";
+  }
+
 
   // A function or method to define the role and authentications
 
@@ -47,6 +56,22 @@ class Authentication
       return Results.Unauthorized();
     }
     if (!IsAdmin(ctx))
+    {
+      return Results.Forbid();
+    }
+
+    return null;
+  }
+
+  // A function or method to define the role "Authorization" and authentications
+
+  public static IResult? RequireUser(HttpContext ctx)
+  {
+    if (!IsLoggedIn(ctx))
+    {
+      return Results.Unauthorized();
+    }
+    if (!IsUser(ctx))
     {
       return Results.Forbid();
     }

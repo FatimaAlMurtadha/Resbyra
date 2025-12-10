@@ -168,9 +168,11 @@ async Task db_reset_to_default(Config config)
             amenity_name VARCHAR(300)
          );
   """;
+    // Use the table amenities
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_table);
 
-  // Hotels' table
-  string hotels_table = """
+    // Hotels' table
+    string hotels_table = """
         CREATE TABLE hotels (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
@@ -206,11 +208,13 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (hotel_id) REFERENCES hotels(id) 
          );
   """;
-
+    // use the table rooms
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
+    // Use the table amenities_hotels
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
 
-  // Packages' table
-  string packages_table = """
+    // Packages' table
+    string packages_table = """
         CREATE TABLE packages (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
