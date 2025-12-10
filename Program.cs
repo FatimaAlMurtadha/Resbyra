@@ -41,7 +41,7 @@ app.MapGet("/countries/search", Countries.Search);
 
 app.MapGet("/cities", Cities.GetAll);
 
-// SEARCH /cities/search?term=stock
+// SEARCH
 app.MapGet("/cities/search", Cities.Search);
 
 // get by id, only int
@@ -58,9 +58,9 @@ app.MapPut("/destinations/{id}", Destinations.Put);
 app.MapDelete("/destinations/{id}", Destinations.Delete);
 
 // Activities
-app.MapGet("/activities", () => FoodActivities.GetAll(config));
-app.MapGet("/activities/{id:int}", (int id) => FoodActivities.Get(id, config));
-app.MapGet("/activities/search", (string? term) => FoodActivities.Search(term, config));
+app.MapGet("/activities", () => Activities.GetAll(config));
+app.MapGet("/activities/{id:int}", (int id) => Activities.Get(id, config));
+app.MapGet("/activities/search", (string? term) => Activities.Search(term, config));
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
