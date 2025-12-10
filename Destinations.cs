@@ -79,8 +79,21 @@ class Destinations
   // POST/ Destinations
   // Insert a new destination into db
 
-  public static async Task<IResult> Post(Post_Args destination, Config config)
+  public static async Task<IResult> Post(Post_Args destination, Config config, HttpContext ctx)
   {
+    // To post a destination "Add" is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End of authentication
+
     string query = """
             INSERT INTO destinations(description, climate, average_cost, city_id)
             VALUES (@description, @climate, @average_cost, @city_id)
