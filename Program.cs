@@ -17,14 +17,14 @@ app.UseSession();
 
 // REST routes
 // Registeration feature
-app.MapPost("/register", Registerations.Post); //Consistency in spelling change /oskar
+app.MapPost("/register", Register.Post); //Consistency in spelling change /oskar // Matching name of the class / Fatima
 
 // session / login / logout examples (auth resource)
 app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
 app.MapDelete("/login", Login.Delete);
 
-app.MapPost("/register", Registerations.Post);
+app.MapPost("/register", Register.Post); // Matching name of the class / Fatima
 
 // CRUD examples (user resource)
 app.MapGet("/users", Users.GetAll);
@@ -198,9 +198,11 @@ async Task db_reset_to_default(Config config)
             amenity_name VARCHAR(300)
          );
   """;
+    // Use the table amenities
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_table);
 
-  // Hotels' table
-  string hotels_table = """
+    // Hotels' table
+    string hotels_table = """
         CREATE TABLE hotels (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
@@ -236,11 +238,13 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (hotel_id) REFERENCES hotels(id) 
          );
   """;
-
+    // use the table rooms
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
+    // Use the table amenities_hotels
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
 
-  // Packages' table
-  string packages_table = """
+    // Packages' table
+    string packages_table = """
         CREATE TABLE packages (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
