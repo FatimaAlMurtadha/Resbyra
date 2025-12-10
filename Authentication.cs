@@ -58,21 +58,7 @@ class Authentication
   }
 
 
-  // A function or method to define the role and authentications
 
-  public static IResult? RequireAdmin(HttpContext ctx)
-  {
-    if (!IsLoggedIn(ctx))
-    {
-      return Results.Unauthorized();
-    }
-    if (!IsAdmin(ctx))
-    {
-      return Results.Forbid();
-    }
-
-    return null;
-  }
 
   // A function or method to define the role "Authorization" and authentications
 
