@@ -35,25 +35,32 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
-/*
+
+// HOTELS
 app.MapGet("/hotels", Hotels.GetAll);
-app.MapGet("/hotels/{id}", Hotels.Get);     
+app.MapGet("/hotels/{id:int}", Hotels.Get);
 app.MapGet("/hotels/search", Hotels.Search);
-app.MapGet("/hotels/{id}", Hotels.Delete);
-app.MapGet("/hotels/", Hotels.Post);
-app.MapGet("/hotels/{id}", Hotels.Put);
-app.MapGet("/hotels/{destinationId}", Hotels.ByDestination);
+
+// using proper verbs >_>
+app.MapPost("/hotels", Hotels.Post);
+app.MapPut("/hotels", Hotels.Put);           
+app.MapDelete("/hotels/{id:int}", Hotels.Delete);
+
+// avoid route clash with /hotels/{id} which caused issue before I think
+app.MapGet("/hotels/by-destination/{destinationId:int}", Hotels.ByDestination);
 
 
+// ROOMS
 app.MapGet("/rooms", Rooms.GetAll);
-app.MapGet("/rooms/{id}", Rooms.Get);
-app.MapGet("/rooms/", Rooms.Post);
-app.MapGet("/rooms/{id}", Rooms.Put);
-app.MapGet("/rooms/{id}", Rooms.Delete);
+app.MapGet("/rooms/{id:int}", Rooms.Get);
 app.MapGet("/rooms/search", Rooms.Search);
-app.MapGet("/rooms/{hotelId}", Rooms.ByHotel);
-app.MapGet("/rooms/{hotelId}/", Rooms.ByRoomNumber);
-*/
+// filter endpoints
+app.MapGet("/rooms/by-hotel/{hotelId:int}", Rooms.ByHotel);
+app.MapGet("/rooms/by-hotel/{hotelId:int}/{roomNumber:int}", Rooms.ByRoomNumber);
+app.MapPost("/rooms", Rooms.Post);
+app.MapPut("/rooms/{id:int}", Rooms.Put);
+app.MapDelete("/rooms/{id:int}", Rooms.Delete);
+
 
 
 // fatima // post, put and delete
