@@ -105,4 +105,102 @@ class Countries
 
         return result;
     }
+
+
+
+    // Fatima post, put, delete
+
+    // We need to use the thierd parameter this time 
+    // In order to check the role
+
+    public record Post_Args(string Name);
+    public static async Task<IResult> Post(Post_Args country, Config config, HttpContext ctx)
+    {
+        // To post a city "Add" is admin's feature 
+        // So we need to make it (only Admin) access
+        // Throug calling our authentication function or method
+
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Check
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        // End of authentication
+        string query = """
+            INSERT INTO countries(country_name)
+            VALUES (@country_name)
+        """;
+
+        var parameters = new MySqlParameter[]
+        {
+            new("@name", country.Name)
+        };
+
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Country created successfully." });
+    }
+
+    // DTO for PUT (updating an existing city)
+
+    public record Put_Args(int Id, string Name);
+
+
+    // PUT /cities/{id}
+    // Update an existing city
+    // The same should be applyed to Put function as on POST
+    // Only admin 
+    public static async Task<IResult> Put(Put_Args country, Config config, HttpContext ctx)
+    {
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Check 
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+
+
+        string query = """
+            UPDATE countries
+            SET country_name = @country_name
+            WHERE id = @id
+        """;
+
+        var parameters = new MySqlParameter[]
+        {
+            new("@id", country.Id),
+            new("@name", country.Name)
+        };
+
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Country updated successfully." });
+    }
+
+    // DELETE /country by /{id}
+    // Remove a city from the database
+    // Only admin
+    public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
+    {
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Chechk
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        string query = "DELETE FROM countries WHERE id = @id";
+
+        var parameters = new MySqlParameter[]
+        {
+            new("@id", id)
+        };
+
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Country deleted successfully." });
+    }
 }

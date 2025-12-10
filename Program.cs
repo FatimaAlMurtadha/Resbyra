@@ -16,6 +16,9 @@ var app = builder.Build();
 app.UseSession();
 
 // REST routes
+// Registeration feature
+app.MapPost("/register", Register.Post); //Consistency in spelling change /oskar // Matching name of the class / Fatima
+
 // session / login / logout examples (auth resource)
 app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
@@ -49,6 +52,29 @@ app.MapGet("/rooms/{id:int}/", Rooms.Delete);
 app.MapGet("/rooms/search", Rooms.Search);
 app.MapGet("/rooms/{hotelId}", Rooms.ByHotel);
 app.MapGet("/rooms/{hotelId}/", Rooms.ByRoomNumber);
+// fatima // post, put and delete
+app.MapPost("/countries", Countries.Post);
+app.MapPost("/countries/{id:int}", Countries.Put);
+app.MapPost("/countries/{id}", Countries.Delete);
+
+// CRUD Cities 
+
+app.MapGet("/cities", Cities.GetAll);
+app.MapGet("/cities/{id}", Cities.Get);
+app.MapPost("/cities", Cities.Post);
+app.MapPut("/cities/{id}", Cities.Put);
+app.MapDelete("/cities/{id}", Cities.Delete);
+
+// GRUD Destinations
+app.MapGet("/destinations", Destinations.GetAll);
+app.MapGet("/destinations/{id}", Destinations.Get);
+app.MapPost("/destinations", Destinations.Post);
+app.MapPut("/destinations/{id}", Destinations.Put);
+app.MapDelete("/destinations/{id}", Destinations.Delete);
+
+app.MapGet("/activities", () => Activities.GetAll(config));
+app.MapGet("/activities/{id:int}", (int id) => Activities.Get(id, config));
+app.MapGet("/activities/search", (string? term) => Activities.Search(term, config));
 
 
 // special, reset db
@@ -92,7 +118,8 @@ async Task db_reset_to_default(Config config)
         (
             id INT PRIMARY KEY AUTO_INCREMENT,
             email varchar(256) NOT NULL UNIQUE,
-            password TEXT
+            password TEXT NOT NULL, 
+            role VARCHAR(50) NOT NULL DEFAULT 'user'
         )
     """;
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
@@ -134,18 +161,42 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_table);
 
-  // Activities' table
+  // Food Activities' table
   string activities_table = """
-        CREATE TABLE activities (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(200) NOT NULL,
-            type VARCHAR(100) NOT NULL,
-            price DECIMAL(10,2) NOT NULL,
-            description TEXT NOT NULL
-        );
-    """;
+                                CREATE TABLE IF NOT EXISTS activities (
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    name VARCHAR(200) NOT NULL,
+                                    description TEXT NOT NULL
+                                );
+                            """;
 
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, activities_table);
+  
+  
+  string insertItalianPizza = """
+                                  INSERT INTO activities (name, description)
+                                  VALUES ('Italian Pizza Tasting', 'Taste authentic Italian pizzas prepared using traditional regional techniques.');
+                              """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertItalianPizza);
+
+  string insertSwedishMushroom = """
+                                     INSERT INTO activities (name, description)
+                                     VALUES ('Swedish Mushroom Bonanza', 'Join a guided forest tour and sample classic Swedish mushroom dishes.');
+                                 """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertSwedishMushroom);
+
+  string insertIndianFeast = """
+                                 INSERT INTO activities (name, description)
+                                 VALUES ('Indian Spice Feast', 'Experience a rich selection of Indian dishes featuring diverse spices and regional flavors.');
+                             """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertIndianFeast);
+
+  string insertAmericanBurger = """
+                                    INSERT INTO activities (name, description)
+                                    VALUES ('American 15kg Burger Buffet', 'A wildly irresponsible buffet featuring oversized burgers, fries, and enough calories to frighten your doctor.');
+                                """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertAmericanBurger);
+
 
   // The relation between the destinations and the activities M:N
 
@@ -158,10 +209,20 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (activity_id) REFERENCES activities(id)
         );
     """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_activities_table);
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_activities_table);
 
-  // Hotels' table
-  string hotels_table = """
+    // Amenities' table
+    string amenities_table = """
+         CREATE TABLE amenities(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            amenity_name VARCHAR(300)
+         );
+  """;
+    // Use the table amenities
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_table);
+
+    // Hotels' table
+    string hotels_table = """
         CREATE TABLE hotels (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
@@ -175,8 +236,8 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, hotels_table);
 
-  // Rooms' table
-  string rooms_table = """
+    // Rooms' table
+    string rooms_table = """
         CREATE TABLE rooms (
             id INT AUTO_INCREMENT PRIMARY KEY,
             number INT NOT NULL,
@@ -188,10 +249,23 @@ async Task db_reset_to_default(Config config)
         );
     """;
 
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
+    // The relation between the amenities and hotels
+    string amenities_hotels = """
+         CREATE TABLE amenities_hotels(
+            amenity_id INT NOT NULL,
+            hotel_id INT NOT NULL,
+            PRIMARY KEY (amenity_id, hotel_id),
+            FOREIGN KEY (amenity_id) REFERENCES amenities(id),
+            FOREIGN KEY (hotel_id) REFERENCES hotels(id) 
+         );
+  """;
+    // use the table rooms
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
+    // Use the table amenities_hotels
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
 
-  // Packages' table
-  string packages_table = """
+    // Packages' table
+    string packages_table = """
         CREATE TABLE packages (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,

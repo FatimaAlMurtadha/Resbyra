@@ -1,6 +1,9 @@
 namespace server;
 
 using MySql.Data.MySqlClient;
+using System.Security.Cryptography;
+using System.Text;
+
 
 class Login
 {
@@ -13,38 +16,83 @@ class Login
     }
   }
 
-  // Login
-  public static bool
-  Get(HttpContext ctx)
+  // Check if logged in 
+  public static bool Get(HttpContext ctx)
   {
-    bool result = false;
-    if (ctx.Session.IsAvailable)
+    if (!ctx.Session.IsAvailable)
     {
-      result = ctx.Session.Keys.Contains("user_id");
+      return false; 
     }
-    return result;
+    return ctx.Session.Keys.Contains("user_id"); 
+
   }
 
   public record Post_Data(string Email, string Password);
-  public static async Task<bool>
-  Post(Post_Data credentials, Config config, HttpContext ctx)
+
+  // Here is log in function 
+  public static async Task<bool> Post(Post_Data credentials, Config config, HttpContext ctx)
   {
     bool result = false;
-    string query = "SELECT id FROM users WHERE email = @email AND password = @password";
+
+    // Get user by email
+    string query = "SELECT id, password, role FROM users WHERE email = @Email"; // I stoped here
+
     var parameters = new MySqlParameter[]
     {
-            new("@email", credentials.Email),
-            new("@password", credentials.Password),
+      new("@email", credentials.Email),
+      // needed to check the password with same function on Registeration.cs 
+
+      // new("@password", credentials.Password),
     };
-    object query_result = await MySqlHelper.ExecuteScalarAsync(config.ConnectionString, query, parameters);
-    if (query_result is int id)
+
+    // needed to use reader to get id, password and role
+
+    using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
     {
-      ctx.Session.SetInt32("user_id", id);
-      result = true;
+      if (reader.Read())
+      {
+        int id = reader.GetInt32(reader.GetOrdinal("id")); // id
+        string storedHash = reader.GetString(reader.GetOrdinal("password")); // password
+        string role = reader.GetString(reader.GetOrdinal("role")); // role
+
+        // Check incoming password (same as Registeration)
+        string incomingHash = HashPassword(credentials.Password);
+
+        // Compare
+        if (incomingHash == storedHash)
+        {
+          // Save session
+          ctx.Session.SetInt32("user_id", id);
+          ctx.Session.SetString("role", role);
+          result = true;
+        }
+      }
     }
 
     return result;
   }
+
+  // Using the same hashing function as Registeration.cs
+  private static string HashPassword(string password)
+  {
+    using var sha = SHA256.Create();
+    byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+    return Convert.ToBase64String(bytes);
+  }
+
+
+
+  // needed to comment this query and will use reader instead in order to read all the values not only ID
+  /*object query_result = await MySqlHelper.ExecuteScalarAsync(config.ConnectionString, query, parameters);
+  if (query_result is int id)
+  {
+    ctx.Session.SetInt32("user_id", id);
+    result = true;
+  }
+
+  return result;
+}*/
+
 
 
 }
