@@ -70,10 +70,24 @@ class Cities
   public record Post_Args(string Name, int CountryId);
 
 
-  // POST /cities
+  // POST /cities 
   // Insert a new city into the database
-  public static async Task<IResult> Post(Post_Args city, Config config)
+  // We need to use the thierd parameter this time 
+  // In order to check the role
+  public static async Task<IResult> Post(Post_Args city, Config config, HttpContext ctx)
   {
+    // To post a city "Add" is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End of authentication
     string query = """
             INSERT INTO cities(name, country_id)
             VALUES (@name, @country_id)
@@ -89,15 +103,27 @@ class Cities
 
     return Results.Ok(new { message = "City created successfully." });
   }
-  
+
   // DTO for PUT (updating an existing city)
+
   public record Put_Args(int Id, string Name, int CountryId);
 
-  
+
   // PUT /cities/{id}
   // Update an existing city
-  public static async Task<IResult> Put(Put_Args city, Config config)
+  // The same should be applyed to Put function as on POST
+  // Only admin 
+  public static async Task<IResult> Put(Put_Args city, Config config, HttpContext ctx)
   {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+
+
     string query = """
             UPDATE cities
             SET name = @name, country_id = @country_id
@@ -118,8 +144,16 @@ class Cities
 
   // DELETE /cities by /{id}
   // Remove a city from the database
-  public static async Task<IResult> Delete(int id, Config config)
+  // Only admin
+  public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
   {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
     string query = "DELETE FROM cities WHERE id = @id";
 
     var parameters = new MySqlParameter[]
@@ -131,4 +165,6 @@ class Cities
 
     return Results.Ok(new { message = "City deleted successfully." });
   }
+  
+  
 }
