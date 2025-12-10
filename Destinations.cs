@@ -92,7 +92,7 @@ class Destinations
     {
       return admin_authentication;
     }
-    // End of authentication
+    // End othorization
 
     string query = """
             INSERT INTO destinations(description, climate, average_cost, city_id)
@@ -117,8 +117,20 @@ class Destinations
 
   // PUT /destinations/{id}
   // Update an existing destination
-  public static async Task<IResult> Put(Put_Args destination, Config config)
+  public static async Task<IResult> Put(Put_Args destination, Config config, HttpContext ctx)
   {
+    // To put a destination "update, edite" is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End of authorization
     string query = """
             UPDATE destinations
             SET description = @description, climate = @climate, average_cost = @average_cost,
@@ -142,8 +154,22 @@ class Destinations
 
   // DELETE /destination by /{id}
   // Remove a destination from the database
-  public static async Task<IResult> Delete(int id, Config config)
+  public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
   {
+
+    // To delete a destination is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End of authorization
+
     string query = "DELETE FROM destinations WHERE id = @id";
 
     var parameters = new MySqlParameter[]
