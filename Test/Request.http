@@ -1,12 +1,16 @@
-﻿### Reset database to default state
+﻿#########################################################
+# FEEL FREE TO CHANGE VARIABLES WHEN TESTING!!! DELETE DATA PASE (BUTTON UNDER) FOR FRESH INSTANCE
+# HAVE FUN! /OSKAR
+#########################################################
 DELETE http://localhost:5132/db
 
+
 #########################################################
-# AUTH / SESSION (Register, Login, Profile-ish)
+# AUTH / SESSION (Register, Login, Logout)
 #########################################################
 
 ### Register (new user)
-POST {{baseUrl}}/register
+POST http://localhost:5132/register
 Content-Type: application/json
 
 {
@@ -16,7 +20,7 @@ Content-Type: application/json
 }
 
 ### Login (as that user)
-POST {{baseUrl}}/login
+POST http://localhost:5132/login
 Content-Type: application/json
 
 {
@@ -24,11 +28,11 @@ Content-Type: application/json
   "password": "Password123!"
 }
 
-### Login status (should be true after successful login)
-GET {{baseUrl}}/login
+### Login status (should return true assuming you logged in :))
+GET http://localhost:5132/login
 
-### Logout (clears session)
-DELETE {{baseUrl}}/login
+### Logout
+DELETE http://localhost:5132/login
 
 
 #########################################################
@@ -36,10 +40,10 @@ DELETE {{baseUrl}}/login
 #########################################################
 
 ### Users - Get all
-GET {{baseUrl}}/users
+GET http://localhost:5132/users
 
-### Users - Get by id (adjust id if needed)
-GET {{baseUrl}}/users/1
+### Users - Get by id
+GET http://localhost:5132/users/1
 
 
 #########################################################
@@ -47,10 +51,10 @@ GET {{baseUrl}}/users/1
 #########################################################
 
 ### Countries - Get all
-GET {{baseUrl}}/countries
+GET http://localhost:5132/countries
 
 ### Countries - Search
-GET {{baseUrl}}/countries/search?term=sw
+GET http://localhost:5132/countries/search?term=sw
 
 
 #########################################################
@@ -58,10 +62,10 @@ GET {{baseUrl}}/countries/search?term=sw
 #########################################################
 
 ### Cities - Get all
-GET {{baseUrl}}/cities
+GET http://localhost:5132/cities
 
 ### Cities - Search
-GET {{baseUrl}}/cities/search?term=sto
+GET http://localhost:5132/cities/search?term=sto
 
 
 #########################################################
@@ -69,10 +73,10 @@ GET {{baseUrl}}/cities/search?term=sto
 #########################################################
 
 ### Destinations - Get all
-GET {{baseUrl}}/destinations
+GET http://localhost:5132/destinations
 
 ### Destinations - Search
-GET {{baseUrl}}/destinations/search?term=beach
+GET http://localhost:5132/destinations/search?term=beach
 
 
 #########################################################
@@ -80,10 +84,10 @@ GET {{baseUrl}}/destinations/search?term=beach
 #########################################################
 
 ### Bookings - Get all
-GET {{baseUrl}}/bookings
+GET http://localhost:5132/bookings
 
-### Bookings - Search (works even without term)
-GET {{baseUrl}}/bookings/search?term=1
+### Bookings - Search
+GET http://localhost:5132/bookings/search?term=1
 
 
 #########################################################
@@ -91,10 +95,10 @@ GET {{baseUrl}}/bookings/search?term=1
 #########################################################
 
 ### Hotels - Get all
-GET {{baseUrl}}/hotels
+GET http://localhost:5132/hotels
 
-### Hotels - By destination (adjust destinationId if needed)
-GET {{baseUrl}}/hotels/by-destination/1
+### Hotels - By destination
+GET http://localhost:5132/hotels/by-destination/1
 
 
 #########################################################
@@ -102,10 +106,10 @@ GET {{baseUrl}}/hotels/by-destination/1
 #########################################################
 
 ### Rooms - Get all
-GET {{baseUrl}}/rooms
+GET http://localhost:5132/rooms
 
-### Rooms - By hotel (adjust hotelId if needed)
-GET {{baseUrl}}/rooms/by-hotel/1
+### Rooms - By hotel
+GET http://localhost:5132/rooms/by-hotel/1
 
 
 #########################################################
@@ -113,10 +117,10 @@ GET {{baseUrl}}/rooms/by-hotel/1
 #########################################################
 
 ### Activities - Get all
-GET {{baseUrl}}/activities
+GET http://localhost:5132/activities
 
 ### Activities - Search
-GET {{baseUrl}}/activities/search?term=food
+GET http://localhost:5132/activities/search?term=food
 
 
 #########################################################
@@ -124,18 +128,18 @@ GET {{baseUrl}}/activities/search?term=food
 #########################################################
 
 ### Amenities - Get all
-GET {{baseUrl}}/amenities
+GET http://localhost:5132/amenities
 
 ### Amenities - Search
-GET {{baseUrl}}/amenities/search?term=wifi
+GET http://localhost:5132/amenities/search?term=wifi
 
 
 #########################################################
-# AMENITIES <-> HOTELS LINK
+# AMENITIES <-> HOTELS
 #########################################################
 
-### AmenetiesHotel - Get amenities for a hotel
-GET {{baseUrl}}/hotels/1/amenities
+### Get amenities for a hotel
+GET http://localhost:5132/hotels/1/amenities
 
-### AmenetiesHotel - Get hotels for an amenity
-GET {{baseUrl}}/amenities/1/hotels
+### Get hotels for an amenity
+GET http://localhost:5132/amenities/1/hotels
