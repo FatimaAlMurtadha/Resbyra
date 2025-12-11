@@ -73,8 +73,21 @@ class Rooms
 
     public record RoomCreate(string RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
 
-    public static async Task<IResult> Post(RoomCreate room, Config config)
+    public static async Task<IResult> Post(RoomCreate room, Config config, HttpContext ctx)
     {
+        // To post a room "Add" is admin's feature 
+        // So we need to make it (only Admin) access
+        // Throug calling our authentication function or method
+
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Chech 
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        // End othorization
+
         string query = """
             INSERT INTO rooms (room_number, type, price_per_night, capacity, hotel_id)
             VALUES (@room_number, @type, @price_per_night, @capacity, @hotel_id)
@@ -97,8 +110,22 @@ class Rooms
 
     public record RoomUpdate(int Id, string RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
 
-    public static async Task<IResult> Put(RoomUpdate room, Config config)
+    public static async Task<IResult> Put(RoomUpdate room, Config config, HttpContext ctx)
     {
+
+        // To put a room "Add" is admin's feature 
+        // So we need to make it (only Admin) access
+        // Throug calling our authentication function or method
+
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Check 
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        // End othorization
+
         string query = """
             UPDATE rooms
             SET 
@@ -171,7 +198,7 @@ class Rooms
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> ByHotel(int hotelId, Config config)
+    public static async Task<IResult> ByHotel(int hotelId, Config config, HttpC)
     {
         List<GetAll_Data> result = new();
 
