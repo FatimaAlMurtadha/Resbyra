@@ -68,9 +68,9 @@ class Bookings
     // t.e 
     // return Results.Ok(new { message = "booking created successfully." });
     // 3 -> an Interface <IResult> after Task --> Fatima
-    public static async Task Post(Post_Args args, Config config, HttpContext ctx)
+    public static async Task<IResult> Post(Post_Args booking, Config config, HttpContext ctx)
     {
-        /*
+        
         // To post a booking "Add" is users's feature 
         // So we need to make it (only inlogged user) access
         // Throug calling our authentication function or method
@@ -87,7 +87,7 @@ class Bookings
         // bring user_id from the session // it can't be null
         int current_user_id = Authentication.GetUserId(ctx)!.Value;
         // End othorization
-        */
+        
 
 
 
@@ -98,19 +98,20 @@ class Bookings
 
         var parameters = new MySqlParameter[]
         {
-            new("@total_price", args.TotalPrice),
-            new("@date", args.Date),
-            new("@user_id", args.UserId),
-            new("@package_id", args.PackageId)
+            new("@total_price", booking.TotalPrice),
+            new("@date", booking.Date),
+            new("@user_id", booking.UserId),
+            new("@package_id", booking.PackageId)
         };
 
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+        return Results.Ok(new { message = "booking created successfully." });
     }
 
     // PUT
-    public static async Task Put(int id, Put_Args args, Config config, HttpContext ctx)
+    public static async Task<IResult> Put(int id, Put_Args booking, Config config, HttpContext ctx)
     {
-        /*
+        
         // To put a booking "Add" is users's feature 
         // So we need to make it (only inlogged user) access
         // Throug calling our authentication function or method
@@ -155,7 +156,7 @@ class Bookings
             return Results.Forbid();
         }
         // End // Fatima
-        */
+        
 
         string query = """
             UPDATE bookings 
@@ -166,19 +167,20 @@ class Bookings
         var parameters = new MySqlParameter[]
         {
             new("@id", id),
-            new("@total_price", args.TotalPrice),
-            new("@date", args.Date),
-            new("@user_id", args.UserId),
-            new("@package_id", args.PackageId)
+            new("@total_price", booking.TotalPrice),
+            new("@date", booking.Date),
+            new("@user_id", booking.UserId),
+            new("@package_id", booking.PackageId)
         };
 
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+        return Results.Ok(new { message = "booking updated successfully." });
     }
 
     // DELETE
-    public static async Task Delete(int id, Config config, HttpContext ctx)
+    public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
     {
-        /*
+        
         // To delete a booking "Add" is users's feature 
         // So we need to make it (only inlogged user) access
         // Throug calling our authentication function or method
@@ -225,7 +227,7 @@ class Bookings
         }
         // End // Fatima
 
-        */
+        
 
         string query = "DELETE FROM bookings WHERE id = @id";
 
@@ -235,6 +237,7 @@ class Bookings
         };
 
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+        return Results.Ok(new { message = "booking deleted successfully." });
     }
     
         //dropping the search function here, arbaz if it is confusing or you need help intigrating it into your file please let me know :) /Oskar
