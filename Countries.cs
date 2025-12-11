@@ -1,206 +1,202 @@
 ﻿namespace server;
 
 using MySql.Data.MySqlClient;
-using Microsoft.AspNetCore.Http; // för IResult and Results
+using Microsoft.AspNetCore.Http;
 
 class Countries
 {
-    // DTO för list results: GET /countries and /countries/search
-    public record GetAll_Data(int Id, string CountryName);
+  // DTO för listresultat
+  public record GetAll_Data(int Id, string CountryName);
 
-    // GET /countries<
-    //Vi hämtar länder för databasen
-    public static List<GetAll_Data> GetAll(Config config)
+  // DTO för single result
+  public record Get_Data(string CountryName);
+
+  // GET /countries
+  public static async Task<IResult> GetAll(Config config)
+  {
+    List<GetAll_Data> result = new();
+
+    string query = "SELECT id, country_name FROM countries";
+
+    using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
     {
-        List<GetAll_Data> result = new();
-
-        string query = "SELECT id, country_name FROM countries";
-
-        using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query))
-        {
-            while (reader.Read())
-            {
-                result.Add(new(
-                    reader.GetInt32(0),
-                    reader.GetString(1)
-                ));
-            }
-        }
-
-        return result;
+      while (reader.Read())
+      {
+        result.Add(new(
+            reader.GetInt32(0),
+            reader.GetString(1)
+        ));
+      }
     }
 
+    return Results.Ok(result);
+  }
 
-    // DTO för single result
-    public record Get_Data(string CountryName);
+  // GET /countries/{id}
+  public static async Task<IResult> Get(int id, Config config)
+  {
+    Get_Data? result = null;
 
-    // GET /countries/{id}
-    //specifikt land baserat på ID
-    public static IResult Get(int id, Config config)
+    string query = "SELECT country_name FROM countries WHERE id = @id";
+
+    var parameters = new MySqlParameter[]
     {
-        Get_Data? result = null;
+      new("@id", id)
+    };
 
-        string query = "SELECT country_name FROM countries WHERE id = @id";
-
-        var parameters = new MySqlParameter[]
-        {
-            new("@id", id)
-        };
-
-        using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query, parameters))
-        {
-            if (reader.Read())
-            {
-                result = new(reader.GetString(0));
-            }
-        }
-
-        if (result is null)
-        {
-            // Om inget land hittas returnera felkod 404
-            return Results.NotFound(new
-            {
-                message = $"Country with id {id} was not found."
-            });
-        }
-
-        // Om det är ok returnera 200 med landet
-        return Results.Ok(result);
+    using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+    {
+      if (reader.Read())
+      {
+        result = new(reader.GetString(0));
+      }
     }
 
-
-    // GET /countries/search?name=...
-    //Checkar efter länder baserat på namn, SQl
-    public static List<GetAll_Data> Search(string? name, Config config)
+    if (result is null)
     {
-        // Om ingen search term -> visa ALLT
-        if (string.IsNullOrWhiteSpace(name))
+      return Results.NotFound(new
+      {
+        message = $"Country with id {id} was not found."
+      });
+    }
+
+    return Results.Ok(result);
+  }
+
+  // GET /countries/search?term=...
+  public static async Task<IResult> Search(string? term, Config config)
+  {
+    List<GetAll_Data> result = new();
+
+    string query;
+    MySqlParameter[]? parameters = null;
+
+    if (string.IsNullOrWhiteSpace(term))
+    {
+      // Ingen term -> alla länder
+      query = "SELECT id, country_name FROM countries";
+    }
+    else
+    {
+      query = """
+              SELECT id, country_name
+              FROM countries
+              WHERE country_name LIKE @term
+              """;
+
+      parameters = new MySqlParameter[]
+      {
+        new("@term", "%" + term + "%")
+      };
+    }
+
+    if (parameters is null)
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
+      {
+        while (reader.Read())
         {
-            return GetAll(config);
+          result.Add(new(
+              reader.GetInt32(0),
+              reader.GetString(1)
+          ));
         }
+      }
+    }
+    else
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+              reader.GetInt32(0),
+              reader.GetString(1)
+          ));
+        }
+      }
+    }
 
-        List<GetAll_Data> result = new();
+    return Results.Ok(result);
+  }
 
-        string query = """
-            SELECT id, country_name
-            FROM countries
-            WHERE country_name LIKE CONCAT('%', @name, '%')
+  // DTO för POST
+  public record Post_Args(string CountryName);
+
+  // POST /countries
+  // Skapa nytt land  snälla dubbel kolla så jag gjorde rätt Fatima, justera det annars så det blir bra :) /Oskar
+  public static async Task<IResult> Post(Post_Args country, Config config, HttpContext ctx)
+  {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+
+    string query = """
+            INSERT INTO countries (country_name)
+            VALUES (@name)
         """;
 
-        var parameters = new MySqlParameter[]
-        {
-            new("@name", name)
-        };
+    var parameters = new MySqlParameter[]
+    {
+      new("@name", country.CountryName)
+    };
 
-        using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query, parameters))
-        {
-            while (reader.Read())
-            {
-                result.Add(new(
-                    reader.GetInt32(0),
-                    reader.GetString(1)
-                ));
-            }
-        }
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
 
-        return result;
+    return Results.Ok(new { message = "Country created successfully." });
+  }
+
+  // DTO för PUT
+  public record Put_Args(int Id, string CountryName);
+
+  // PUT /countries/{id}
+  // Uppdatera land –  snälla dubbel kolla så jag gjorde rätt Fatima, justera det annars så det blir bra :) /Oskar
+  public static async Task<IResult> Put(Put_Args country, Config config, HttpContext ctx)
+  {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
     }
 
-
-
-    // Fatima post, put, delete
-
-    // We need to use the thierd parameter this time 
-    // In order to check the role
-
-    public record Post_Args(string Name);
-    public static async Task<IResult> Post(Post_Args country, Config config, HttpContext ctx)
-    {
-        // To post a city "Add" is admin's feature 
-        // So we need to make it (only Admin) access
-        // Throug calling our authentication function or method
-
-        var admin_authentication = Authentication.RequireAdmin(ctx);
-
-        // Check
-        if (admin_authentication is not null)
-        {
-            return admin_authentication;
-        }
-        // End of authentication
-        string query = """
-            INSERT INTO countries(country_name)
-            VALUES (@country_name)
-        """;
-
-        var parameters = new MySqlParameter[]
-        {
-            new("@name", country.Name)
-        };
-
-        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-
-        return Results.Ok(new { message = "Country created successfully." });
-    }
-
-    // DTO for PUT (updating an existing city)
-
-    public record Put_Args(int Id, string Name);
-
-
-    // PUT /cities/{id}
-    // Update an existing city
-    // The same should be applyed to Put function as on POST
-    // Only admin 
-    public static async Task<IResult> Put(Put_Args country, Config config, HttpContext ctx)
-    {
-        var admin_authentication = Authentication.RequireAdmin(ctx);
-
-        // Check 
-        if (admin_authentication is not null)
-        {
-            return admin_authentication;
-        }
-
-
-        string query = """
+    string query = """
             UPDATE countries
-            SET country_name = @country_name
+            SET country_name = @name
             WHERE id = @id
         """;
 
-        var parameters = new MySqlParameter[]
-        {
-            new("@id", country.Id),
-            new("@name", country.Name)
-        };
-
-        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-
-        return Results.Ok(new { message = "Country updated successfully." });
-    }
-
-    // DELETE /country by /{id}
-    // Remove a city from the database
-    // Only admin
-    public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
+    var parameters = new MySqlParameter[]
     {
-        var admin_authentication = Authentication.RequireAdmin(ctx);
+      new("@id", country.Id),
+      new("@name", country.CountryName)
+    };
 
-        // Chechk
-        if (admin_authentication is not null)
-        {
-            return admin_authentication;
-        }
-        string query = "DELETE FROM countries WHERE id = @id";
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
 
-        var parameters = new MySqlParameter[]
-        {
-            new("@id", id)
-        };
+    return Results.Ok(new { message = "Country updated successfully." });
+  }
 
-        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-
-        return Results.Ok(new { message = "Country deleted successfully." });
+  // DELETE /countries/{id}
+  // Ta bort land – bara admin, snälla dubbel kolla så jag gjorde rätt Fatima, justera det annars så det blir bra :) /Oskar
+  public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
+  {
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
     }
-}
+
+    string query = "DELETE FROM countries WHERE id = @id";
+
+    var parameters = new MySqlParameter[]
+    {
+      new("@id", id)
+    };
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+    return Results.Ok(new { message = "Country deleted successfully." });
+  }
+} 

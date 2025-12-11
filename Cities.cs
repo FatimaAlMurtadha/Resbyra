@@ -167,4 +167,66 @@ class Cities
   }
   
   
+  // GET /cities/search?term=stock
+  // FoodActivity-style search
+  public static async Task<IResult> Search(string? term, Config config)
+  {
+    List<GetAll_Data> result = new();
+
+    string query;
+    MySqlParameter[]? parameters = null;
+
+    if (string.IsNullOrWhiteSpace(term))
+    {
+      // Ingen term -> alla cities
+      query = "SELECT id, name, country_id FROM cities";
+    }
+    else
+    {
+      query = """
+              SELECT id, name, country_id
+              FROM cities
+              WHERE name LIKE @term
+              """;
+
+      parameters = new MySqlParameter[]
+      {
+        new("@term", "%" + term + "%")
+      };
+    }
+
+    if (parameters is null)
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+            reader.GetInt32("id"),
+            reader.GetString("name"),
+            reader.GetInt32("country_id")
+          ));
+        }
+      }
+    }
+    else
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+            reader.GetInt32("id"),
+            reader.GetString("name"),
+            reader.GetInt32("country_id")
+          ));
+        }
+      }
+    }
+
+    return Results.Ok(result);
+  }
+  
+  
+  
 }

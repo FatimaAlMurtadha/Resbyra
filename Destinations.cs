@@ -182,6 +182,77 @@ class Destinations
     return Results.Ok(new { message = "Destination deleted successfully." });
   }
 
+  
+  
+
+  // GET /destinations/search?term=beach
+  // FoodActivity-style search: tom term = alla, annars LIKE på description/climate
+  public static async Task<IResult> Search(string? term, Config config)
+  {
+    List<GetAll_Data> result = new();
+
+    string query;
+    MySqlParameter[]? parameters = null;
+
+    if (string.IsNullOrWhiteSpace(term))
+    {
+      // Ingen term -> alla destinations
+      query = "SELECT id, description, climate, average_cost, city_id FROM destinations";
+    }
+    else
+    {
+      query = """
+              SELECT id, description, climate, average_cost, city_id
+              FROM destinations
+              WHERE description LIKE @term
+                 OR climate LIKE @term
+              """;
+
+      parameters = new MySqlParameter[]
+      {
+        new("@term", "%" + term + "%")
+      };
+    }
+
+    if (parameters is null)
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+            reader.GetInt32("id"),
+            reader.GetString("description"),
+            reader.GetString("climate"),
+            reader.GetDecimal("average_cost"),
+            reader.GetInt32("city_id")
+          ));
+        }
+      }
+    }
+    else
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+            reader.GetInt32("id"),
+            reader.GetString("description"),
+            reader.GetString("climate"),
+            reader.GetDecimal("average_cost"),
+            reader.GetInt32("city_id")
+          ));
+        }
+      }
+    }
+
+    return Results.Ok(result);
+  }
+
+
+  
+  
 
 }
 
