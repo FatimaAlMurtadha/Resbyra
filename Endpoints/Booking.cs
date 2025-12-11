@@ -60,8 +60,37 @@ class Bookings
     }
 
     // POST
-    public static async Task Post(Post_Args args, Config config)
+
+
+    // there are errors on the code Post + put + Delete need the following
+    // 1-> a parameter "booking" instead of "args" because it's a assigned for the languege
+    // 2-> a return value at the end of each method 
+    // t.e 
+    // return Results.Ok(new { message = "booking created successfully." });
+    // 3 -> an Interface <IResult> after Task --> Fatima
+    public static async Task Post(Post_Args args, Config config, HttpContext ctx)
     {
+        /*
+        // To post a booking "Add" is users's feature 
+        // So we need to make it (only inlogged user) access
+        // Throug calling our authentication function or method
+
+        var user_authentication = Authentication.RequireUser(ctx);
+
+        // Chech 
+        if (user_authentication is not null)
+        {
+            return user_authentication;
+        }
+
+        // check the role from the session
+        // bring user_id from the session // it can't be null
+        int current_user_id = Authentication.GetUserId(ctx)!.Value;
+        // End othorization
+        */
+
+
+
         string query = """
             INSERT INTO bookings(total_price, date, user_id, package_id)
             VALUES(@total_price, @date, @user_id, @package_id)
@@ -79,8 +108,55 @@ class Bookings
     }
 
     // PUT
-    public static async Task Put(int id, Put_Args args, Config config)
+    public static async Task Put(int id, Put_Args args, Config config, HttpContext ctx)
     {
+        /*
+        // To put a booking "Add" is users's feature 
+        // So we need to make it (only inlogged user) access
+        // Throug calling our authentication function or method
+
+        var user_authentication = Authentication.RequireUser(ctx);
+
+        // Check 
+        if (user_authentication is not null)
+        {
+            return user_authentication;
+        }
+
+        // check the role from the session
+        // bring user_id from the session // it can't be null
+        int current_user_id = Authentication.GetUserId(ctx)!.Value;
+        // End othorization
+        // this variable takes the role depending on the session inlogged User Role
+        string role = Authentication.GetRole(ctx)!;
+
+        // we need also to bring and link the booking withe the owner of the session "booking's owner"
+        string query_search = "SELECT user_id FROM bookings WHERE id = @id";
+        // a variable to save the booking owner with a null value that we reassign on reader
+        int? booking_owner_id = -1;
+
+        // need to read information of the booking owner from database
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query_search, new MySqlParameter("@id", id)))
+        {
+            if (reader.Read())
+            {
+                booking_owner_id = reader.GetInt32(0);
+
+            }
+            else
+            {
+                return Results.NotFound();
+            }
+        }
+
+        // Securty
+        if (role != "admin" && booking_owner_id != current_user_id)
+        {
+            return Results.Forbid();
+        }
+        // End // Fatima
+        */
+
         string query = """
             UPDATE bookings 
             SET total_price = @total_price, date = @date, user_id = @user_id, package_id = @package_id
@@ -100,8 +176,57 @@ class Bookings
     }
 
     // DELETE
-    public static async Task Delete(int id, Config config)
+    public static async Task Delete(int id, Config config, HttpContext ctx)
     {
+        /*
+        // To delete a booking "Add" is users's feature 
+        // So we need to make it (only inlogged user) access
+        // Throug calling our authentication function or method
+
+        var user_authentication = Authentication.RequireUser(ctx);
+
+        // Chech 
+        if (user_authentication is not null)
+        {
+            return user_authentication;
+        }
+
+        // check the role from the session
+        // bring user_id from the session // it can't be null
+        int current_user_id = Authentication.GetUserId(ctx)!.Value;
+        // End othorization
+
+        // this variable takes the role depending on the session inlogged User Role
+        string role = Authentication.GetRole(ctx)!;
+
+        // we need also to bring and link the booking withe the owner of the session "booking's owner"
+        string query_search = "SELECT user_id FROM bookings WHERE id = @id";
+        // a variable to save the booking owner with a null value that we reassign on reader
+        int? booking_owner_id = -1;
+
+        // need to read information of the booking owner from database
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query_search, new MySqlParameter("@id", id)))
+        {
+            if (reader.Read())
+            {
+                booking_owner_id = reader.GetInt32(0);
+
+            }
+            else
+            {
+                return Results.NotFound();
+            }
+        }
+
+        // Securty
+        if (role != "admin" && booking_owner_id != current_user_id)
+        {
+            return Results.Forbid();
+        }
+        // End // Fatima
+
+        */
+
         string query = "DELETE FROM bookings WHERE id = @id";
 
         var parameters = new MySqlParameter[]
