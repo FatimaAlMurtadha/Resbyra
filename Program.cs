@@ -213,6 +213,7 @@ async Task db_reset_to_default(Config config)
   string destinations_table = """
         CREATE TABLE destinations (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(200) NOT NULL,
             description TEXT NOT NULL,
             climate VARCHAR(100) NOT NULL,
             average_cost DECIMAL(10,2) NOT NULL,
@@ -364,8 +365,8 @@ async Task db_reset_to_default(Config config)
     string create_view = """
          CREATE OR REPLACE VIEW view_package_destinations AS 
          SELECT p.id AS package_id, p.name AS package_name, p.type, p.total_price, 
-                p.duration_days, p.description AS package+description, 
-                d.id AS destination_id, d.name AS destination_name, d.climate
+                p.duration_days, p.description AS package_description, 
+                d.id AS destination_id, d.name AS destination_name, d.climate,
                 c.name AS city_name
          FROM package_destinations AS pd
          INNER JOIN packages AS p ON pd.package_id = p.id

@@ -8,7 +8,7 @@ class Destinations
 {
   // DTO 
 
-  public record GetAll_Data(int Id, string Description, string Climate, decimal AverageCost, int CityId);
+  public record GetAll_Data(int Id, string Name , string Description, string Climate, decimal AverageCost, int CityId);
 
   // GET / destinations
   // Bring all destinations
@@ -25,6 +25,7 @@ class Destinations
       {
         result.Add(new(
             reader.GetInt32("id"),
+            reader.GetString("name"),
             reader.GetString("description"),
             reader.GetString("climate"),
             reader.GetDecimal("average_cost"),
@@ -36,7 +37,7 @@ class Destinations
   }
 
   // DTO
-  public record Get_Data(string Description, string Climate, decimal AverageCost, int CityId);
+  public record Get_Data(string Description, string Name ,string Climate, decimal AverageCost, int CityId);
 
   // GET / Destinations by /{id}
   // Fetch a specific destination by its ID
@@ -57,6 +58,7 @@ class Destinations
       if (reader.Read())
       {
         result = new(
+            reader.GetString("name"),
             reader.GetString("description"),
             reader.GetString("climate"),
             reader.GetDecimal("average_cost"),
@@ -74,7 +76,7 @@ class Destinations
   }
 
   // DTO for POST
-  public record Post_Args(string Description, string Climate, decimal AverageCost, int CityId);
+  public record Post_Args(string Description, string Name , string Climate, decimal AverageCost, int CityId);
 
   // POST/ Destinations
   // Insert a new destination into db
@@ -101,6 +103,7 @@ class Destinations
 
     var parameters = new MySqlParameter[]
     {
+            new("@name", destination.Name),
             new("@description", destination.Description),
             new("@climate", destination.Climate),
             new("@average_cost", destination.AverageCost),
@@ -113,7 +116,7 @@ class Destinations
   }
 
   // DTO for PUT (updating an existing city)
-  public record Put_Args(int Id, string Description, string Climate, decimal AverageCost, int CityId);
+  public record Put_Args(int Id, string Name , string Description, string Climate, decimal AverageCost, int CityId);
 
   // PUT /destinations/{id}
   // Update an existing destination
@@ -133,7 +136,7 @@ class Destinations
     // End of authorization
     string query = """
             UPDATE destinations
-            SET description = @description, climate = @climate, average_cost = @average_cost,
+            SET name = @name , description = @description, climate = @climate, average_cost = @average_cost,
             city_id = @city_id
             WHERE id = @id
         """;
@@ -141,6 +144,7 @@ class Destinations
     var parameters = new MySqlParameter[]
     {
             new("@id", destination.Id),
+            new("@name", destination.Name),
             new("@destination", destination.Description),
             new("@climate", destination.Climate),
             new("@average_cost", destination.AverageCost),
@@ -202,7 +206,7 @@ class Destinations
     else
     {
       query = """
-              SELECT id, description, climate, average_cost, city_id
+              SELECT id, name , description, climate, average_cost, city_id
               FROM destinations
               WHERE description LIKE @term
                  OR climate LIKE @term
@@ -222,6 +226,7 @@ class Destinations
         {
           result.Add(new(
             reader.GetInt32("id"),
+            reader.GetString("name"),
             reader.GetString("description"),
             reader.GetString("climate"),
             reader.GetDecimal("average_cost"),
@@ -238,6 +243,7 @@ class Destinations
         {
           result.Add(new(
             reader.GetInt32("id"),
+            reader.GetString("name"),
             reader.GetString("description"),
             reader.GetString("climate"),
             reader.GetDecimal("average_cost"),
