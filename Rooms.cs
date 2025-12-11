@@ -71,7 +71,7 @@ class Rooms
         return Results.NotFound(new {message = $"Room was not found."});        
     }
 
-    public record RoomCreate(string RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
+    public record RoomCreate(int RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
 
     public static async Task<IResult> Post(RoomCreate room, Config config)
     {
@@ -95,7 +95,7 @@ class Rooms
 
     }
 
-    public record RoomUpdate(int Id, string RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
+    public record RoomUpdate(int Id, int RoomNumber, string Type, decimal PricePerNight, int Capacity, int HotelId);
 
     public static async Task<IResult> Put(RoomUpdate room, Config config)
     {

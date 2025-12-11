@@ -51,7 +51,7 @@ class Hotels
     {
         Get_Data? result = null;
 
-        string query = "SELECT name, phone_number, address, description, destination_id FROM hotels WHERE id = @id";
+        string query = "SELECT name, phone_number, rating, address, description, destination_id FROM hotels WHERE id = @id";
 
         var parameters = new MySqlParameter[]
         {
@@ -192,7 +192,7 @@ class Hotels
         string query ="""
             SELECT id, name, phone_number, rating, address, description, destination_id FROM hotels
             WHERE destination_id = @destinationId
-            ORDEER BY reting DESC, name ASC
+            ORDER BY reting DESC, name ASC
         """;
 
         var parameters = new MySqlParameter[]
