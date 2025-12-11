@@ -89,9 +89,25 @@ class Hotels
                                         //Post nytt hotel
     public record CreateNew(string Name, string PhoneNumber, decimal Rating, string Address, string Description, int DestinationId);
 
-    public static async Task<IResult> Post(CreateNew hotel, Config config)
+    public static async Task<IResult> Post(CreateNew hotel, Config config, HttpContext ctx)
+    {
+
+
+    // To post a hotel "Add" is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Chech 
+        if (admin_authentication is not null)
         {
-            string query = """
+            return admin_authentication;
+        }
+        // End othorization
+
+
+        string query = """
                 INSERT INTO hotels (name, phone_number, rating, address, description, destination_id)
                 VALUES (@name, @phone_number, @rating, @address, @description, @destination_id)
             """;
@@ -112,8 +128,23 @@ class Hotels
 
     public record UpdateH(int Id, string Name, string PhoneNumber, decimal Rating, string Address, string Description, int DestinationId);
 
-    public static async Task<IResult> Put(UpdateH hotel, Config config)
+    public static async Task<IResult> Put(UpdateH hotel, Config config, HttpContext ctx)
     {
+
+
+        // To post a hotel "Add" is admin's feature 
+        // So we need to make it (only Admin) access
+        // Throug calling our authentication function or method
+
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Chech 
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        // End othorization
+
         string query = """
             UPDATE hotels
                 SET name = @name, phone_number = @phone_number, rating= @rating, address = @address, description = @description, destination_id = @destination_id 
@@ -135,8 +166,23 @@ class Hotels
         return Results.Ok(new {message = "Hotel Uppdated."});
     }
 
-    public static async Task<IResult> Delete(int id, Config config)
+    public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
     {
+
+
+        // To post a hotel "Add" is admin's feature 
+        // So we need to make it (only Admin) access
+        // Throug calling our authentication function or method
+
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Chech 
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        // End othorization
+
         string query = "DELETE FROM hotels WHERE id = @id";
 
         var parameters = new MySqlParameter[]
@@ -192,8 +238,8 @@ class Hotels
         string query ="""
             SELECT id, name, phone_number, rating, address, description, destination_id FROM hotels
             WHERE destination_id = @destinationId
-            ORDEER BY reting DESC, name ASC
-        """;
+            ORDEER BY rating DESC, name ASC
+        """; // spelling // Fatima
 
         var parameters = new MySqlParameter[]
         {

@@ -70,6 +70,32 @@ app.MapPost("/bookings", Bookings.Post);
 app.MapPut("/bookings/{id:int}", Bookings.Put);
 app.MapDelete("/bookings/{id:int}", Bookings.Delete);
 
+//
+// HOTELS
+app.MapGet("/hotels", Hotels.GetAll);
+app.MapGet("/hotels/{id:int}", Hotels.Get);
+app.MapGet("/hotels/search", Hotels.Search);
+
+// using proper verbs >_>
+app.MapPost("/hotels", Hotels.Post);
+app.MapPut("/hotels", Hotels.Put);
+app.MapDelete("/hotels/{id:int}", Hotels.Delete);
+
+// avoid route clash with /hotels/{id} which caused issue before I think
+app.MapGet("/hotels/by-destination/{destinationId:int}", Hotels.ByDestination);
+
+
+// ROOMS
+app.MapGet("/rooms", Rooms.GetAll);
+app.MapGet("/rooms/{id:int}", Rooms.Get);
+app.MapGet("/rooms/search", Rooms.Search);
+// filter endpoints
+app.MapGet("/rooms/by-hotel/{hotelId:int}", Rooms.ByHotel);
+app.MapGet("/rooms/by-hotel/{hotelId:int}/{roomNumber:int}", Rooms.ByRoomNumber);
+app.MapPost("/rooms", Rooms.Post);
+app.MapPut("/rooms/{id:int}", Rooms.Put);
+app.MapDelete("/rooms/{id:int}", Rooms.Delete);
+
 
 // Activities
 app.MapGet("/activities", () => Activities.GetAll(config));
@@ -311,6 +337,7 @@ async Task db_reset_to_default(Config config)
   string rooms_table = """
         CREATE TABLE rooms (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            room_number INT NOT NULL,
             type VARCHAR(100) NOT NULL,
             price_per_night DECIMAL(10,2) NOT NULL,
             capacity INT NOT NULL,
