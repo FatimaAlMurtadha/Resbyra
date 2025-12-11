@@ -116,7 +116,7 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS users");
 
 
-  /////////////////////// Create all tables /////////////////////////
+  /////////////////////// Create all tables //////////////////////////
   // Users' table
   string users_table = """
         CREATE TABLE users
