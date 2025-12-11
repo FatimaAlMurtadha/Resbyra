@@ -1,1 +1,141 @@
-﻿
+﻿### Reset database to default state
+DELETE http://localhost:5132/db
+
+#########################################################
+# AUTH / SESSION (Register, Login, Profile-ish)
+#########################################################
+
+### Register (new user)
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "email": "http_user1@resbyra.se",
+  "password": "Password123!",
+  "role": "user"
+}
+
+### Login (as that user)
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "http_user1@resbyra.se",
+  "password": "Password123!"
+}
+
+### Login status (should be true after successful login)
+GET {{baseUrl}}/login
+
+### Logout (clears session)
+DELETE {{baseUrl}}/login
+
+
+#########################################################
+# USERS
+#########################################################
+
+### Users - Get all
+GET {{baseUrl}}/users
+
+### Users - Get by id (adjust id if needed)
+GET {{baseUrl}}/users/1
+
+
+#########################################################
+# COUNTRIES
+#########################################################
+
+### Countries - Get all
+GET {{baseUrl}}/countries
+
+### Countries - Search
+GET {{baseUrl}}/countries/search?term=sw
+
+
+#########################################################
+# CITIES
+#########################################################
+
+### Cities - Get all
+GET {{baseUrl}}/cities
+
+### Cities - Search
+GET {{baseUrl}}/cities/search?term=sto
+
+
+#########################################################
+# DESTINATIONS
+#########################################################
+
+### Destinations - Get all
+GET {{baseUrl}}/destinations
+
+### Destinations - Search
+GET {{baseUrl}}/destinations/search?term=beach
+
+
+#########################################################
+# BOOKINGS
+#########################################################
+
+### Bookings - Get all
+GET {{baseUrl}}/bookings
+
+### Bookings - Search (works even without term)
+GET {{baseUrl}}/bookings/search?term=1
+
+
+#########################################################
+# HOTELS
+#########################################################
+
+### Hotels - Get all
+GET {{baseUrl}}/hotels
+
+### Hotels - By destination (adjust destinationId if needed)
+GET {{baseUrl}}/hotels/by-destination/1
+
+
+#########################################################
+# ROOMS
+#########################################################
+
+### Rooms - Get all
+GET {{baseUrl}}/rooms
+
+### Rooms - By hotel (adjust hotelId if needed)
+GET {{baseUrl}}/rooms/by-hotel/1
+
+
+#########################################################
+# ACTIVITIES
+#########################################################
+
+### Activities - Get all
+GET {{baseUrl}}/activities
+
+### Activities - Search
+GET {{baseUrl}}/activities/search?term=food
+
+
+#########################################################
+# AMENITIES
+#########################################################
+
+### Amenities - Get all
+GET {{baseUrl}}/amenities
+
+### Amenities - Search
+GET {{baseUrl}}/amenities/search?term=wifi
+
+
+#########################################################
+# AMENITIES <-> HOTELS LINK
+#########################################################
+
+### AmenetiesHotel - Get amenities for a hotel
+GET {{baseUrl}}/hotels/1/amenities
+
+### AmenetiesHotel - Get hotels for an amenity
+GET {{baseUrl}}/amenities/1/hotels
