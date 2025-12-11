@@ -111,4 +111,68 @@ class Bookings
 
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
     }
+    
+        //dropping the search function here, arbaz if it is confusing or you need help intigrating it into your file please let me know :) /Oskar
+
+    public static async Task<IResult> Search(string? term, Config config)
+    {
+        List<GetAll_Data> result = new();
+
+        string query;
+        MySqlParameter[]? parameters = null;
+
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            query = "SELECT id, total_price, date, user_id, package_id FROM bookings";
+        }
+        else
+        {
+            query = """
+                        SELECT id, total_price, date, user_id, package_id
+                        FROM bookings
+                        WHERE CAST(total_price AS CHAR) LIKE @term
+                           OR CAST(date AS CHAR) LIKE @term
+                           OR CAST(user_id AS CHAR) LIKE @term
+                           OR CAST(package_id AS CHAR) LIKE @term
+                    """;
+
+            parameters = new MySqlParameter[]
+            {
+                new("@term", "%" + term + "%")
+            };
+        }
+
+        if (parameters is null)
+        {
+            using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query);
+            while (reader.Read())
+            {
+                result.Add(new(
+                    reader.GetInt32(0),
+                    reader.GetDecimal(1),
+                    reader.GetDateTime(2),
+                    reader.GetInt32(3),
+                    reader.GetInt32(4)
+                ));
+            }
+        }
+        else
+        {
+            using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters);
+            while (reader.Read())
+            {
+                result.Add(new(
+                    reader.GetInt32(0),
+                    reader.GetDecimal(1),
+                    reader.GetDateTime(2),
+                    reader.GetInt32(3),
+                    reader.GetInt32(4)
+                ));
+            }
+        }
+
+        return Results.Ok(result);
+    }
+    
+    
 }
