@@ -103,7 +103,7 @@ class Bookings
         };
 
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-
+        
         
     }
 
