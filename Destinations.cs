@@ -2,7 +2,6 @@ namespace server;
 
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
-using server;
 
 class Destinations
 {

@@ -59,6 +59,14 @@ app.MapGet("/activities", () => Activities.GetAll(config));
 app.MapGet("/activities/{id:int}", (int id) => Activities.Get(id, config));
 app.MapGet("/activities/search", (string? term) => Activities.Search(term, config));
 
+// bookings -> = hotels // fixing the same issue
+app.MapGet("/bookings", Bookings.GetAll);
+app.MapGet("/bookings/{id}", Bookings.Get);
+app.MapPost("/bookings", Bookings.Post);
+app.MapPut("/bookings/{id}", Bookings.Put);
+app.MapDelete("/bookings/{id}", Bookings.Delete);
+
+//
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
