@@ -33,9 +33,15 @@ app.MapPost("/users", Users.Post);
 app.MapPut("/users/{id}", Users.Put);
 app.MapDelete("/users/{id}", Users.Delete);
 
+// COUNTRIES
 app.MapGet("/countries", Countries.GetAll);
-app.MapGet("/countries/{id:int}", Countries.Get); // note :int constraint
+app.MapGet("/countries/{id:int}", Countries.Get);
 app.MapGet("/countries/search", Countries.Search);
+
+app.MapPost("/countries", Countries.Post);
+app.MapPut("/countries/{id:int}", Countries.Put);
+app.MapDelete("/countries/{id:int}", Countries.Delete);
+
 
 // CRUD Cities 
 
@@ -52,15 +58,34 @@ app.MapDelete("/cities/{id:int}", Cities.Delete);
 
 // CRUD Destinations
 app.MapGet("/destinations", Destinations.GetAll);
-app.MapGet("/destinations/{id}", Destinations.Get);
+app.MapGet("/destinations/search", Destinations.Search); 
+app.MapGet("/destinations/{id:int}", Destinations.Get);
 app.MapPost("/destinations", Destinations.Post);
-app.MapPut("/destinations/{id}", Destinations.Put);
-app.MapDelete("/destinations/{id}", Destinations.Delete);
+app.MapPut("/destinations/{id:int}", Destinations.Put);
+app.MapDelete("/destinations/{id:int}", Destinations.Delete);
+
+// Bookings
+app.MapGet("/bookings", Bookings.GetAll);
+app.MapGet("/bookings/search", Bookings.Search); 
+app.MapGet("/bookings/{id:int}", Bookings.Get);
+app.MapPost("/bookings", Bookings.Post);
+app.MapPut("/bookings/{id:int}", Bookings.Put);
+app.MapDelete("/bookings/{id:int}", Bookings.Delete);
+
 
 // Activities
 app.MapGet("/activities", () => Activities.GetAll(config));
 app.MapGet("/activities/{id:int}", (int id) => Activities.Get(id, config));
 app.MapGet("/activities/search", (string? term) => Activities.Search(term, config));
+
+
+// Amenities
+app.MapGet("/amenities", Amenities.GetAll);
+app.MapGet("/amenities/search", Amenities.Search);
+app.MapGet("/amenities/{id:int}", Amenities.Get);
+app.MapPost("/amenities", Amenities.Post);
+app.MapPut("/amenities/{id:int}", Amenities.Put);
+app.MapDelete("/amenities/{id:int}", Amenities.Delete);
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -102,8 +127,8 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
   // TEST
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('fatima@gmail.com','123')");
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('ahmed@gmail.com','123')");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('fatima@gmail.com','123, admin')");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('ahmed@gmail.com','123, user')");
 
 // Countries' table
   string countries_table = """
@@ -241,6 +266,21 @@ async Task db_reset_to_default(Config config)
             amenity_name VARCHAR(300)
          );
   """;
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_table);
+
+  // Seedar amenities (för testing)
+  string insertAmenity1 = """
+                              INSERT INTO amenities (amenity_name)
+                              VALUES ('Free WiFi');
+                          """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertAmenity1);
+
+  string insertAmenity2 = """
+                              INSERT INTO amenities (amenity_name)
+                              VALUES ('Swimming Pool');
+                          """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertAmenity2);
 
   // Hotels' table
   string hotels_table = """
@@ -280,6 +320,8 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (hotel_id) REFERENCES hotels(id) 
          );
   """;
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
 
   // Packages' table
   string packages_table = """
