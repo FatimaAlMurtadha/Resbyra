@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
         );
 
 */
-public class PackagesDestination
+public class PackagesDestinations
 {
   // A usual logic of tabels' classes wn't be able to be used here because this table is only a relation table
   // So A view or a JOIN quiery would be perfect 
