@@ -85,6 +85,13 @@ app.MapPost("/amenities", Amenities.Post);
 app.MapPut("/amenities/{id:int}", Amenities.Put);
 app.MapDelete("/amenities/{id:int}", Amenities.Delete);
 
+// package_destinations
+app.MapGet("/package_destinations", PackagesDestinations.GetAll);
+app.MapGet("/package_destinations/package/{id}", PackagesDestinations.GetByPackage); // by packageId 
+app.MapGet("/package_destinations/destination/{id}", PackagesDestinations.GetByDestination); // by DestinationId
+app.MapPost("/package_destinations", PackagesDestinations.Post);
+app.MapDelete("/package_destinations/{packageId}/{destinationId}", PackagesDestinations.Delete);
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
@@ -350,7 +357,25 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (destination_id) REFERENCES destinations(id)
         );
     """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_destinations_table);
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_destinations_table);
+
+    // Create a view in order to view all packages_destination information
+    // a view would be faster and stable
+    string create_view = """
+         CREATE OR REPLACE VIEW view_package_destinations AS 
+         SELECT p.id AS package_id, p.name AS package_name, p.type, p.total_price, 
+                p.duration_days, p.description AS package+description, 
+                d.id AS destination_id, d.name AS destination_name, d.climate
+                c.name AS city_name
+         FROM package_destinations AS pd
+         INNER JOIN packages AS p ON pd.package_id = p.id
+         INNER JOIN destinations AS d ON pd.destination_id = d.id
+         INNER JOIN cities AS c ON d.city_id = c.id 
+  
+  """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, create_view);
+    // end of the view
+
 
   // The relation between the packages and the activities M:N
   string package_activities_table = """
