@@ -2,113 +2,227 @@ namespace server;
 
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
-
 class Bookings
 {
     // DTOs
     public record GetAll_Data(int Id, decimal TotalPrice, DateTime Date, int UserId, int PackageId);
     public record Get_Data(decimal TotalPrice, DateTime Date, int UserId, int PackageId);
     public record Post_Args(decimal TotalPrice, DateTime Date, int UserId, int PackageId);
-    public record Put_Args(int Id, decimal TotalPrice, DateTime Date, 
-    int UserId, int PackageId);
-
-    // GET ALL
-    public static async Task<List<GetAll_Data>> GetAll(Config config)
+    public record Put_Args(int Id, decimal TotalPrice, DateTime Date, int UserId, int PackageId);
+    // GET ALL /bookings
+    public static async Task<IResult> GetAll(Config config)
     {
         List<GetAll_Data> result = new();
         string query = "SELECT id, total_price, date, user_id, package_id FROM bookings";
-
-        using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query);
-        while (reader.Read())
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
         {
-            result.Add(new(
-                reader.GetInt32(0),
-                reader.GetDecimal(1),
-                reader.GetDateTime(2),
-                reader.GetInt32(3),
-                reader.GetInt32(4)
-            ));
+            while (reader.Read())
+            {
+                result.Add(new(
+                    reader.GetInt32("id"),
+                    reader.GetDecimal("total_price"),
+                    reader.GetDateTime("date"),
+                    reader.GetInt32("user_id"),
+                    reader.GetInt32("package_id")
+                ));
+            }
         }
-        return result;
+        return Results.Ok(result);
     }
-
-    // GET BY ID
+    // GET /bookings/{id}
     public static async Task<IResult> Get(int id, Config config)
     {
         Get_Data? result = null;
-
         string query = "SELECT total_price, date, user_id, package_id FROM bookings WHERE id = @id";
         var parameters = new MySqlParameter[]
         {
             new("@id", id)
         };
-
-        using var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters);
-        if (reader.Read())
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
         {
-            result = new(
-                reader.GetDecimal(0),
-                reader.GetDateTime(1),
-                reader.GetInt32(2),
-                reader.GetInt32(3)
-            );
+            if (reader.Read())
+            {
+                result = new(
+                    reader.GetDecimal("total_price"),
+                    reader.GetDateTime("date"),
+                    reader.GetInt32("user_id"),
+                    reader.GetInt32("package_id")
+                );
+            }
         }
-
-        return result is null
-            ? Results.NotFound(new { message = $"Booking with id {id} not found." })
-            : Results.Ok(result);
+        if (result is null)
+        {
+            return Results.NotFound(new { message = $"Booking with id {id} was not found." });
+        }
+        return Results.Ok(result);
     }
-
+    // POST /bookings
     // POST
-    public static async Task Post(Post_Args args, Config config)
+ 
+    // there are errors on the code Post + put + Delete need the following
+    // 1-> a parameter "booking" instead of "args" because it's a assigned for the languege
+    // 2-> a return value at the end of each method
+    // t.e
+    // return Results.Ok(new { message = "booking created successfully." });
+    // 3 -> an Interface <IResult> after Task --> Fatima
+    public static async Task<IResult> Post(Post_Args booking, Config config, HttpContext ctx)
     {
+                /*
+        // To post a booking "Add" is users's feature
+        // So we need to make it (only inlogged user) access
+        // Throug calling our authentication function or method
+ 
+        var user_authentication = Authentication.RequireUser(ctx);
+        // Chech
+        if (user_authentication is not null)
+        {
+            return user_authentication;
+        }
+        // check the role from the session
+        // bring user_id from the session // it can't be null
+        int current_user_id = Authentication.GetUserId(ctx)!.Value;
+        // End othorization
+        */
         string query = """
-            INSERT INTO bookings(total_price, date, user_id, package_id)
-            VALUES(@total_price, @date, @user_id, @package_id)
+            INSERT INTO bookings (total_price, date, user_id, package_id)
+            VALUES (@total_price, @date, @user_id, @package_id)
         """;
-
         var parameters = new MySqlParameter[]
         {
-            new("@total_price", args.TotalPrice),
-            new("@date", args.Date),
-            new("@user_id", args.UserId),
-            new("@package_id", args.PackageId)
+            new("@total_price", booking.TotalPrice),
+            new("@date", booking.Date),
+            new("@user_id", booking.UserId),
+            new("@package_id", booking.PackageId)
         };
 
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+        return Results.Ok(new { message = "Booking created successfully." });
     }
-
-    // PUT
-    public static async Task Put(int id, Put_Args args, Config config)
+    // PUT /bookings/{id}
+    public static async Task<IResult> Put(int id, Put_Args booking, Config config, HttpContext ctx)
     {
+     /*
+        // To put a booking "Add" is users's feature
+        // So we need to make it (only inlogged user) access
+        // Throug calling our authentication function or method
+ 
+        var user_authentication = Authentication.RequireUser(ctx);
+ 
+        // Check
+        if (user_authentication is not null)
+        {
+            return user_authentication;
+        }
+ 
+        // check the role from the session
+        // bring user_id from the session // it can't be null
+        int current_user_id = Authentication.GetUserId(ctx)!.Value;
+        // End othorization
+        // this variable takes the role depending on the session inlogged User Role
+        string role = Authentication.GetRole(ctx)!;
+ 
+        // we need also to bring and link the booking withe the owner of the session "booking's owner"
+        string query_search = "SELECT user_id FROM bookings WHERE id = @id";
+        // a variable to save the booking owner with a null value that we reassign on reader
+        int? booking_owner_id = -1;
+ 
+        // need to read information of the booking owner from database
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query_search, new MySqlParameter("@id", id)))
+        {
+            if (reader.Read())
+            {
+                booking_owner_id = reader.GetInt32(0);
+ 
+            }
+            else
+            {
+                return Results.NotFound();
+            }
+        }
+        // Securty
+        if (role != "admin" && booking_owner_id != current_user_id)
+        {
+            return Results.Forbid();
+        }
+        // End // Fatima
+        */
         string query = """
-            UPDATE bookings 
-            SET total_price = @total_price, date = @date, user_id = @user_id, package_id = @package_id
+            UPDATE bookings
+            SET total_price = @total_price,
+                date = @date,
+                user_id = @user_id,
+                package_id = @package_id
             WHERE id = @id
         """;
-
         var parameters = new MySqlParameter[]
         {
             new("@id", id),
-            new("@total_price", args.TotalPrice),
-            new("@date", args.Date),
-            new("@user_id", args.UserId),
-            new("@package_id", args.PackageId)
+            new("@total_price", booking.TotalPrice),
+            new("@date", booking.Date),
+            new("@user_id", booking.UserId),
+            new("@package_id", booking.PackageId)
         };
-
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+        return Results.Ok(new { message = "Booking updated successfully." });
     }
-
-    // DELETE
-    public static async Task Delete(int id, Config config)
+    // DELETE /bookings/{id}
+    public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
     {
+       /*
+        // To delete a booking "Add" is users's feature
+        // So we need to make it (only inlogged user) access
+        // Throug calling our authentication function or method
+ 
+        var user_authentication = Authentication.RequireUser(ctx);
+ 
+        // Chech
+        if (user_authentication is not null)
+        {
+            return user_authentication;
+        }
+ 
+        // check the role from the session
+        // bring user_id from the session // it can't be null
+        int current_user_id = Authentication.GetUserId(ctx)!.Value;
+        // End othorization
+ 
+        // this variable takes the role depending on the session inlogged User Role
+        string role = Authentication.GetRole(ctx)!;
+ 
+        // we need also to bring and link the booking withe the owner of the session "booking's owner"
+        string query_search = "SELECT user_id FROM bookings WHERE id = @id";
+        // a variable to save the booking owner with a null value that we reassign on reader
+        int? booking_owner_id = -1;
+ 
+        // need to read information of the booking owner from database
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query_search, new MySqlParameter("@id", id)))
+        {
+            if (reader.Read())
+            {
+                booking_owner_id = reader.GetInt32(0);
+ 
+            }
+            else
+            {
+                return Results.NotFound();
+            }
+        }
+ 
+        // Securty
+        if (role != "admin" && booking_owner_id != current_user_id)
+        {
+            return Results.Forbid();
+        }
+        // End //
+        */
         string query = "DELETE FROM bookings WHERE id = @id";
 
         var parameters = new MySqlParameter[]
         {
             new("@id", id)
         };
-
         await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+        return Results.Ok(new { message = "Booking deleted successfully." });
     }
 }
+
