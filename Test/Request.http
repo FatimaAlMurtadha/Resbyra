@@ -143,3 +143,31 @@ GET http://localhost:5132/hotels/1/amenities
 
 ### Get hotels for an amenity
 GET http://localhost:5132/amenities/1/hotels
+
+
+#########################################################
+# DESTINATIONS <-> ACTIVITIES 
+#########################################################
+
+### DestinationActivites - Alla aktiviteter för en destination
+GET http://localhost:5132/destinations/1/activities
+
+### DestinationActivites - Alla destinations som har en aktivitet
+GET http://localhost:5132/activities/1/destinations
+
+
+#########################################################
+# ADMIN-ONLY  (koppla/ta bort)
+#########################################################
+
+### Link activity to destination (admin)
+POST http://localhost:5132/destinations/activities/link
+Content-Type: application/json
+
+{
+  "destinationId": 1,
+  "activityId": 1
+}
+
+### Unlink activity from destination (admin)
+DELETE http://localhost:5132/destinations/1/activities/1
