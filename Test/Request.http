@@ -98,7 +98,10 @@ GET http://localhost:5132/bookings/search?term=1
 GET http://localhost:5132/hotels
 
 ### Hotels - By destination
-GET http://localhost:5132/bookings/search?term=Sakura
+GET http://localhost:5132/hotels/by-destination/2
+
+### Hotels - By destination
+GET http://localhost:5132/hotels/search?term=Sakura
 
 
 #########################################################

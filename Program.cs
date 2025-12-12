@@ -320,6 +320,18 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_activities_table);
 
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                  INSERT INTO destinations_activities (destination_id, activity_id)
+                                                                  VALUES
+                                                                      (1, 2), -- Stockholm -> Swedish Mushroom Bonanza
+                                                                      (2, 1), -- Tokyo -> Italian Pizza Tasting
+                                                                      (2, 3); -- Tokyo -> Indian Spice Feast
+                                                                  """);
+  
+  
+  
+  
   // Amenities' table
   string amenities_table = """
          CREATE TABLE amenities(
