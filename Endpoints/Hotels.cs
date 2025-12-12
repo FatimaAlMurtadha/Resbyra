@@ -238,7 +238,7 @@ class Hotels
         string query ="""
             SELECT id, name, phone_number, rating, address, description, destination_id FROM hotels
             WHERE destination_id = @destinationId
-            ORDEER BY rating DESC, name ASC
+            ORDER BY rating DESC, name ASC
         """; // spelling // Fatima
 
         var parameters = new MySqlParameter[]
