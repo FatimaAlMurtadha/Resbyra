@@ -36,6 +36,9 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);
 app.MapGet("/countries/search", Countries.Search);
 
+
+app.MapGet("/packages", Packages.Get); 
+app.MapGet("/packages/{id}", Packages.GetMore); 
 app.MapPost("/countries", Countries.Post);
 app.MapPut("/countries/{id:int}", Countries.Put);
 app.MapDelete("/countries/{id:int}", Countries.Delete);
