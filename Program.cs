@@ -36,12 +36,14 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);
 app.MapGet("/countries/search", Countries.Search);
 
-
+//PACKAGES
 app.MapGet("/packages", Packages.Get); 
 app.MapGet("/packages/{id}", Packages.GetMore); 
 app.MapPost("/countries", Countries.Post);
 app.MapPut("/countries/{id:int}", Countries.Put);
 app.MapDelete("/countries/{id:int}", Countries.Delete);
+app.MapGet("/packages/search", Packages.Search);
+
 
 
 // CRUD Cities 
@@ -374,33 +376,64 @@ async Task db_reset_to_default(Config config)
   
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
 
-  // Packages' table
+// Packages' table
   string packages_table = """
-        CREATE TABLE packages (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(200) NOT NULL,
-            type ENUM('ready','custom') NOT NULL DEFAULT 'ready',
-            total_price DECIMAL(10,2) NOT NULL,
-            duration_days INT NOT NULL,
-            description TEXT NOT NULL,
-            user_id INT,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        );
-    """;
+                              CREATE TABLE packages (
+                                  id INT AUTO_INCREMENT PRIMARY KEY,
+                                  name VARCHAR(200) NOT NULL,
+                                  type ENUM('ready','custom') NOT NULL DEFAULT 'ready',
+                                  total_price DECIMAL(10,2) NOT NULL,
+                                  duration_days INT NOT NULL,
+                                  description TEXT NOT NULL,
+                                  user_id INT,
+                                  FOREIGN KEY (user_id) REFERENCES users(id)
+                              );
+                          """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, packages_table);
 
-  // The relation between the packages and the destinations M:N
+// Seed packages
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                      INSERT INTO packages (name, type, total_price, duration_days, description, user_id)
+                                                                      VALUES
+                                                                      ('Stockholm Food Weekend', 'ready', 2499.00, 3, 'Museums + cozy food + city vibes.', NULL),
+                                                                      ('Tokyo Night Bites', 'ready', 3999.00, 4, 'Neon streets and a proper food crawl.', NULL);
+                                                                  """);
+
+// The relation between the packages and the destinations M:N  ✅ must exist before insert
   string package_destinations_table = """
-        CREATE TABLE package_destinations (
-            package_id INT NOT NULL,
-            destination_id INT NOT NULL,
-            PRIMARY KEY (package_id, destination_id),
-            FOREIGN KEY (package_id) REFERENCES packages(id),
-            FOREIGN KEY (destination_id) REFERENCES destinations(id)
-        );
-    """;
+                                          CREATE TABLE package_destinations (
+                                              package_id INT NOT NULL,
+                                              destination_id INT NOT NULL,
+                                              PRIMARY KEY (package_id, destination_id),
+                                              FOREIGN KEY (package_id) REFERENCES packages(id),
+                                              FOREIGN KEY (destination_id) REFERENCES destinations(id)
+                                          );
+                                      """;
+  
+  
+  
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_destinations_table);
 
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                      INSERT INTO destinations (description, climate, average_cost, city_id)
+                                                                      VALUES
+                                                                      ('Stockholm city trip', 'Cold', 1200.00, 1),
+                                                                      ('Tokyo food crawl', 'Mild', 1800.00, 2);
+                                                                  """);
+
+  
+  
+  // Link packages -> destinations
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                      INSERT INTO package_destinations (package_id, destination_id)
+                                                                      VALUES
+                                                                      (1, 1),
+                                                                      (2, 2);
+                                                                  """);
+
+  
+  
   // The relation between the packages and the activities M:N
   string package_activities_table = """
         CREATE TABLE package_activities (
