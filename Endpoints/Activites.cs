@@ -3,7 +3,7 @@
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http; // för IResult and Results
 
-class FoodActivities
+class Activities
 {
     // DTO för list results: GET /activities and /activities/search
     public record GetAll_Data(int Id, string Name, string Description);

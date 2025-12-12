@@ -1,0 +1,173 @@
+﻿#########################################################
+# FEEL FREE TO CHANGE VARIABLES WHEN TESTING!!! DELETE DATA PASE (BUTTON UNDER) FOR FRESH INSTANCE
+# HAVE FUN! /OSKAR
+#########################################################
+DELETE http://localhost:5132/db
+
+
+#########################################################
+# AUTH / SESSION (Register, Login, Logout)
+#########################################################
+
+### Register (new user)
+POST http://localhost:5132/register
+Content-Type: application/json
+
+{
+  "email": "http_user1@resbyra.se",
+  "password": "Password123!",
+  "role": "user"
+}
+
+### Login (as that user)
+POST http://localhost:5132/login
+Content-Type: application/json
+
+{
+  "email": "http_user1@resbyra.se",
+  "password": "Password123!"
+}
+
+### Login status (should return true assuming you logged in :))
+GET http://localhost:5132/login
+
+### Logout
+DELETE http://localhost:5132/login
+
+
+#########################################################
+# USERS
+#########################################################
+
+### Users - Get all
+GET http://localhost:5132/users
+
+### Users - Get by id
+GET http://localhost:5132/users/1
+
+
+#########################################################
+# COUNTRIES
+#########################################################
+
+### Countries - Get all
+GET http://localhost:5132/countries
+
+### Countries - Search
+GET http://localhost:5132/countries/search?term=sw
+
+
+#########################################################
+# CITIES
+#########################################################
+
+### Cities - Get all
+GET http://localhost:5132/cities
+
+### Cities - Search
+GET http://localhost:5132/cities/search?term=sto
+
+
+#########################################################
+# DESTINATIONS
+#########################################################
+
+### Destinations - Get all
+GET http://localhost:5132/destinations
+
+### Destinations - Search
+GET http://localhost:5132/destinations/search?term=beach
+
+
+#########################################################
+# BOOKINGS
+#########################################################
+
+### Bookings - Get all
+GET http://localhost:5132/bookings
+
+### Bookings - Search
+GET http://localhost:5132/bookings/search?term=1
+
+
+#########################################################
+# HOTELS
+#########################################################
+
+### Hotels - Get all
+GET http://localhost:5132/hotels
+
+### Hotels - By destination
+GET http://localhost:5132/hotels/by-destination/1
+
+
+#########################################################
+# ROOMS
+#########################################################
+
+### Rooms - Get all
+GET http://localhost:5132/rooms
+
+### Rooms - By hotel
+GET http://localhost:5132/rooms/by-hotel/1
+
+
+#########################################################
+# ACTIVITIES
+#########################################################
+
+### Activities - Get all
+GET http://localhost:5132/activities
+
+### Activities - Search
+GET http://localhost:5132/activities/search?term=food
+
+
+#########################################################
+# AMENITIES
+#########################################################
+
+### Amenities - Get all
+GET http://localhost:5132/amenities
+
+### Amenities - Search
+GET http://localhost:5132/amenities/search?term=wifi
+
+
+#########################################################
+# AMENITIES <-> HOTELS
+#########################################################
+
+### Get amenities for a hotel
+GET http://localhost:5132/hotels/1/amenities
+
+### Get hotels for an amenity
+GET http://localhost:5132/amenities/1/hotels
+
+
+#########################################################
+# DESTINATIONS <-> ACTIVITIES 
+#########################################################
+
+### DestinationActivites - Alla aktiviteter för en destination
+GET http://localhost:5132/destinations/1/activities
+
+### DestinationActivites - Alla destinations som har en aktivitet
+GET http://localhost:5132/activities/1/destinations
+
+
+#########################################################
+# ADMIN-ONLY  (koppla/ta bort)
+#########################################################
+
+### Link activity to destination (admin)
+POST http://localhost:5132/destinations/activities/link
+Content-Type: application/json
+
+{
+  "destinationId": 1,
+  "activityId": 1
+}
+
+### Unlink activity from destination (admin)
+DELETE http://localhost:5132/destinations/1/activities/1

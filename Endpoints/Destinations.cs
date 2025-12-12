@@ -2,7 +2,7 @@ namespace server;
 
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
-using server;
+
 
 class Destinations
 {
@@ -79,8 +79,21 @@ class Destinations
   // POST/ Destinations
   // Insert a new destination into db
 
-  public static async Task<IResult> Post(Post_Args destination, Config config)
+  public static async Task<IResult> Post(Post_Args destination, Config config, HttpContext ctx)
   {
+    // To post a destination "Add" is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End othorization
+
     string query = """
             INSERT INTO destinations(description, climate, average_cost, city_id)
             VALUES (@description, @climate, @average_cost, @city_id)
@@ -104,8 +117,20 @@ class Destinations
 
   // PUT /destinations/{id}
   // Update an existing destination
-  public static async Task<IResult> Put(Put_Args destination, Config config)
+  public static async Task<IResult> Put(Put_Args destination, Config config, HttpContext ctx)
   {
+    // To put a destination "update, edite" is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End of authorization
     string query = """
             UPDATE destinations
             SET description = @description, climate = @climate, average_cost = @average_cost,
@@ -129,8 +154,22 @@ class Destinations
 
   // DELETE /destination by /{id}
   // Remove a destination from the database
-  public static async Task<IResult> Delete(int id, Config config)
+  public static async Task<IResult> Delete(int id, Config config, HttpContext ctx)
   {
+
+    // To delete a destination is admin's feature 
+    // So we need to make it (only Admin) access
+    // Throug calling our authentication function or method
+
+    var admin_authentication = Authentication.RequireAdmin(ctx);
+
+    // Chech 
+    if (admin_authentication is not null)
+    {
+      return admin_authentication;
+    }
+    // End of authorization
+
     string query = "DELETE FROM destinations WHERE id = @id";
 
     var parameters = new MySqlParameter[]
@@ -143,6 +182,77 @@ class Destinations
     return Results.Ok(new { message = "Destination deleted successfully." });
   }
 
+  
+  
+
+  // GET /destinations/search?term=beach
+  // FoodActivity-style search: tom term = alla, annars LIKE på description/climate
+  public static async Task<IResult> Search(string? term, Config config)
+  {
+    List<GetAll_Data> result = new();
+
+    string query;
+    MySqlParameter[]? parameters = null;
+
+    if (string.IsNullOrWhiteSpace(term))
+    {
+      // Ingen term -> alla destinations
+      query = "SELECT id, description, climate, average_cost, city_id FROM destinations";
+    }
+    else
+    {
+      query = """
+              SELECT id, description, climate, average_cost, city_id
+              FROM destinations
+              WHERE description LIKE @term
+                 OR climate LIKE @term
+              """;
+
+      parameters = new MySqlParameter[]
+      {
+        new("@term", "%" + term + "%")
+      };
+    }
+
+    if (parameters is null)
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+            reader.GetInt32("id"),
+            reader.GetString("description"),
+            reader.GetString("climate"),
+            reader.GetDecimal("average_cost"),
+            reader.GetInt32("city_id")
+          ));
+        }
+      }
+    }
+    else
+    {
+      using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+      {
+        while (reader.Read())
+        {
+          result.Add(new(
+            reader.GetInt32("id"),
+            reader.GetString("description"),
+            reader.GetString("climate"),
+            reader.GetDecimal("average_cost"),
+            reader.GetInt32("city_id")
+          ));
+        }
+      }
+    }
+
+    return Results.Ok(result);
+  }
+
+
+  
+  
 
 }
 
