@@ -50,6 +50,9 @@ app.MapPost("/destinations", Destinations.Post);
 app.MapPut("/destinations/{id}", Destinations.Put);
 app.MapDelete("/destinations/{id}", Destinations.Delete);
 
+// CRUD accommodations , no login required => public
+app.MapGet("/accommodations", Accommodations.GetAll);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -84,8 +87,9 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS cities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS countries");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS users");
-
-  /////////////////////// Create all tables /////////////////////////
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS accommodations");
+  /////////////////////// Create all tables //////////////////////////// 
+  
   // Users' table
   string users_table = """
         CREATE TABLE users
@@ -134,6 +138,21 @@ async Task db_reset_to_default(Config config)
         );
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_table);
+
+   /// accommodations table
+  string accommodations_table = """
+  CREATE TABLE accommodations 
+  (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    price_per_night DECIMAL(10,2) NOT NULL,
+    destinations_id INT NOT NULL,
+    FOREIGN KEY (destinations_id) REFERENCES destinations(id)
+  );
+  """;
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, accommodations_table);
 
   // Activities' table
   string activities_table = """
