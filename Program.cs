@@ -111,6 +111,25 @@ app.MapPost("/amenities", Amenities.Post);
 app.MapPut("/amenities/{id:int}", Amenities.Put);
 app.MapDelete("/amenities/{id:int}", Amenities.Delete);
 
+// Hotels <-> Amenities 
+
+app.MapGet("/hotels/{hotelId:int}/amenities", AmenetiesHotel.ByHotel);
+app.MapGet("/amenities/{amenityId:int}/hotels", AmenetiesHotel.ByAmenity);
+
+app.MapPost("/hotels/amenities/link", AmenetiesHotel.Link);
+app.MapDelete("/hotels/{hotelId:int}/amenities/{amenityId:int}", AmenetiesHotel.Unlink);
+
+// DestinationsS <-> Activites 
+
+app.MapGet("/destinations/{destinationId:int}/activities", DestinationActivites.ByDestination);
+app.MapGet("/activities/{activityId:int}/destinations", DestinationActivites.ByActivity);
+
+app.MapPost("/destinations/activities/link", DestinationActivites.Link);
+app.MapDelete("/destinations/{destinationId:int}/activities/{activityId:int}",
+    DestinationActivites.Unlink
+);
+
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
