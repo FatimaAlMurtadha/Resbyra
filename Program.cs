@@ -37,6 +37,10 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);       // note :int constraint
 app.MapGet("/countries/search", Countries.Search);
 
+
+app.MapGet("/packages", Packages.Get); 
+app.MapGet("/packages/{id}", Packages.GetMore); 
+
 // CRUD Cities 
 
 app.MapGet("/cities", Cities.GetAll);

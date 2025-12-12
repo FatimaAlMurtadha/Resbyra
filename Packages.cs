@@ -1,8 +1,10 @@
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Tls;
 
 namespace server;
 
  /*
+            +++ Packages
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
             type ENUM('ready','custom') NOT NULL DEFAULT 'ready',
@@ -12,105 +14,160 @@ namespace server;
             user_id INT,
             FOREIGN KEY (user_id) REFERENCES users(id)
 
+
+            +++ destinations 
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            description TEXT NOT NULL,
+            climate VARCHAR(100) NOT NULL,
+            average_cost DECIMAL(10,2) NOT NULL,
+            city_id INT NOT NULL,
+            FOREIGN KEY (city_id) REFERENCES cities(id)
+
+            +++Activities
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(200) NOT NULL,
+            description TEXT NOT NULL
+
     */
 
 class Packages
 {
-   public record GetAll_Data(int Id, string Name, string type, decimal TotalPrice, int Duration, int UserId)
-{
-    public static async Task<IResult>GetAll(Config config)
-    {
-        List<GetAll_Data>result = new();
+    public record ThePackage(int Id, string Name, decimal TotalPrice, int DurationDays, string Description, List<TheActivity>Activities,
+    List<TheDestination>Destinations);
 
-        string query = "SELECT id, name, type, total_price, duration, userid FROM packages";
-
-        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
-        {
-            while(reader.Read())
-            {
-                result.Add(new(
-                    reader.GetInt32("id"),
-                    reader.GetString("name"),
-                    reader.GetString("type"),
-                    reader.GetDecimal("total_price"),
-                    reader.GetInt32("duration"),
-                    reader.GetInt32("user_id")
-
-                ));
-            }
-        }
-        return Results.Ok(result);
-    }
-
-    public record Get_Data(string Name, string Type, decimal Price, int Duration, int UserId);
+    public record TheActivity(int Id, string Name, string Description);
+    public record TheDestination(int Id, string Description, string Climate, decimal AverageCost);
 
     public static async Task<IResult> Get(int id, Config config)
     {
-        Get_Data? result = null;
+        var packages = new List<object>();
+        
+        string query = """
+            SELECT id, name, total_price, duration_days, description FROM packages WHERE type = 'ready' 
+        """;   
 
-        string query = "SELECT name, type, price, duration, user_id FROM packages WHERE id = @id";
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
+        {
+            while (reader.Read())
+            {
+                int packageId = reader.GetInt32("id");
+                
+                var destinations = await GetDestinations(packageId, config);
+                var activities = await GetActivities(packageId, config);
+
+                packages.Add(new
+                {
+                    Id = packageId,
+                    Name = reader.GetString("name"),
+                    TotalPrice = reader.GetDecimal("total_price"),
+                    DurationDays = reader.GetInt32("duration_days"),
+                    Description = reader.GetString("description"),
+                    Destinations = destinations,  
+                    Activities = activities
+                });
+            }
+        } 
+        return Results.Ok(packages);
+    }
+
+    public static async Task<IResult> GetMore(int id, Config config)
+    {
+        string query = """
+            SELECT id, name, total_price, duration_days, description FROM packages WHERE id = @id AND type = 'ready' 
+        """;
 
         var parameters = new MySqlParameter[]
         {
             new("@id", id)
         };
 
-        using (var reader =await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
         {
-            if (reader.Read())
+            if (!reader.Read())
             {
-                result = new(
-                    reader.GetString("name"),
-                    reader.GetString("type"),
-                    reader.GetDecimal("price"),
-                    reader.GetInt32("duration"),
-                    reader.GetInt32("user_id")
-                    );
+                return Results.NotFound(new { message = $"Not found." });
+            }
+
+            var packageName = reader.GetString("name");
+            var totalPrice = reader.GetDecimal("total_price");
+            var durationDays = reader.GetInt32("duration_days");
+            var description = reader.GetString("description");
+
+            var destinations = await GetDestinations(id, config);
+            var activities = await GetActivities(id, config);
+
+            var thepackage = new ThePackage(
+                Id: id,
+                Name: packageName,
+                TotalPrice: totalPrice,
+                DurationDays: durationDays,
+                Description: description,
+                Destinations: destinations,
+                Activities: activities
+            );
+
+            return Results.Ok(thepackage);
+        }
+    }
+    private static async Task<List<TheDestination>> GetDestinations(int packageId, Config config)
+    {
+        var destinations = new List<TheDestination>();
+
+        string query = """
+            SELECT a.id, a.description, a.climate, a.average_cost FROM destinations a
+            INNER JOIN package_destinations b ON a.id = b.destination_id
+            WHERE b.package_id = @packageId
+        """;
+
+        var parameters = new MySqlParameter[] 
+        { 
+            new("@packageId", packageId) 
+        };
+
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+        {
+            while (reader.Read())
+            {
+                destinations.Add(new TheDestination(
+                    Id: reader.GetInt32("id"),
+                    Description: reader.GetString("description"),
+                    Climate: reader.GetString("climate"),
+                    AverageCost: reader.GetDecimal("average_cost")
+                ));
             }
         }
 
-        if (result is null)
+        return destinations;
+    }
+
+    private static async Task<List<TheActivity>> GetActivities(int packageId, Config config)
+    {
+        var activities = new List<TheActivity>();
+
+        string query = """
+            SELECT c.id, c.name, c.description FROM activities c
+            INNER JOIN package_activities d ON c.id = d.activity_id
+            WHERE d.package_id = @packageId
+        """;
+
+        var parameters = new MySqlParameter[] 
+        { 
+            new("@packageId", packageId) 
+        };
+
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
         {
-            
-            return Results.NotFound(new
+            while (reader.Read())
             {
-                message = $"not found."
-            });
+                activities.Add(new TheActivity(
+                    Id: reader.GetInt32("id"),
+                    Name: reader.GetString("name"),
+                    Description: reader.GetString("description")
+                ));
+            }
         }
 
-        
-        return Results.Ok(result);
+        return activities;
     }
 
-    public record CreateNew(string Name, string Type, decimal Price, int Duration, int UserId);
-
-    public static async Task<IResult>Post(CreateNew packages, Config config)
-    {
-        string query = """
-            INSERT INTO packages (name, type, price, duration, user_id)
-            VALUES (@name, @type, @price, @duration, @user_id)
-        """;
-        var parameters = new MySqlParameter[]
-            {
-                new("@name", packages.Name),
-                new("@type", packages.Type),
-                new("@price", packages.Price),
-                new("@duration", packages.Duration),
-                new("@user_id", packages.UserId),
-                
-            };
-            await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-
-            return Results.Ok(new {message ="Package created."});
-    }
-   
-    public record UpdateP(string Name, string Type, decimal Price, int Duration, int UserId)
-    
-    public static async Task<IResult> Put(UpdateP packages, Config config)
-    {
-        
-    }
-
-    
-
-}}
+}
