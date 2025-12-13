@@ -119,5 +119,23 @@ var parameters = new MySqlParameter[]
         new("@total_price", bookingRoom.TotalPrice)
     };
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-    return Results.Ok(new { message = "Booked room updated." });
+    return Results.Ok(new { message = "Booking room updated." });
     }
+ public static async Task<IResult> Delete(int bookingId,int roomId,Config config,HttpContext ctx)
+ {
+   var admin_authentication = Authentication.RequireAdmin(ctx);
+
+        // Check
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+     string query = """DELETE FROM booking_rooms WHERE booking_id = @booking_id AND room_id = @room_id """;
+    var parameters = new MySqlParameter[]{ new("@booking_id", bookingId),new("@room_id", roomId)};
+    
+        await MySqlHelper.ExecuteNonQueryAsync(
+            config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Booked room removed." });
+    }
+} 
