@@ -92,5 +92,38 @@ if (reader.Read())
         return Results.Ok(new { message = "Traveler created." });
     }
 //Update
+ public record TravelerUpdate(int Id,string FirstName,string LastName,string PassportNumber,int Age);
+ public static async Task<IResult> Put(TravelerUpdate traveler,Config config,HttpContext ctx)
+  {
+        // Logged-in user required
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+        // Check
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+string query = """
+            UPDATE travelers
+            SET
+                first_name = @first_name,
+                last_name = @last_name,
+                passport_number = @passport_number,
+                age = @age
+            WHERE id = @id
+        """;
+var parameters = new MySqlParameter[]
+{
+            new ("@id", traveler.Id),
+            new ("@first_name", traveler.FirstName),
+            new ("@last_name", traveler.LastName),
+            new ("@passport_number", traveler.PassportNumber),
+            new ("@age", traveler.Age)
+};
+await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Traveler updated." });
+    }
+//DELETE
+
 
 
