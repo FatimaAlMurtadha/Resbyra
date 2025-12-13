@@ -30,11 +30,10 @@ class BookRoom
                 reader.GetInt32("guests"),
                 reader.GetDecimal("total_price")
                 ));
-
-                
         }
         return Results.Ok(result);
         }
       }
 }
-//GET book 
+//GET bookroom id
+
