@@ -47,6 +47,12 @@ app.MapPost("/destinations", Destinations.Post);
 app.MapPut("/destinations/{id}", Destinations.Put);
 app.MapDelete("/destinations/{id}", Destinations.Delete);
 
+//BookingRoom
+app.MapGet("/booking-rooms", BookRoom.GetAll);
+app.MapGet("/bookroom/{id}", BookRoom.Get);
+app.MapPost("/bookroom", BookRoom.Post);
+app.MapPut("/bookroom/{id}", BookRoom.Put);
+app.MapDelete("/bookroom/{id}", BookRoom.Delete);
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
