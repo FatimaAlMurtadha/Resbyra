@@ -399,7 +399,7 @@ async Task db_reset_to_default(Config config)
                                                                       ('Tokyo Night Bites', 'ready', 3999.00, 4, 'Neon streets and a proper food crawl.', NULL);
                                                                   """);
 
-// The relation between the packages and the destinations M:N  ✅ must exist before insert
+// The relation between the packages and the destinations
   string package_destinations_table = """
                                           CREATE TABLE package_destinations (
                                               package_id INT NOT NULL,
@@ -431,7 +431,6 @@ async Task db_reset_to_default(Config config)
                                                                       (1, 1),
                                                                       (2, 2);
                                                                   """);
-
   
   
   // The relation between the packages and the activities M:N
