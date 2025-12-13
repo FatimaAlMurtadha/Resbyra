@@ -54,6 +54,9 @@ app.MapPost("/bookroom", BookRoom.Post);
 app.MapPut("/bookroom/{id}", BookRoom.Put);
 app.MapDelete("/bookroom/{id}", BookRoom.Delete);
 
+//Travel
+app.MapGet("/travelers", Travelers.GetAll);
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
