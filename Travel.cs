@@ -140,9 +140,7 @@ string query = "DELETE FROM travelers WHERE id = @id";
             new MySqlParameter("@id", id)
         };
 
-        await MySqlHelper.ExecuteNonQueryAsync(
-            config.ConnectionString, query, parameters);
-
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
         return Results.Ok(new { message = "Traveler deleted." });
     }
 }
