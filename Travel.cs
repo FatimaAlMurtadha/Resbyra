@@ -61,3 +61,36 @@ if (reader.Read())
         }
         return Results.NotFound(new { message = "Traveler not found." });
     }
+    //Create
+    public record TravelerCreate(string FirstName,string LastName,string PassportNumber,int Age,int BookingId,int UserId);
+     public static async Task<IResult> Post(TravelerCreate traveler, Config config,HttpContext ctx)
+     {
+        // Logged-in user required
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+        // Check
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+        string query = """
+            INSERT INTO travelers
+            (first_name, last_name, passport_number, age, booking_id, user_id)
+            VALUES
+            (@first_name, @last_name, @passport_number, @age, @booking_id, @user_id)
+            """;
+        var parameters = new MySqlParameter[]
+       {
+            new ("@first_name", traveler.FirstName),
+            new ("@last_name", traveler.LastName),
+            new ("@passport_number", traveler.PassportNumber),
+            new ("@age", traveler.Age),
+            new ("@booking_id", traveler.BookingId),
+            new ("@user_id", traveler.UserId)
+        };
+        await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
+
+        return Results.Ok(new { message = "Traveler created." });
+    }
+//Update
+
+

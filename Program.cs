@@ -56,7 +56,8 @@ app.MapDelete("/bookroom/{id}", BookRoom.Delete);
 
 //Travel
 app.MapGet("/travelers", Travelers.GetAll);
-
+app.MapGet("/travelers/{id:int}", Travelers.Get);
+app.MapPost("/travelers", Travelers.Post);
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 

@@ -6,70 +6,54 @@ using System.Security.Cryptography;
 // import the library of text encoding utilities
 using System.Text;
 
-class Registerations
+class Register // Matching the class name / Fatima
 {
   // DTO for registration data
-  public record Registerations_Data(string Email, string Password, string? Role);
-
+  public record Register_Data(string Email, string Password, string? Role); // Matching with the class name / Fatima
   // POST /register
-  public static async Task<bool> Post(Registerations_Data data, Config config)
+  public static async Task<bool> Post(Register_Data data, Config config) // Matching with the class name / Fatima
   {
     // Check if email already exists
-
     string checkQuery = "SELECT id FROM users WHERE email = @Email";
-
     var checkParameters = new MySqlParameter[]
     {
             new("@Email", data.Email)
     };
-
     //  Here ScalarAsync is used in order to get that single value "Email" which is unique
-
     object? exists = await MySqlHelper.ExecuteScalarAsync(
         config.ConnectionString,
         checkQuery,
         checkParameters
     );
-
     if (exists != null)
     {
       // email already exists
-
       return false;
     }
-
     // Secure password
-
     string hashedPassword = HashPassword(data.Password);
-
     // Decide role (if null → user)
     string role = string.IsNullOrWhiteSpace(data.Role) ? "user" : data.Role!;
-
     // Insert new user
-
     string insertQuery = """
             INSERT INTO users(email, password, role)
             VALUES (@Email, @Password, @Role)
         """;
-
     var insertParameters = new MySqlParameter[]
     {
             new("@Email", data.Email),
             new("@Password", hashedPassword),
             new("@Role", role)
     };
-
 // A NonQueryAsync is used in order to insert ("It is basically used with INSERT, UPDATE and delete")
     await MySqlHelper.ExecuteNonQueryAsync(
         config.ConnectionString,
         insertQuery,
         insertParameters
     );
-
     // Done
     return true;
   }
-
   // This function is a simple function in order to secure the password with SHA256
   private static string HashPassword(string password) // only password
   {
