@@ -124,6 +124,25 @@ await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameter
         return Results.Ok(new { message = "Traveler updated." });
     }
 //DELETE
+public static async Task<IResult> Delete(int id,Config config,HttpContext ctx)
+{
+            // Logged-in user required
+        var admin_authentication = Authentication.RequireAdmin(ctx);
+        // Check
+        if (admin_authentication is not null)
+        {
+            return admin_authentication;
+        }
+string query = "DELETE FROM travelers WHERE id = @id";
 
+        var parameters = new[]
+        {
+            new MySqlParameter("@id", id)
+        };
 
+        await MySqlHelper.ExecuteNonQueryAsync(
+            config.ConnectionString, query, parameters);
 
+        return Results.Ok(new { message = "Traveler deleted." });
+    }
+}
