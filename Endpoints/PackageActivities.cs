@@ -34,7 +34,7 @@ class PackageActivities
     }
     return Results.Ok(result);
   }
-
+ /*
   // The opposite ByActivity
   public static async Task<IResult> ByActivity(int activityId, Config config)
   {
@@ -74,7 +74,7 @@ class PackageActivities
 
 
   }
-
+ */
   // Connect activity to oackage "Admin"
   public static async Task<IResult> Link(Link_Args link, Config config, HttpContext ctx)
   {
