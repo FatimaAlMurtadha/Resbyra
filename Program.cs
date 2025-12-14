@@ -139,6 +139,17 @@ app.MapDelete("/destinations/{destinationId:int}/activities/{activityId:int}",
 );
 
 
+// Packages <-> Activites 
+
+app.MapGet("/packages/{packageId:int}/activities", PackageActivities.ByPackage);
+app.MapGet("/activities/{activityId:int}/packages", PackageActivities.ByActivity);
+
+app.MapPost("/packages/activities/link", PackageActivities.Link);
+app.MapDelete("/packages/{packageId:int}/activities/{activityId:int}",
+    PackageActivities.Unlink
+);
+
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
