@@ -132,6 +132,14 @@ app.MapDelete(
 
 
 
+// CUSTOM CARDS ROUTES
+app.MapGet("/custom-cards", CustomCards.GetAll);
+app.MapGet("/custom-cards/{id}", CustomCards.Get);
+app.MapGet("/custom-cards/search", CustomCards.Search);
+app.MapPost("/custom-cards", CustomCards.Post);
+app.MapPut("/custom-cards/{id}", CustomCards.Put);
+app.MapDelete("/custom-cards/{id}", CustomCards.Delete);
+
 
 
 
