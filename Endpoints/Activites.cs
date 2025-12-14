@@ -3,18 +3,18 @@
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http; // för IResult and Results
 
-class Countries
+class Activities
 {
-    // DTO för list results: GET /countries and /countries/search
-    public record GetAll_Data(int Id, string CountryName);
+    // DTO för list results: GET /activities and /activities/search
+    public record GetAll_Data(int Id, string Name, string Description);
 
-    // GET /countries<
-    //Vi hämtar länder för databasen
+    // GET /activities
+    // Hämtar alla food-aktiviteter från databasen
     public static List<GetAll_Data> GetAll(Config config)
     {
         List<GetAll_Data> result = new();
 
-        string query = "SELECT id, country_name FROM countries";
+        string query = "SELECT id, name, description FROM activities";
 
         using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query))
         {
@@ -22,7 +22,8 @@ class Countries
             {
                 result.Add(new(
                     reader.GetInt32(0),
-                    reader.GetString(1)
+                    reader.GetString(1),
+                    reader.GetString(2)
                 ));
             }
         }
@@ -32,15 +33,15 @@ class Countries
 
 
     // DTO för single result
-    public record Get_Data(string CountryName);
+    public record Get_Data(string Name, string Description);
 
-    // GET /countries/{id}
-    //specifikt land baserat på ID
+    // GET /activities/{id}
+    // Hämtar specifik aktivitet baserat på ID
     public static IResult Get(int id, Config config)
     {
         Get_Data? result = null;
 
-        string query = "SELECT country_name FROM countries WHERE id = @id";
+        string query = "SELECT name, description FROM activities WHERE id = @id";
 
         var parameters = new MySqlParameter[]
         {
@@ -51,30 +52,31 @@ class Countries
         {
             if (reader.Read())
             {
-                result = new(reader.GetString(0));
+                result = new(
+                    reader.GetString(0),
+                    reader.GetString(1)
+                );
             }
         }
 
         if (result is null)
         {
-            // Om inget land hittas returnera felkod 404
             return Results.NotFound(new
             {
-                message = $"Country with id {id} was not found."
+                message = $"Activity with id {id} was not found."
             });
         }
 
-        // Om det är ok returnera 200 med landet
         return Results.Ok(result);
     }
 
 
-    // GET /countries/search?name=...
-    //Checkar efter länder baserat på namn, SQl
-    public static List<GetAll_Data> Search(string? name, Config config)
+    // GET /activities/search?term=...
+    // Söker efter aktiviteter baserat på namn eller beskrivning
+    public static List<GetAll_Data> Search(string? term, Config config)
     {
         // Om ingen search term -> visa ALLT
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(term))
         {
             return GetAll(config);
         }
@@ -82,14 +84,15 @@ class Countries
         List<GetAll_Data> result = new();
 
         string query = """
-            SELECT id, country_name
-            FROM countries
-            WHERE country_name LIKE CONCAT('%', @name, '%')
+            SELECT id, name, description
+            FROM activities
+            WHERE name        LIKE CONCAT('%', @term, '%')
+               OR description LIKE CONCAT('%', @term, '%')
         """;
 
         var parameters = new MySqlParameter[]
         {
-            new("@name", name)
+            new("@term", term)
         };
 
         using (var reader = MySqlHelper.ExecuteReader(config.ConnectionString, query, parameters))
@@ -98,7 +101,8 @@ class Countries
             {
                 result.Add(new(
                     reader.GetInt32(0),
-                    reader.GetString(1)
+                    reader.GetString(1),
+                    reader.GetString(2)
                 ));
             }
         }
