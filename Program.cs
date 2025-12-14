@@ -279,22 +279,6 @@ async Task db_reset_to_default(Config config)
                                                                           ('Pyramider + bazaars + Nilen tour', 'RIKTIGT varmt', 1100.00, 4) -- Cairo
                                                                   """);
 
-
-  // Food Activities' table
-  string activities_table = """
-    // Destinations' table
-    string destinations_table = """
-        CREATE TABLE destinations (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(200) NOT NULL,
-            description TEXT NOT NULL,
-            climate VARCHAR(100) NOT NULL,
-            average_cost DECIMAL(10,2) NOT NULL,
-            city_id INT NOT NULL,
-            FOREIGN KEY (city_id) REFERENCES cities(id)
-        );
-    """;
-
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_table);
     // TEST destinations
     // 1 stockholm
