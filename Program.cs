@@ -36,6 +36,9 @@ app.MapGet("/countries", Countries.GetAll);
 app.MapGet("/countries/{id:int}", Countries.Get);
 app.MapGet("/countries/search", Countries.Search);
 
+
+app.MapGet("/packages", Packages.Get); 
+app.MapGet("/packages/{id}", Packages.GetMore); 
 app.MapPost("/countries", Countries.Post);
 app.MapPut("/countries/{id:int}", Countries.Put);
 app.MapDelete("/countries/{id:int}", Countries.Delete);
@@ -117,6 +120,24 @@ app.MapGet("/package_destinations/package/{id}", PackagesDestinations.GetByPacka
 app.MapGet("/package_destinations/destination/{id}", PackagesDestinations.GetByDestination); // by DestinationId
 app.MapPost("/package_destinations", PackagesDestinations.Post);
 app.MapDelete("/package_destinations/{packageId}/{destinationId}", PackagesDestinations.Delete);
+// Hotels <-> Amenities 
+
+app.MapGet("/hotels/{hotelId:int}/amenities", AmenetiesHotel.ByHotel);
+app.MapGet("/amenities/{amenityId:int}/hotels", AmenetiesHotel.ByAmenity);
+
+app.MapPost("/hotels/amenities/link", AmenetiesHotel.Link);
+app.MapDelete("/hotels/{hotelId:int}/amenities/{amenityId:int}", AmenetiesHotel.Unlink);
+
+// DestinationsS <-> Activites 
+
+app.MapGet("/destinations/{destinationId:int}/activities", DestinationActivites.ByDestination);
+app.MapGet("/activities/{activityId:int}/destinations", DestinationActivites.ByActivity);
+
+app.MapPost("/destinations/activities/link", DestinationActivites.Link);
+app.MapDelete("/destinations/{destinationId:int}/activities/{activityId:int}",
+    DestinationActivites.Unlink
+);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
