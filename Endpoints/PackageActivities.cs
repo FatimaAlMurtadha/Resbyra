@@ -17,7 +17,7 @@ class PackageActivities
               SELECT a.id, a.name, a.description
               FROM activities AS a
               INNER JOIN package_activities AS pa ON pa.activity_id = a.id
-              WHER pa.package_id = @packageId
+              WHERE pa.package_id = @packageId
               """;
     var parameters = new MySqlParameter[]
     {
@@ -27,7 +27,7 @@ class PackageActivities
     while (reader.Read())
     {
       result.Add(new(
-        reader.GetInt16("id"),
+        reader.GetInt32("id"),
         reader.GetString("name"),
         reader.GetString("description")
       ));
