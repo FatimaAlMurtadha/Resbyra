@@ -11,9 +11,9 @@ class Travelers
 {
         List<GetAll_Data> result = new();
 string query = """
-            SELECT id, first_name, last_name, passport_number, age, booking_id, user_id
-            FROM travelers
-        """;
+    SELECT id, first_name, last_name, passport_number, age, booking_id, user_id
+    FROM travelers
+""";
 using var reader =
 await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query);
  while (reader.Read())
@@ -33,11 +33,11 @@ await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query);
 //Get BY ID
 public static async Task<IResult> Get(int id, Config config)
     {
-        string query = """
-            SELECT first_name, last_name, passport_number, age, booking_id
-            FROM travelers
-            WHERE id = @id
-        """;
+string query = """
+    SELECT first_name, last_name, passport_number, age, booking_id, user_id
+    FROM travelers
+    WHERE id = @id
+""";
        var parameters = new[]
         {
             new MySqlParameter("@id", id)
