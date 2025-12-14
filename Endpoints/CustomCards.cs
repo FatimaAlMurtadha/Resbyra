@@ -31,13 +31,14 @@ class CustomCards
       while (reader.Read())
       {
         result.Add(new(
-            reader.GetInt32(0),
-            reader.GetInt32(1),
-            reader.GetString(3),
-            reader.GetDecimal(4),
-            reader.IsDBNull(5) ? null : DateOnly.FromDateTime(reader.GetDateTime(5)),
-            reader.IsDBNull(6) ? null : DateOnly.FromDateTime(reader.GetDateTime(6))
-        ));
+              reader.GetInt32(0),
+              reader.GetInt32(1),
+              reader.GetString(2),
+              reader.IsDBNull(3) ? null : reader.GetDecimal(3),
+              reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),
+              reader.IsDBNull(5) ? null : DateOnly.FromDateTime(reader.GetDateTime(5))
+            ));
+
       }
     }
 
