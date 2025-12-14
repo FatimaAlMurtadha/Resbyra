@@ -131,6 +131,17 @@ app.MapDelete(
 );
 
 
+// Packages <-> Activites 
+
+app.MapGet("/packages/{packageId:int}/activities", PackageActivities.ByPackage);
+app.MapGet("/activities/{activityId:int}/packages", PackageActivities.ByActivity);
+
+app.MapPost("/packages/activities/link", PackageActivities.Link);
+app.MapDelete("/packages/{packageId:int}/activities/{activityId:int}",
+    PackageActivities.Unlink
+);
+
+
 
 // CUSTOM CARDS ROUTES
 app.MapGet("/custom-cards", CustomCards.GetAll);
