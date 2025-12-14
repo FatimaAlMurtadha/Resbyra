@@ -14,11 +14,12 @@ class DestinationActivites
     var result = new List<Activities.GetAll_Data>();
 
     string query = """
-      SELECT a.id, a.name, a.description
-      FROM activities a
-      JOIN destination_activities da ON da.activity_id = a.id
-      WHERE da.destination_id = @destinationId
-    """;
+                     SELECT a.id, a.name, a.description
+                     FROM activities a
+                     JOIN destinations_activities da ON da.activity_id = a.id
+                     WHERE da.destination_id = @destinationId
+                   """;
+
 
     var parameters = new MySqlParameter[]
     {
@@ -46,11 +47,12 @@ class DestinationActivites
     var result = new List<Destinations.GetAll_Data>();
 
     string query = """
-      SELECT d.id, d.description, d.climate, d.average_cost, d.city_id
-      FROM destinations d
-      JOIN destination_activities da ON da.destination_id = d.id
-      WHERE da.activity_id = @activityId
-    """;
+                     SELECT d.id, d.description, d.climate, d.average_cost, d.city_id
+                     FROM destinations d
+                     JOIN destinations_activities da ON da.destination_id = d.id
+                     WHERE da.activity_id = @activityId
+                   """;
+
 
     var parameters = new MySqlParameter[]
     {
@@ -82,9 +84,10 @@ class DestinationActivites
       return adminAuth;
 
     string query = """
-      INSERT INTO destination_activities (destination_id, activity_id)
-      VALUES (@destinationId, @activityId)
-    """;
+                     INSERT INTO destinations_activities (destination_id, activity_id)
+                     VALUES (@destinationId, @activityId)
+                   """;
+
 
     var parameters = new MySqlParameter[]
     {
@@ -109,10 +112,11 @@ class DestinationActivites
       return adminAuth;
 
     string query = """
-      DELETE FROM destination_activities
-      WHERE destination_id = @destinationId
-        AND activity_id = @activityId
-    """;
+                     DELETE FROM destinations_activities
+                     WHERE destination_id = @destinationId
+                       AND activity_id = @activityId
+                   """;
+
 
     var parameters = new MySqlParameter[]
     {

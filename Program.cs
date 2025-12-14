@@ -256,6 +256,32 @@ async Task db_reset_to_default(Config config)
                        """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertCity4);
 
+  // Destinations' table
+  string destinations_table = """
+                                  CREATE TABLE destinations (
+                                      id INT AUTO_INCREMENT PRIMARY KEY,
+                                      description TEXT NOT NULL,
+                                      climate VARCHAR(100) NOT NULL,
+                                      average_cost DECIMAL(10,2) NOT NULL,
+                                      city_id INT NOT NULL,
+                                      FOREIGN KEY (city_id) REFERENCES cities(id)
+                                  );
+                              """;
+
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_table);
+
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                      INSERT INTO destinations (description, climate, average_cost, city_id)
+                                                                      VALUES
+                                                                          ('Gammlastan + museum', 'kallt', 1200.00, 1),   -- Stockholm
+                                                                          ('Neon nights + sushi fun', 'Mild', 1800.00, 2),    -- Tokyo
+                                                                          ('BästaStrand + tapas + fotboll', 'Warmt', 1400.00, 3), -- Barcelona
+                                                                          ('Pyramider + bazaars + Nilen tour', 'RIKTIGT varmt', 1100.00, 4) -- Cairo
+                                                                  """);
+
+
+  // Food Activities' table
+  string activities_table = """
     // Destinations' table
     string destinations_table = """
         CREATE TABLE destinations (
@@ -348,6 +374,18 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_activities_table);
 
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                  INSERT INTO destinations_activities (destination_id, activity_id)
+                                                                  VALUES
+                                                                      (1, 2), -- Stockholm -> Swedish Mushroom Bonanza
+                                                                      (2, 1), -- Tokyo -> Italian Pizza Tasting
+                                                                      (2, 3); -- Tokyo -> Indian Spice Feast
+                                                                  """);
+  
+  
+  
+  
   // Amenities' table
   string amenities_table = """
          CREATE TABLE amenities(
@@ -371,20 +409,35 @@ async Task db_reset_to_default(Config config)
                           """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertAmenity2);
 
-  // Hotels' table
+// Hotels' table
   string hotels_table = """
-        CREATE TABLE hotels (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(200) NOT NULL,
-            phone_number VARCHAR(50),
-            rating DECIMAL(3,1) NOT NULL,
-            address VARCHAR(255) NOT NULL,
-            description TEXT NOT NULL,
-            destination_id INT NOT NULL,
-            FOREIGN KEY (destination_id) REFERENCES destinations(id)
-        );
-    """;
+                            CREATE TABLE hotels (
+                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                name VARCHAR(200) NOT NULL,
+                                phone_number VARCHAR(50),
+                                rating DECIMAL(3,1) NOT NULL,
+                                address VARCHAR(255) NOT NULL,
+                                description TEXT NOT NULL,
+                                destination_id INT NOT NULL,
+                                FOREIGN KEY (destination_id) REFERENCES destinations(id)
+                            );
+                        """;
+
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, hotels_table);
+
+// Seed hotels
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                      INSERT INTO hotels (name, phone_number, rating, address, description, destination_id)
+                                                                      VALUES
+                                                                      -- Stockholm
+                                                                      ('Grand Nordic Hotel', '+12345678', 4.5, 'Gammlastan 12, Stockholm',
+                                                                       'Elegant hotel close to the museum.', 1),
+
+                                                                      -- Tokyo
+                                                                      ('Sakura Hotell', '+87654321', 4.7, 'Shibuya Crossing 3-1, Tokyo',
+                                                                       'Modern hotel surrounded by nightlife and world-class food.', 2);
+                                                                  """);
+
 
   // Rooms' table
   string rooms_table = """
