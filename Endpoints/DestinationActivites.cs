@@ -47,12 +47,11 @@ class DestinationActivites
     var result = new List<Destinations.GetAll_Data>();
 
     string query = """
-                     SELECT d.id, d.description, d.climate, d.average_cost, d.city_id
+                     SELECT d.id, d.name, d.description, d.climate, d.average_cost, d.city_id
                      FROM destinations d
                      JOIN destinations_activities da ON da.destination_id = d.id
                      WHERE da.activity_id = @activityId
                    """;
-
 
     var parameters = new MySqlParameter[]
     {
@@ -66,6 +65,7 @@ class DestinationActivites
     {
       result.Add(new(
         reader.GetInt32("id"),
+        reader.GetString("name"),
         reader.GetString("description"),
         reader.GetString("climate"),
         reader.GetDecimal("average_cost"),
@@ -75,6 +75,7 @@ class DestinationActivites
 
     return Results.Ok(result);
   }
+
 
   // koppla aktivitet till destination (admin)
   public static async Task<IResult> Link(Link_Args link, Config config, HttpContext ctx)
