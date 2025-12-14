@@ -114,6 +114,12 @@ app.MapPost("/amenities", Amenities.Post);
 app.MapPut("/amenities/{id:int}", Amenities.Put);
 app.MapDelete("/amenities/{id:int}", Amenities.Delete);
 
+// package_destinations
+app.MapGet("/package_destinations", PackagesDestinations.GetAll);
+app.MapGet("/package_destinations/package/{id}", PackagesDestinations.GetByPackage); // by packageId 
+app.MapGet("/package_destinations/destination/{id}", PackagesDestinations.GetByDestination); // by DestinationId
+app.MapPost("/package_destinations", PackagesDestinations.Post);
+app.MapDelete("/package_destinations/{packageId}/{destinationId}", PackagesDestinations.Delete);
 // Hotels <-> Amenities 
 
 app.MapGet("/hotels/{hotelId:int}/amenities", AmenetiesHotel.ByHotel);
@@ -177,8 +183,8 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, users_table);
   // TEST
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('fatima@gmail.com','123, admin')");
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password) VALUES ('ahmed@gmail.com','123, user')");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password, role) VALUES ('fatima@gmail.com','123, admin')");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "INSERT INTO users(email, password, role) VALUES ('ahmed@gmail.com','123, user')");
 
 // Countries' table
   string countries_table = """
@@ -276,6 +282,54 @@ async Task db_reset_to_default(Config config)
 
   // Food Activities' table
   string activities_table = """
+    // Destinations' table
+    string destinations_table = """
+        CREATE TABLE destinations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(200) NOT NULL,
+            description TEXT NOT NULL,
+            climate VARCHAR(100) NOT NULL,
+            average_cost DECIMAL(10,2) NOT NULL,
+            city_id INT NOT NULL,
+            FOREIGN KEY (city_id) REFERENCES cities(id)
+        );
+    """;
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, destinations_table);
+    // TEST destinations
+    // 1 stockholm
+    string insertDestination1 = """
+                           INSERT INTO destinations (name, description, climate, average_cost, city_id)
+                           VALUES ( 'Djurgården Island', 'A scenic island in Stockholm known for its museums, green parks, waterfront views, and family‑friendly attractions.', 
+                           'Cold temperate', 1100.00, 1);
+                       """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertDestination1);
+    // 2 Tokyo
+    string insertDestination2 = """
+                           INSERT INTO destinations (name, description, climate, average_cost, city_id)
+                           VALUES ('Old city','Historic old town known for its narrow cobblestone streets, colorful buildings, and medieval architecture.', 
+                           'Cold temperate', 1200.00, 2);
+                       """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertDestination2);
+
+    // 3 Barcha
+    string insertDestination3 = """
+                           INSERT INTO destinations (name, description, climate, average_cost, city_id)
+                           VALUES ('Park Güell', 'A world‑famous public park designed by Antoni Gaudí, featuring colorful mosaics, unique architecture, and panoramic views of Barcelona.','Mediterranean', 1500.00, 3);
+                       """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertDestination3);
+
+    // 4 Cairo
+    string insertDestination4 = """
+                           INSERT INTO destinations (name, description, climate, average_cost, city_id)
+                           VALUES ( 'Khan el‑Khalili Bazaar', 'A historic marketplace in Cairo known for its vibrant shops, traditional crafts, spices, and rich cultural atmosphere.','Hot desert', 400.00, 4);
+                       """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertDestination4);
+
+    //
+
+    // Food Activities' table
+    string activities_table = """
         CREATE TABLE IF NOT EXISTS activities (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(200) NOT NULL,
@@ -427,8 +481,8 @@ async Task db_reset_to_default(Config config)
     """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, packages_table);
 
-  // The relation between the packages and the destinations M:N
-  string package_destinations_table = """
+    // The relation between the packages and the destinations M:N
+    string package_destinations_table = """
         CREATE TABLE package_destinations (
             package_id INT NOT NULL,
             destination_id INT NOT NULL,
@@ -437,7 +491,35 @@ async Task db_reset_to_default(Config config)
             FOREIGN KEY (destination_id) REFERENCES destinations(id)
         );
     """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_destinations_table);
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_destinations_table);
+
+    // Seeds // Test
+    // 1
+    string insertPackageDestination1 = """
+                              INSERT INTO package_destinations
+                              VALUES (1, 1),(2, 2),(3, 3),(4,4);
+                          """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, insertPackageDestination1);
+
+
+    // Create a view in order to view all packages_destination information
+    // a view would be faster and stable
+    string create_view = """
+         CREATE OR REPLACE VIEW view_package_destinations AS 
+         SELECT p.id AS package_id, p.name AS package_name, p.type, p.total_price, 
+                p.duration_days, p.description AS package_description, 
+                d.id AS destination_id, d.name AS destination_name, d.climate,
+                c.name AS city_name
+         FROM package_destinations AS pd
+         INNER JOIN packages AS p ON pd.package_id = p.id
+         INNER JOIN destinations AS d ON pd.destination_id = d.id
+         INNER JOIN cities AS c ON d.city_id = c.id;
+  
+  """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, create_view);
+    // end of the view
+
 
   // The relation between the packages and the activities M:N
   string package_activities_table = """
