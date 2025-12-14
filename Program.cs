@@ -130,6 +130,17 @@ app.MapDelete(
   DestinationActivites.Unlink
 );
 
+
+
+
+
+
+// CustomCardsActivities ROUTES 
+app.MapGet("/custom-cards-activities/card/{cardId}", CustomCardsActivities.ByCard);
+app.MapGet("/custom-cards-activities/activity/{activityId}", CustomCardsActivities.ByActivity);
+app.MapPost("/custom-cards-activities", CustomCardsActivities.Link);
+app.MapDelete("/custom-cards-activities/{cardId}/{activityId}", CustomCardsActivities.Unlink);
+app.MapGet("/custom-cards-activities/search", CustomCardsActivities.Search);
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
