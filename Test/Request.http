@@ -160,6 +160,25 @@ GET http://localhost:5132/activities/1/destinations
 
 
 #########################################################
+# PACKAGES
+#########################################################
+
+### Packages – Get all ready packages
+GET http://localhost:5132/packages
+
+
+### Packages – Get one package 
+GET http://localhost:5132/packages/1
+
+
+### Packages – Search
+GET http://localhost:5132/packages/search?term=Tokyo
+
+
+### Packages – Search without term (should give all)
+GET http://localhost:5132/packages/search
+
+#########################################################
 # ADMIN-ONLY  (koppla/ta bort)
 #########################################################
 

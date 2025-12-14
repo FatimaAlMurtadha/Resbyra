@@ -1,5 +1,4 @@
 using MySql.Data.MySqlClient;
-using Org.BouncyCastle.Tls;
 
 namespace server;
 
@@ -38,7 +37,7 @@ class Packages
     public record TheActivity(int Id, string Name, string Description);
     public record TheDestination(int Id, string Description, string Climate, decimal AverageCost);
 
-    public static async Task<IResult> Get(int id, Config config)
+    public static async Task<IResult> Get(Config config)
     {
         var packages = new List<object>();
         
@@ -169,5 +168,92 @@ class Packages
 
         return activities;
     }
+    
+    
+    // GET /packages/search?term=...
+public static async Task<IResult> Search(string? term, Config config)
+{
+    var result = new List<object>();
+
+    string query;
+    MySqlParameter[]? parameters = null;
+
+    if (string.IsNullOrWhiteSpace(term))
+    {
+        query = """
+            SELECT id, name, total_price, duration_days, description
+            FROM packages
+            WHERE type = 'ready'
+            ORDER BY id ASC
+        """;
+    }
+    else
+    {
+        query = """
+            SELECT id, name, total_price, duration_days, description
+            FROM packages
+            WHERE type = 'ready'
+              AND (name LIKE @term OR description LIKE @term)
+            ORDER BY id ASC
+        """;
+
+        parameters = new MySqlParameter[]
+        {
+            new("@term", "%" + term + "%")
+        };
+    }
+
+    if (parameters is null)
+    {
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
+        {
+            while (reader.Read())
+            {
+                int packageId = reader.GetInt32("id");
+
+                var destinations = await GetDestinations(packageId, config);
+                var activities = await GetActivities(packageId, config);
+
+                result.Add(new
+                {
+                    Id = packageId,
+                    Name = reader.GetString("name"),
+                    TotalPrice = reader.GetDecimal("total_price"),
+                    DurationDays = reader.GetInt32("duration_days"),
+                    Description = reader.GetString("description"),
+                    Destinations = destinations,
+                    Activities = activities
+                });
+            }
+        }
+    }
+    else
+    {
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query, parameters))
+        {
+            while (reader.Read())
+            {
+                int packageId = reader.GetInt32("id");
+
+                var destinations = await GetDestinations(packageId, config);
+                var activities = await GetActivities(packageId, config);
+
+                result.Add(new
+                {
+                    Id = packageId,
+                    Name = reader.GetString("name"),
+                    TotalPrice = reader.GetDecimal("total_price"),
+                    DurationDays = reader.GetInt32("duration_days"),
+                    Description = reader.GetString("description"),
+                    Destinations = destinations,
+                    Activities = activities
+                });
+            }
+        }
+    }
+
+    return Results.Ok(result);
+}
+
 
 }
