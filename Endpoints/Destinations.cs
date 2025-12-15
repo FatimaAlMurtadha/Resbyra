@@ -46,7 +46,7 @@ class Destinations
   {
     Get_Data? result = null;
 
-    string query = "SELECT description, climate, average_cost, city_id FROM destinations WHERE id = @id";
+    string query = "SELECT name, description, climate, average_cost, city_id FROM destinations WHERE id = @id";
 
     var parameters = new MySqlParameter[]
     {
@@ -76,7 +76,7 @@ class Destinations
   }
 
   // DTO for POST
-  public record Post_Args(string Description, string Name , string Climate, decimal AverageCost, int CityId);
+  public record Post_Args(string Name, string Description , string Climate, decimal AverageCost, int CityId);
 
   // POST/ Destinations
   // Insert a new destination into db
@@ -201,7 +201,7 @@ class Destinations
     if (string.IsNullOrWhiteSpace(term))
     {
       // Ingen term -> alla destinations
-      query = "SELECT id, description, climate, average_cost, city_id FROM destinations";
+      query = "SELECT id, name, description, climate, average_cost, city_id FROM destinations";
     }
     else
     {
