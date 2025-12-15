@@ -174,6 +174,14 @@ app.MapDelete("/custom-cards-hotels/{cardId}/{hotelId}", CustomCardHotels.Unlink
 // search method has cardId and *optional term*
 app.MapGet("/custom-cards-hotels/search", CustomCardHotels.Search);
 
+// CustomCardsRooms ROUTES
+
+app.MapGet("/custom-cards-rooms/card/{cardId}", CustomCardsRooms.ByCard);
+app.MapGet("/custom-cards-rooms/room/{roomId}", CustomCardsRooms.ByRoom);
+app.MapPost("/custom-cards-rooms", CustomCardsRooms.Link);
+app.MapDelete("/custom-cards-rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
+app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search);
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
