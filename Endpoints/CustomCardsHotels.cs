@@ -182,7 +182,7 @@ class CustomCardHotels
       query = """
                 SELECT h.id, h.name, h.phone_number, h.rating, h.address , h.description, h.destination_id
                 FROM hotels AS h
-                INNER JOIN custom_card_hotels AS ch ON ch.hotel_id = a.id
+                INNER JOIN custom_card_hotels AS ch ON ch.hotel_id = h.id
                 WHERE ch.card_id = @cardId
                   AND h.name LIKE @term
                 """;
