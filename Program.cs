@@ -116,11 +116,11 @@
     app.MapDelete("/package_destinations/{packageId:int}/{destinationId:int}", PackagesDestinations.Delete);
 
     // Hotels <-> Amenities 
-    app.MapGet("/hotels/{hotelId:int}/amenities", AmenetiesHotel.ByHotel);
-    app.MapGet("/amenities/{amenityId:int}/hotels", AmenetiesHotel.ByAmenity);
+    app.MapGet("/hotels/{hotelId:int}/amenities", AmenitiesHotel.ByHotel);
+    app.MapGet("/amenities/{amenityId:int}/hotels", AmenitiesHotel.ByAmenity);
 
-    app.MapPost("/hotels/amenities/link", AmenetiesHotel.Link);
-    app.MapDelete("/hotels/{hotelId:int}/amenities/{amenityId:int}", AmenetiesHotel.Unlink);
+    app.MapPost("/hotels/amenities/link", AmenitiesHotel.Link);
+    app.MapDelete("/hotels/{hotelId:int}/amenities/{amenityId:int}", AmenitiesHotel.Unlink);
 
     // DestinationsS <-> Activites 
     app.MapGet("/destinations/{destinationId:int}/activities", DestinationActivites.ByDestination);

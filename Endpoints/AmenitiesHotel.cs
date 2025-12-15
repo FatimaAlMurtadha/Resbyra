@@ -3,7 +3,7 @@
 using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Http;
 
-class AmenetiesHotel
+class AmenitiesHotel
 {
   // POST body for linkar anemetiy till hotell
   public record Link_Args(int HotelId, int AmenityId);
