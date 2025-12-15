@@ -155,6 +155,14 @@ app.MapPost("/custom-cards-activities", CustomCardsActivities.Link);
 app.MapDelete("/custom-cards-activities/{cardId}/{activityId}", CustomCardsActivities.Unlink);
 app.MapGet("/custom-cards-activities/search", CustomCardsActivities.Search);
 
+// Packages <-> Amenities
+app.MapGet("/packages/{packageId:int}/amenities", PackagesAmenities.ByPackage);
+app.MapGet("/amenities/{amenityId:int}/packages", PackagesAmenities.ByAmenity);
+
+app.MapPost("/packages/amenities/link", PackagesAmenities.Link);
+app.MapDelete("/packages/{packageId:int}/amenities/{amenityId:int}", PackagesAmenities.Unlink);
+
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
@@ -165,10 +173,15 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS booking_rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS travelers");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS bookings");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_destinations");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_amenities");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_rooms");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_hotels");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_cards");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS package_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS package_destinations");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS packages_amenities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS packages");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS amenities_hotels");
@@ -338,6 +351,15 @@ async Task db_reset_to_default(Config config)
     );
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, rooms_table);
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                    INSERT INTO rooms (id, room_number, type, price_per_night, capacity, hotel_id)
+                                                                    VALUES
+                                                                      (1, 101, 'Standard', 900.00, 2, 1),
+                                                                      (2, 102, 'Deluxe', 1200.00, 2, 1),
+                                                                      (3, 201, 'Standard', 950.00, 2, 2),
+                                                                      (4, 202, 'Suite',   1500.00, 4, 2);
+                                                                  """);
 
   string amenities_hotels = """
     CREATE TABLE amenities_hotels(
@@ -384,12 +406,7 @@ async Task db_reset_to_default(Config config)
     );
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, package_destinations_table);
-
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
-    INSERT INTO package_destinations
-    VALUES (1, 1),(2, 2),(3, 3),(4, 4);
-  """);
-
+  
   string create_view = """
     CREATE OR REPLACE VIEW view_package_destinations AS
     SELECT p.id AS package_id, p.name AS package_name, p.type, p.total_price,
@@ -402,6 +419,25 @@ async Task db_reset_to_default(Config config)
     INNER JOIN cities AS c ON d.city_id = c.id;
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, create_view);
+  
+  
+  string packages_amenities_table = """
+                                      CREATE TABLE packages_amenities(
+                                        package_id INT NOT NULL,
+                                        amenity_id INT NOT NULL,
+                                        PRIMARY KEY (package_id, amenity_id),
+                                        FOREIGN KEY (package_id) REFERENCES packages(id),
+                                        FOREIGN KEY (amenity_id) REFERENCES amenities(id)
+                                      );
+                                    """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, packages_amenities_table);
+
+// lite testdata
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                    INSERT INTO packages_amenities
+                                                                    VALUES (1, 1), (1, 2), (2, 1);
+                                                                  """);
+
 
   string package_activities_table = """
     CREATE TABLE package_activities (
@@ -465,6 +501,17 @@ async Task db_reset_to_default(Config config)
     );
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_cards_table);
+  
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                    INSERT INTO custom_cards (id, user_id, title, budget, start_date, end_date)
+                                                                    VALUES
+                                                                      (1, 2, 'Fatima food tour', 5000.00, '2025-01-10', '2025-01-12'),
+                                                                      (2, 2, 'Tokyo budget plan', 3000.00, '2025-02-01', '2025-02-05'),
+                                                                      (3, 2, 'Barcelona chill', 4500.00, '2025-03-10', '2025-03-14'),
+                                                                      (4, 2, 'Cairo chaos', 4000.00, '2025-04-01', '2025-04-04');
+                                                                  """);
+  
+  
 
   string custom_card_activities_table = """
     CREATE TABLE custom_card_activities (
@@ -498,9 +545,13 @@ async Task db_reset_to_default(Config config)
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
       // Add Data
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
-        INSERT INTO custom_card_hotels
-        VALUES (1, 1),(2, 2),(3, 3),(4, 4);
-      """);
+                                                                        INSERT INTO custom_card_hotels
+                                                                        VALUES
+                                                                          (1, 1),
+                                                                          (2, 2),
+                                                                          (3, 1),
+                                                                          (4, 2);
+                                                                      """);
 
   // Create CustomCardsRooms table "The relation between them 2"
   string custom_card_rooms_table = """
@@ -534,9 +585,13 @@ async Task db_reset_to_default(Config config)
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_amenities_table);
       // Add Data
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
-        INSERT INTO custom_card_amenities
-        VALUES (1, 1),(2, 2),(3, 3),(4, 4);
-      """);
+                                                                        INSERT INTO custom_card_amenities
+                                                                        VALUES
+                                                                          (1, 1),
+                                                                          (2, 2),
+                                                                          (3, 1),
+                                                                          (4, 2);
+                                                                      """);
 
 
   // Create CustomCardDestinations table "The relation between them 2"
