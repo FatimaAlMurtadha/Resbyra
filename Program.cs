@@ -162,6 +162,17 @@ app.MapGet("/amenities/{amenityId:int}/packages", PackagesAmenities.ByAmenity);
 app.MapPost("/packages/amenities/link", PackagesAmenities.Link);
 app.MapDelete("/packages/{packageId:int}/amenities/{amenityId:int}", PackagesAmenities.Unlink);
 
+// CustomCardsHotelss ROUTES  
+
+app.MapGet("/custom-cards-hotels/card/{cardId}", CustomCardHotels.ByCard);
+
+app.MapGet("/custom-cards-hotels/hotel/{hotelId}", CustomCardHotels.ByHotel);
+
+app.MapPost("/custom-cards-hotels", CustomCardHotels.Link);
+
+app.MapDelete("/custom-cards-hotels/{cardId}/{hotelId}", CustomCardHotels.Unlink);
+// search method has cardId and *optional term*
+app.MapGet("/custom-cards-hotels/search", CustomCardHotels.Search);
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
