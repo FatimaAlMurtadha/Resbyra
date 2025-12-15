@@ -276,13 +276,15 @@ async Task db_reset_to_default(Config config)
   // The relation between the bookings and the rooms M:N
   string booking_rooms_table = """
         CREATE TABLE booking_rooms (
-            booking_id INT NOT NULL,
+        id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
             room_id INT NOT NULL,
-            nights INT NOT NULL,
-            price DECIMAL(10,2) NOT NULL,
-            PRIMARY KEY (booking_id, room_id),
-            FOREIGN KEY (booking_id) REFERENCES bookings(id),
-            FOREIGN KEY (room_id) REFERENCES rooms(id)
+            check_in DATE NOT NULL,
+            check_out DATE NOT NULL,
+            guests INT NOT NULL,
+            total_price DECIMAL(10,2) NOT NULL,
+            FOREGIN KEY (user_id) REFERENCES users(id),
+            FOREGIN KEY (room_id) REFERENCES room(id)
         );
     """;
 
