@@ -23,7 +23,7 @@ CREATE TABLE hotels (
           FOREIGN KEY (destination_id) REFERENCES destinations(id)
         );
 */
-public class CustomCardHotels
+class CustomCardHotels
 {
 
   // Link hotel <-> custom card
