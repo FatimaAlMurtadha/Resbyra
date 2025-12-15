@@ -357,9 +357,10 @@
           FOREIGN KEY (hotel_id) REFERENCES hotels(id)
         );
       """;
-      await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, amenities_hotels);
 
-      string packages_table = """
+
+  string packages_table = """
         CREATE TABLE packages (
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(200) NOT NULL,
@@ -475,4 +476,60 @@
         );
       """;
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_activities_table);
-    }
+
+  // Create CustomCardsHotels table "The relation between them 2"
+      string custom_card_hotels_table = """
+        CREATE TABLE custom_card_hotels(
+        card_id INT NOT NULL,
+        hotel_id INT NOT NULL,
+        PRIMARY KEY (card_id, hotel_id),
+        FOREIGN KEY (card_id) REFERENCES custom_cards(id),
+        FOREIGN KEY (hotel_id) REFERENCES hotels(id)
+      );
+
+      """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
+
+    // Create CustomCardsRooms table "The relation between them 2"
+      string custom_card_rooms_table = """
+        CREATE TABLE custom_card_rooms(
+        card_id INT NOT NULL,
+        room_id INT NOT NULL,
+        PRIMARY KEY (card_id, room_id),
+        FOREIGN KEY (card_id) REFERENCES custom_cards(id),
+        FOREIGN KEY (room_id) REFERENCES rooms(id)
+      );
+
+      """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_rooms_table);
+
+  // Create CustomCardsAmenities table "The relation between them 2"
+    string custom_card_amenities_table = """
+        CREATE TABLE custom_card_amenities(
+        card_id INT NOT NULL,
+        amenity_id INT NOT NULL,
+        PRIMARY KEY (card_id, amenity_id),
+        FOREIGN KEY (card_id) REFERENCES custom_cards(id),
+        FOREIGN KEY (amenity_id) REFERENCES amenities(id)
+      );
+
+      """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_amenities_table);
+
+  // Create CustomCardsdestinations table "The relation between them 2"
+  string custom_card_destinations_table = """
+        CREATE TABLE custom_card_destinations(
+        card_id INT NOT NULL,
+        destination_id INT NOT NULL,
+        PRIMARY KEY (card_id, destination_id),
+        FOREIGN KEY (card_id) REFERENCES custom_cards(id),
+        FOREIGN KEY (destination_id) REFERENCES destinations(id)
+      );
+
+      """;
+    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_destinations_table);
+
+
+
+
+}
