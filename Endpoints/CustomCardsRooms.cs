@@ -134,7 +134,7 @@ class CustomCardsRooms
   }
 
   // Search rooms linked to a card
-  public static async Task<IResult> Search(int cardId, string? term, Config config)
+  public static async Task<IResult> Search(int cardId, Config config)
   {
     var result = new List<Rooms.GetAll_Data>();
 

@@ -280,3 +280,52 @@ Content-Type: application/json
   "cardId": 1,
   "activityId": 2
 }
+
+
+
+#########################################################
+# FEATURE: CUSTOM CARDS <-> Rooms
+#########################################################
+
+### CustomCardsRooms – Get rooms for a card
+
+GET http://localhost:5132/custom-cards-rooms/card/1
+Content-Type: application/json
+
+
+    {
+        "id": 1,
+        "roomNumber": 101,
+        "type": "Standard",
+        "pricePerNight": 900.00,
+        "capacity": 2,
+        "hotelId": 1
+    }
+
+  ### CustomCardsRooms – Get cards for a room
+
+
+  GET  http://localhost:5132/custom-cards-rooms/room/1
+  Content-Type: application/json
+
+   {
+        "id": 1,
+        "userId": 2,
+        "title": "Fatima food tour",
+        "budget": 5000.00,
+        "startDate": "2025-01-10",
+        "endDate": "2025-01-12"
+    }
+
+
+GET http://localhost:5132/custom-cards-rooms/search?cardId=1
+Content-Type: application/json
+  {
+        "id": 1,
+        "roomNumber": 101,
+        "type": "Standard",
+        "pricePerNight": 900.00,
+        "capacity": 2,
+        "hotelId": 1
+    }
+

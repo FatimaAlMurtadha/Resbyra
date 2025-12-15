@@ -180,7 +180,7 @@ app.MapGet("/custom-cards-rooms/card/{cardId}", CustomCardsRooms.ByCard);
 app.MapGet("/custom-cards-rooms/room/{roomId}", CustomCardsRooms.ByRoom);
 app.MapPost("/custom-cards-rooms", CustomCardsRooms.Link);
 app.MapDelete("/custom-cards-rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
-app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search);
+app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search); // by card id 
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
