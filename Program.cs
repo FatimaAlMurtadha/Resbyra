@@ -47,6 +47,13 @@ app.MapPost("/destinations", Destinations.Post);
 app.MapPut("/destinations/{id}", Destinations.Put);
 app.MapDelete("/destinations/{id}", Destinations.Delete);
 
+//BookingRoom
+app.MapGet("/booking-rooms", BookRoom.GetAll);
+app.MapGet("/bookroom/{id}", BookRoom.Get);
+app.MapPost("/bookroom", BookRoom.Post);
+app.MapPut("/bookroom/{id}", BookRoom.Put);
+app.MapDelete("/bookroom/{id}", BookRoom.Delete);
+
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -276,15 +283,16 @@ async Task db_reset_to_default(Config config)
   // The relation between the bookings and the rooms M:N
   string booking_rooms_table = """
         CREATE TABLE booking_rooms (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+            id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
+            travel_id INT NOT NULL,
             room_id INT NOT NULL,
             check_in DATE NOT NULL,
             check_out DATE NOT NULL,
-            guests INT NOT NULL,
             total_price DECIMAL(10,2) NOT NULL,
             FOREGIN KEY (user_id) REFERENCES users(id),
-            FOREGIN KEY (room_id) REFERENCES room(id)
+            FOREGIN KEY (room_id) REFERENCES room(id),
+            FOREGIN KEY (travel_id) REFERENCES travelers(id),
         );
     """;
 
