@@ -167,6 +167,9 @@
     // special, reset db
     app.MapDelete("/db", db_reset_to_default);
 
+    // CRUD accommodations , no login required => public
+    app.MapGet("/accommodations", Accommodations.GetAll);
+
     app.Run();
 
     async Task db_reset_to_default(Config config)
@@ -189,6 +192,7 @@
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS cities");
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS countries");
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS users");
+      await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS accommodations");
 
       string users_table = """
         CREATE TABLE users
@@ -475,4 +479,17 @@
         );
       """;
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_activities_table);
+
+      string accommodations_table = """
+        CREATE TABLE accommodations (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         name VARCHAR(200) NOT NULL,
+         type VARCHAR(100) NOT NULL,
+         price_per_night DECIMAL(10,2) NOT NULL,
+         destination_id INT NOT NULL,
+        FOREIGN KEY (destination_id) REFERENCES destinations(id)
+        );
+      """;
+      await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, accommodations_table);
     }
+      
