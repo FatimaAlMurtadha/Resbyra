@@ -164,6 +164,14 @@
     app.MapPost("/custom-cards-activities", CustomCardsActivities.Link);
     app.MapDelete("/custom-cards-activities/{cardId}/{activityId}", CustomCardsActivities.Unlink);
     app.MapGet("/custom-cards-activities/search", CustomCardsActivities.Search);
+
+
+    // CustomCardsHotelss ROUTES 
+    app.MapGet("/custom-cards-hotels/card/{cardId}", CustomCardHotels.ByCard);
+    app.MapGet("/custom-cards-hotels/hotel/{hotelId}", CustomCardHotels.ByHotel);
+    app.MapPost("/custom-cards-hotels", CustomCardHotels.Link);
+    app.MapDelete("/custom-cards-hotels/{cardId}/{hotelId}", CustomCardHotels.Unlink);
+    app.MapGet("/custom-cards-hotels/search", CustomCardHotels.Search);
     // special, reset db
     app.MapDelete("/db", db_reset_to_default);
 
