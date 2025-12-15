@@ -180,3 +180,22 @@ class CustomCardsAmenities
 
 
 } //fatima
+
+/*
+program.cs
+
+// CustomCardsAmenities ROUTES
+
+app.MapGet("/custom-cards-amenities/card/{cardId}", CustomCardsAmenities.ByCard);
+
+app.MapGet("/custom-cards-amenities/amenity/{amenityId}", CustomCardsAmenities.ByAmenity);
+
+app.MapPost("/custom-cards-amenities", CustomCardsAmenities.Link);
+
+app.MapDelete("/custom-cards-amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
+
+app.MapGet("/custom-cards-amenities/search", CustomCardsAmenities.Search);
+
+
+
+*/
