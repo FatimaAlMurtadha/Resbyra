@@ -91,7 +91,10 @@ class CustomCardsRooms
   {
     var userAuth = Authentication.RequireUser(ctx);
     if (userAuth is not null)
+    {
       return userAuth;
+    }
+      
 
     string query = """
             INSERT INTO custom_card_rooms (card_id, room_id)

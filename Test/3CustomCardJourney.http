@@ -210,7 +210,6 @@ Content-Type: application/json
   "hotelId": 2
 }
 
-
 ### Unlink destination to card
 DELETE http://localhost:5132/custom-cards/hotels/3/2
 
@@ -226,14 +225,27 @@ GET http://localhost:5132/custom-cards-hotels/search?cardId=1&term=Gran
 # TEST D: Rooms <-> Custom Card
 #########################################################
 
-### Link room to card
+### Verify rooms for card
+GET http://localhost:5132/custom-cards-rooms/card/1
+
+
+### Verify cards for room
+GET http://localhost:5132/custom-cards-rooms/room/1
+
+### Link hotel to card
 POST http://localhost:5132/custom-cards/rooms/link
 Content-Type: application/json
 
 {
   "cardId": 1,
-  "roomId": 1
+  "roomId": 4
 }
 
-### Verify rooms for card
-GET http://localhost:5132/custom-cards-rooms/card/1
+### Unlink destination to card
+DELETE http://localhost:5132/custom-cards/rooms/3/2
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-rooms/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-rooms/search?cardId=1&term=Gran
