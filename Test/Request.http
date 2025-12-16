@@ -16,7 +16,7 @@ Content-Type: application/json
 {
   "email": "http_user1@resbyra.se",
   "password": "Password123!",
-  "role": "user"
+  "role": "admin"
 }
 
 ### Login (as that user)
@@ -26,7 +26,7 @@ Content-Type: application/json
 {
   "email": "http_user1@resbyra.se",
   "password": "Password123!",
-  "role": "user"
+  "role": "admin"
 }
 
 ### Login status (should return true assuming you logged in :))
@@ -189,11 +189,12 @@ Content-Type: application/json
 
 {
   "destinationId": 1,
-  "activityId": 1
+  "activityId": 4
 }
 
 ### Unlink activity from destination (admin)
 DELETE http://localhost:5132/destinations/1/activities/1
+
 
 ### Travelers – Get all
 GET http://localhost:5132/travelers
@@ -226,18 +227,6 @@ GET http://localhost:5132/booking-rooms
 ### BookingRooms – Get by id
 GET http://localhost:5132/bookroom/1
 
-#########################################################
-# FEATURE: PACKAGES
-#########################################################
-
-### Packages – Get all ready packages
-GET http://localhost:5132/packages
-
-### Packages – Get one package (details)
-GET http://localhost:5132/packages/1
-
-
-#########################################################
 # FEATURE: PACKAGE <-> ACTIVITIES
 #########################################################
 
@@ -249,8 +238,8 @@ POST http://localhost:5132/packages/activities/link
 Content-Type: application/json
 
 {
-  "packageId": 1,
-  "activityId": 2
+  "packageId": 2,
+  "activityId": 3
 }
 
 
@@ -280,10 +269,6 @@ Content-Type: application/json
   "cardId": 1,
   "activityId": 2
 }
-
-
-
-
 
 
 #########################################################
