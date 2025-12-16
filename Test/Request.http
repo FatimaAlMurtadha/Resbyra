@@ -299,6 +299,15 @@ GET http://localhost:5132/custom-cards-hotels/hotel/1
 GET http://localhost:5132/custom-cards-hotels/search?cardId=1
 
 
+### LINK: link customCard 2 to hotel 2 (user)
+POST http://localhost:5132/packages/amenities/link
+Content-Type: application/json
+
+{
+  "cardId": 2,
+  "hotelId": 2
+}
+
 #########################################################
 # FEATURE: CUSTOM CARDS <-> Rooms
 #########################################################
