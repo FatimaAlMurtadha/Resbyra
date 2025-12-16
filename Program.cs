@@ -82,145 +82,15 @@ app.MapPost("/hotels", Hotels.Post);
 app.MapPut("/hotels", Hotels.Put);
 app.MapDelete("/hotels/{id:int}", Hotels.Delete);
 
-// avoid route clash with /hotels/{id}
-app.MapGet("/hotels/by-destination/{destinationId:int}", Hotels.ByDestination);
-
-// ROOMS
-app.MapGet("/rooms", Rooms.GetAll);
-app.MapGet("/rooms/{id:int}", Rooms.Get);
-app.MapGet("/rooms/search", Rooms.Search);
-
-// filter endpoints
-app.MapGet("/rooms/by-hotel/{hotelId:int}", Rooms.ByHotel);
-app.MapGet("/rooms/by-hotel/{hotelId:int}/{roomNumber:int}", Rooms.ByRoomNumber);
-
-app.MapPost("/rooms", Rooms.Post);
-app.MapPut("/rooms/{id:int}", Rooms.Put);
-app.MapDelete("/rooms/{id:int}", Rooms.Delete);
-
-// Activities
-app.MapGet("/activities", () => Activities.GetAll(config));
-app.MapGet("/activities/{id:int}", (int id) => Activities.Get(id, config));
-app.MapGet("/activities/search", (string? term) => Activities.Search(term, config));
-
-// Amenities
-app.MapGet("/amenities", Amenities.GetAll);
-app.MapGet("/amenities/search", Amenities.Search);
-app.MapGet("/amenities/{id:int}", Amenities.Get);
-app.MapPost("/amenities", Amenities.Post);
-app.MapPut("/amenities/{id:int}", Amenities.Put);
-app.MapDelete("/amenities/{id:int}", Amenities.Delete);
-
-// package_destinations
-app.MapGet("/package_destinations", PackagesDestinations.GetAll);
-app.MapGet("/package_destinations/package/{packageId:int}", PackagesDestinations.GetByPackage);
-app.MapGet("/package_destinations/destination/{destinationId:int}", PackagesDestinations.GetByDestination);
-app.MapPost("/package_destinations", PackagesDestinations.Post);
-app.MapDelete("/package_destinations/{packageId:int}/{destinationId:int}", PackagesDestinations.Delete);
-
-// Hotels <-> Amenities
-app.MapGet("/hotels/{hotelId:int}/amenities", AmenitiesHotel.ByHotel);
-app.MapGet("/amenities/{amenityId:int}/hotels", AmenitiesHotel.ByAmenity);
-
-app.MapPost("/hotels/amenities/link", AmenitiesHotel.Link);
-app.MapDelete("/hotels/{hotelId:int}/amenities/{amenityId:int}", AmenitiesHotel.Unlink);
-
-// Destinations <-> Activities
-app.MapGet("/destinations/{destinationId:int}/activities", DestinationActivites.ByDestination);
-app.MapGet("/activities/{activityId:int}/destinations", DestinationActivites.ByActivity);
-
-app.MapPost("/destinations/activities/link", DestinationActivites.Link);
-app.MapDelete("/destinations/{destinationId:int}/activities/{activityId:int}", DestinationActivites.Unlink);
-
-// Packages <-> Activities
-app.MapGet("/packages/{packageId:int}/activities", PackageActivities.ByPackage);
-
-// app.MapGet("/activities/{activityId:int}/packages", PackageActivities.ByActivity);
-
-app.MapPost("/packages/activities/link", PackageActivities.Link);
-app.MapDelete("/packages/{packageId:int}/activities/{activityId:int}", PackageActivities.Unlink);
-
-// CUSTOM CARDS ROUTES
-app.MapGet("/custom-cards", CustomCards.GetAll);
-app.MapGet("/custom-cards/{id}", CustomCards.Get);
-app.MapGet("/custom-cards/search", CustomCards.Search);
-app.MapPost("/custom-cards", CustomCards.Post);
-app.MapPut("/custom-cards/{id}", CustomCards.Put);
-app.MapDelete("/custom-cards/{id}", CustomCards.Delete);
-
-// CustomCardsActivities ROUTES
-app.MapGet("/custom-cards-activities/card/{cardId}", CustomCardsActivities.ByCard);
-app.MapGet("/custom-cards-activities/activity/{activityId}", CustomCardsActivities.ByActivity);
-app.MapPost("/custom-cards-activities", CustomCardsActivities.Link);
-app.MapDelete("/custom-cards-activities/{cardId}/{activityId}", CustomCardsActivities.Unlink);
-app.MapGet("/custom-cards-activities/search", CustomCardsActivities.Search);
-
-// Packages <-> Amenities
-app.MapGet("/packages/{packageId:int}/amenities", PackagesAmenities.ByPackage);
-app.MapGet("/amenities/{amenityId:int}/packages", PackagesAmenities.ByAmenity);
-
-app.MapPost("/packages/amenities/link", PackagesAmenities.Link);
-app.MapDelete("/packages/{packageId:int}/amenities/{amenityId:int}", PackagesAmenities.Unlink);
-
-
-// Packages <-> Hotels
-app.MapGet("/packages/{packageId:int}/hotels", PackagesHotels.ByPackage);
-app.MapGet("/hotels/{hotelId:int}/packages", PackagesHotels.ByHotel);
-
-app.MapPost("/packages/hotels/link", PackagesHotels.Link);
-app.MapDelete("/packages/{packageId:int}/hotels/{hotelId:int}", PackagesHotels.Unlink);
-
-// Packages <-> Rooms
-app.MapGet("/packages/{packageId:int}/rooms", PackagesRooms.ByPackage);
-app.MapGet("/rooms/{roomId:int}/packages", PackagesRooms.ByRoom);
-
-app.MapPost("/packages/rooms/link", PackagesRooms.Link);
-app.MapDelete("/packages/{packageId:int}/rooms/{roomId:int}", PackagesRooms.Unlink);
+//BookingRoom
+app.MapGet("/booking-rooms", BookRoom.GetAll);
+app.MapGet("/booking-rooms/{id}", BookRoom.Get);
+app.MapPost("/booking-rooms", BookRoom.Post);
+app.MapPut("/booking-rooms/{id}", BookRoom.Put);
+app.MapDelete("/booking-rooms/{id}", BookRoom.Delete);
 
 
 
-// CustomCardsHotelss ROUTES  
-
-app.MapGet("/custom-cards-hotels/card/{cardId}", CustomCardHotels.ByCard);
-
-app.MapGet("/custom-cards-hotels/hotel/{hotelId}", CustomCardHotels.ByHotel);
-
-app.MapPost("/custom-cards/hotels/link", CustomCardHotels.Link);
-
-app.MapDelete("/custom-cards/hotels/{cardId}/{hotelId}", CustomCardHotels.Unlink);
-// search method has cardId and *optional term*
-app.MapGet("/custom-cards-hotels/search", CustomCardHotels.Search);
-
-// CustomCardsRooms ROUTES
-
-app.MapGet("/custom-cards-rooms/card/{cardId}", CustomCardsRooms.ByCard);
-app.MapGet("/custom-cards-rooms/room/{roomId}", CustomCardsRooms.ByRoom);
-app.MapPost("/custom-cards/rooms", CustomCardsRooms.Link);
-app.MapDelete("/custom-cards/rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
-app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search); // by card id 
-
-app.MapGet("/accommodations", Accommodations.GetAll);
-// CustomCardsDestinations ROUTES
-
-app.MapGet("/custom-cards-destinations/card/{cardId}", CustomCardsDestinations.ByCard);
-app.MapGet("/custom-cards-destinations/destination/{destinationId}", CustomCardsDestinations.ByDestination);
-app.MapPost("/custom-cards/destinations", CustomCardsDestinations.Link);
-app.MapDelete("/custom-cards/destinations/{cardId}/{destinationId}", CustomCardsDestinations.Unlink);
-app.MapGet("/custom-cards-destinations/search", CustomCardsDestinations.Search);
-
-// CustomCardsAmenities ROUTES
-
-app.MapGet("/custom-cards-amenities/card/{cardId}", CustomCardsAmenities.ByCard);
-app.MapGet("/custom-cards-amenities/amenity/{amenityId}", CustomCardsAmenities.ByAmenity);
-app.MapPost("/custom-cards/menities", CustomCardsAmenities.Link);
-app.MapDelete("/custom-cards/amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
-app.MapGet("/custom-cards-amenities/search", CustomCardsAmenities.Search);
-
-//
-app.MapGet("/bookroom/{id}", BookRoom.Get);
-app.MapPost("/bookroom", BookRoom.Post);
-app.MapPut("/bookroom", BookRoom.Put);
-app.MapDelete("/bookroom/{id}", BookRoom.Delete);
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
@@ -249,7 +119,6 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS hotels");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS destinations_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS activities");
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS accommodations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS destinations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS cities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS countries");
@@ -587,18 +456,23 @@ async Task db_reset_to_default(Config config)
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, travelers_table);
 
-  string booking_rooms_table = """
+  // The relation between the bookings and the rooms M:N
+ string booking_rooms_table = """
     CREATE TABLE booking_rooms (
-      booking_id INT NOT NULL,
-      room_id INT NOT NULL,
-      nights INT NOT NULL,
-      price DECIMAL(10,2) NOT NULL,
-      PRIMARY KEY (booking_id, room_id),
-      FOREIGN KEY (booking_id) REFERENCES bookings(id),
-      FOREIGN KEY (room_id) REFERENCES rooms(id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    travel_id INT NOT NULL,
+    room_id INT NOT NULL,
+    check_in DATE NOT NULL,
+    check_out DATE NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (room_id) REFERENCES rooms(id),
+    FOREIGN KEY (travel_id) REFERENCES travelers(id)
     );
-  """;
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booking_rooms_table);
+
+    """;
+
 
   string custom_cards_table = """
     CREATE TABLE custom_cards (
@@ -651,23 +525,9 @@ async Task db_reset_to_default(Config config)
         FOREIGN KEY (card_id) REFERENCES custom_cards(id),
         FOREIGN KEY (hotel_id) REFERENCES hotels(id)
       );
+
       """;
- await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
-                                         
-        string accommodations_table = """
-        CREATE TABLE accommodations (
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         name VARCHAR(200) NOT NULL,
-         type VARCHAR(100) NOT NULL,
-         price_per_night DECIMAL(10,2) NOT NULL,
-         destination_id INT NOT NULL,
-        FOREIGN KEY (destination_id) REFERENCES destinations(id)
-        );
-      """;
-       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, accommodations_table);
-      
-      
-     
+      await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
       // Add Data
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
                                                                         INSERT INTO custom_card_hotels
