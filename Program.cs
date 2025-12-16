@@ -162,6 +162,23 @@ app.MapGet("/amenities/{amenityId:int}/packages", PackagesAmenities.ByAmenity);
 app.MapPost("/packages/amenities/link", PackagesAmenities.Link);
 app.MapDelete("/packages/{packageId:int}/amenities/{amenityId:int}", PackagesAmenities.Unlink);
 
+
+// Packages <-> Hotels
+app.MapGet("/packages/{packageId:int}/hotels", PackagesHotels.ByPackage);
+app.MapGet("/hotels/{hotelId:int}/packages", PackagesHotels.ByHotel);
+
+app.MapPost("/packages/hotels/link", PackagesHotels.Link);
+app.MapDelete("/packages/{packageId:int}/hotels/{hotelId:int}", PackagesHotels.Unlink);
+
+// Packages <-> Rooms
+app.MapGet("/packages/{packageId:int}/rooms", PackagesRooms.ByPackage);
+app.MapGet("/rooms/{roomId:int}/packages", PackagesRooms.ByRoom);
+
+app.MapPost("/packages/rooms/link", PackagesRooms.Link);
+app.MapDelete("/packages/{packageId:int}/rooms/{roomId:int}", PackagesRooms.Unlink);
+
+
+
 // CustomCardsHotelss ROUTES  
 
 app.MapGet("/custom-cards-hotels/card/{cardId}", CustomCardHotels.ByCard);
@@ -182,6 +199,9 @@ app.MapPost("/custom-cards-rooms", CustomCardsRooms.Link);
 app.MapDelete("/custom-cards-rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
 app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search); // by card id 
 
+
+
+
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
@@ -194,6 +214,7 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS bookings");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_destinations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_amenities");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS packages_rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_hotels");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS custom_card_activities");
@@ -201,6 +222,7 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS package_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS package_destinations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS packages_amenities");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS packages_hotels");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS packages");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS amenities_hotels");
@@ -350,6 +372,8 @@ async Task db_reset_to_default(Config config)
     );
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, hotels_table);
+  
+  
 
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
     INSERT INTO hotels (name, phone_number, rating, address, description, destination_id)
@@ -438,6 +462,54 @@ async Task db_reset_to_default(Config config)
     INNER JOIN cities AS c ON d.city_id = c.id;
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, create_view);
+  
+  
+  string packages_rooms_table = """
+                                  CREATE TABLE packages_rooms(
+                                    package_id INT NOT NULL,
+                                    room_id INT NOT NULL,
+                                    PRIMARY KEY (package_id, room_id),
+                                    FOREIGN KEY (package_id) REFERENCES packages(id),
+                                    FOREIGN KEY (room_id) REFERENCES rooms(id)
+                                  );
+                                """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, packages_rooms_table);
+
+// testdata
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                    INSERT INTO packages_rooms
+                                                                    VALUES
+                                                                      (1, 1),
+                                                                      (1, 2),
+                                                                      (2, 3),
+                                                                      (3, 4);
+                                                                  """);
+
+  
+  
+  string packages_hotels_table = """
+                                   CREATE TABLE packages_hotels(
+                                     package_id INT NOT NULL,
+                                     hotel_id INT NOT NULL,
+                                     PRIMARY KEY (package_id, hotel_id),
+                                     FOREIGN KEY (package_id) REFERENCES packages(id),
+                                     FOREIGN KEY (hotel_id) REFERENCES hotels(id)
+                                   );
+                                 """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, packages_hotels_table);
+
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
+                                                                    INSERT INTO packages_hotels
+                                                                    VALUES
+                                                                      (1, 1),
+                                                                      (2, 2),
+                                                                      (3, 1),
+                                                                      (4, 2);
+                                                                  """);
+
+  
+  
+  
   
   
   string packages_amenities_table = """
