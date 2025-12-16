@@ -49,10 +49,10 @@ app.MapDelete("/destinations/{id}", Destinations.Delete);
 
 //BookingRoom
 app.MapGet("/booking-rooms", BookRoom.GetAll);
-app.MapGet("/bookroom/{id}", BookRoom.Get);
-app.MapPost("/bookroom", BookRoom.Post);
-app.MapPut("/bookroom/{id}", BookRoom.Put);
-app.MapDelete("/bookroom/{id}", BookRoom.Delete);
+app.MapGet("/booking-rooms/{id:int}", BookRoom.Get);
+app.MapPost("/booking-rooms", BookRoom.Post);
+app.MapPut("/booking-rooms/{id:int}", BookRoom.Put);
+app.MapDelete("/booking-rooms/{id:int}", BookRoom.Delete);
 
 
 // special, reset db
