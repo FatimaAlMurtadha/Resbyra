@@ -1,0 +1,83 @@
+﻿#########################################################
+# USER CUSTOM CARD JOURNEY
+# - Create custom card
+# - Link activities
+# - Link hotels
+# - Link rooms
+# - Verify all links
+#########################################################
+
+# NOTE:
+# Run AFTER:
+# - 00_Base
+# - 01_Auth.http
+#########################################################
+
+
+#########################################################
+# TEST A: Create custom card
+#########################################################
+
+POST http://localhost:5132/custom-cards
+Content-Type: application/json
+
+{
+  "title": "My Dream Trip",
+  "budget": 7500.00,
+  "startDate": "2026-01-10",
+  "endDate": "2026-01-17"
+}
+
+### Verify card exists
+GET http://localhost:5132/custom-cards
+
+
+#########################################################
+# TEST B: Activities <-> Custom Card
+#########################################################
+
+### Link activity to card
+POST http://localhost:5132/custom-cards-activities
+Content-Type: application/json
+
+{
+  "cardId": 5,
+  "activityId": 2
+}
+
+### Verify activities for card
+GET http://localhost:5132/custom-cards-activities/card/1
+
+
+#########################################################
+# TEST C: Hotels <-> Custom Card
+#########################################################
+
+### Link hotel to card
+POST http://localhost:5132/custom-cards/hotels/link
+Content-Type: application/json
+
+{
+  "cardId": 5,
+  "hotelId": 2
+}
+
+### Verify hotels for card
+GET http://localhost:5132/custom-cards-hotels/card/1
+
+
+#########################################################
+# TEST D: Rooms <-> Custom Card
+#########################################################
+
+### Link room to card
+POST http://localhost:5132/custom-cards/rooms/link
+Content-Type: application/json
+
+{
+  "cardId": 1,
+  "roomId": 1
+}
+
+### Verify rooms for card
+GET http://localhost:5132/custom-cards-rooms/card/1

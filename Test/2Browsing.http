@@ -1,0 +1,189 @@
+﻿#########################################################
+# USER BROWSING
+#########################################################
+
+
+#########################################################
+# TEST A: Browse packages
+#########################################################
+
+### Get all ready packages
+GET http://localhost:5132/packages
+
+### Get single package (search)
+GET http://localhost:5132/packages/1
+
+
+#########################################################
+# PACKAGES 
+#########################################################
+
+### Get all ready packages
+GET http://localhost:5132/packages
+
+### Get single package
+GET http://localhost:5132/packages/1
+
+### Search packages
+GET http://localhost:5132/packages/search?term=Tokyo
+
+### Search packages (no term = all)
+GET http://localhost:5132/packages/search
+
+
+#########################################################
+# COUNTRIES
+#########################################################
+
+### Get all countries
+GET http://localhost:5132/countries
+
+### Get single country
+GET http://localhost:5132/countries/1
+
+### Search countries
+GET http://localhost:5132/countries/search?term=sw
+
+
+#########################################################
+# CITIES
+#########################################################
+
+### Get all cities
+GET http://localhost:5132/cities
+
+### Get single city
+GET http://localhost:5132/cities/1
+
+### Search cities
+GET http://localhost:5132/cities/search?term=sto
+
+
+#########################################################
+# DESTINATIONS
+#########################################################
+
+### Get all destinations
+GET http://localhost:5132/destinations
+
+### Get single destination
+GET http://localhost:5132/destinations/1
+
+### Search destinations
+GET http://localhost:5132/destinations/search?term=kallt
+
+
+#########################################################
+# HOTELS 
+#########################################################
+
+### Get all hotels
+GET http://localhost:5132/hotels
+
+### Get single hotel
+GET http://localhost:5132/hotels/1
+
+### Search hotels
+GET http://localhost:5132/hotels/search?term=Sakura
+
+### Hotels by destination
+GET http://localhost:5132/hotels/by-destination/2
+
+
+#########################################################
+# ROOMS
+#########################################################
+
+### Get all rooms
+GET http://localhost:5132/rooms
+
+### Get single room
+GET http://localhost:5132/rooms/1
+
+### Search rooms
+GET http://localhost:5132/rooms/search?sok=101
+
+### Rooms by hotel
+GET http://localhost:5132/rooms/by-hotel/1
+
+### Room by hotel + room number (more specific filter)
+GET http://localhost:5132/rooms/by-hotel/1/101
+
+
+#########################################################
+# ACTIVITIES
+#########################################################
+
+### Get all activities
+GET http://localhost:5132/activities
+
+### Get single activity
+GET http://localhost:5132/activities/1
+
+### Search activities
+GET http://localhost:5132/activities/search?term=mushroom
+
+
+#########################################################
+# AMENITIES
+#########################################################
+
+### Get all amenities
+GET http://localhost:5132/amenities
+
+### Get single amenity
+GET http://localhost:5132/amenities/1
+
+### Search amenities
+GET http://localhost:5132/amenities/search?term=wifi
+
+
+#########################################################
+# CUSTOM CARDS
+#########################################################
+
+### Get all custom cards
+GET http://localhost:5132/custom-cards
+
+### Get single custom card
+GET http://localhost:5132/custom-cards/1
+
+### Search custom cards
+GET http://localhost:5132/custom-cards/search?term=Tokyo
+
+
+#########################################################
+# CUSTOM CARD LINKS 
+#########################################################
+
+### Search custom card hotels (cardId + optional term)
+GET http://localhost:5132/custom-cards-hotels/search?cardId=1
+
+### Search custom card rooms (by card id)
+GET http://localhost:5132/custom-cards-rooms/search?cardId=1
+
+### Search custom card destinations
+GET http://localhost:5132/custom-cards-destinations/search?term=1
+
+
+
+#########################################################
+# ACCOMMODATIONS (browse)
+#########################################################
+
+### Get all accommodations
+GET http://localhost:5132/accommodations
+
+
+#########################################################
+# BOOKINGS (browse + search)  (depends on your design, but endpoint exists)
+#########################################################
+
+### Get all bookings
+GET http://localhost:5132/bookings
+
+### Get single booking
+GET http://localhost:5132/bookings/1
+
+### Search bookings
+GET http://localhost:5132/bookings/search?term=1
