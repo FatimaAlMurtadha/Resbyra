@@ -216,7 +216,11 @@ app.MapPost("/custom-cards/menities", CustomCardsAmenities.Link);
 app.MapDelete("/custom-cards/amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
 app.MapGet("/custom-cards-amenities/search", CustomCardsAmenities.Search);
 
-
+//
+app.MapGet("/bookroom/{id}", BookRoom.Get);
+app.MapPost("/bookroom", BookRoom.Post);
+app.MapPut("/bookroom", BookRoom.Put);
+app.MapDelete("/bookroom/{id}", BookRoom.Delete);
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
