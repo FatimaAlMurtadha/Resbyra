@@ -281,22 +281,24 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, travelers_table);
 
   // The relation between the bookings and the rooms M:N
-  string booking_rooms_table = """
-        CREATE TABLE booking_rooms (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            travel_id INT NOT NULL,
-            room_id INT NOT NULL,
-            check_in DATE NOT NULL,
-            check_out DATE NOT NULL,
-            total_price DECIMAL(10,2) NOT NULL,
-            FOREGIN KEY (user_id) REFERENCES users(id),
-            FOREGIN KEY (room_id) REFERENCES room(id),
-            FOREGIN KEY (travel_id) REFERENCES travelers(id),
-        );
-    """;
+string booking_rooms_table = """
+CREATE TABLE booking_rooms (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  booking_id INT NOT NULL,
+  room_id INT NOT NULL,
+  check_in DATE NOT NULL,
+  check_out DATE NOT NULL,
+  guests INT NOT NULL,
+  total_price DECIMAL(10,2) NOT NULL,
 
-  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booking_rooms_table);
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (booking_id) REFERENCES bookings(id),
+  FOREIGN KEY (room_id) REFERENCES rooms(id)
+);
+""";
+await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booking_rooms_table);
+
 
   // Custom cards' table
   string custom_cards_table = """
