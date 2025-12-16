@@ -211,7 +211,12 @@ app.MapGet("/custom-cards-amenities/amenity/{amenityId}", CustomCardsAmenities.B
 app.MapPost("/custom-cards-amenities", CustomCardsAmenities.Link);
 app.MapDelete("/custom-cards-amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
 app.MapGet("/custom-cards-amenities/search", CustomCardsAmenities.Search);
-
+//Book Room
+app.MapGet("/booking-rooms", BookRoom.GetAll);
+app.MapGet("/booking-rooms/{id}", BookRoom.Get);
+app.MapPost("/booking-rooms", BookRoom.Post);
+app.MapPut("/booking-rooms/{id}", BookRoom.Put);
+app.MapDelete("/booking-rooms/{id}", BookRoom.Delete);
 
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
@@ -581,13 +586,16 @@ async Task db_reset_to_default(Config config)
 
   string booking_rooms_table = """
     CREATE TABLE booking_rooms (
-      booking_id INT NOT NULL,
-      room_id INT NOT NULL,
-      nights INT NOT NULL,
-      price DECIMAL(10,2) NOT NULL,
-      PRIMARY KEY (booking_id, room_id),
-      FOREIGN KEY (booking_id) REFERENCES bookings(id),
-      FOREIGN KEY (room_id) REFERENCES rooms(id)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    travel_id INT NOT NULL,
+    room_id INT NOT NULL,
+    check_in DATE NOT NULL,
+    check_out DATE NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (room_id) REFERENCES rooms(id),
+    FOREIGN KEY (travel_id) REFERENCES travelers(id)
     );
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booking_rooms_table);
