@@ -173,7 +173,6 @@ app.MapDelete("/packages/{packageId:int}/hotels/{hotelId:int}", PackagesHotels.U
 // Packages <-> Rooms
 app.MapGet("/packages/{packageId:int}/rooms", PackagesRooms.ByPackage);
 app.MapGet("/rooms/{roomId:int}/packages", PackagesRooms.ByRoom);
-
 app.MapPost("/packages/rooms/link", PackagesRooms.Link);
 app.MapDelete("/packages/{packageId:int}/rooms/{roomId:int}", PackagesRooms.Unlink);
 
@@ -182,11 +181,8 @@ app.MapDelete("/packages/{packageId:int}/rooms/{roomId:int}", PackagesRooms.Unli
 // CustomCardsHotelss ROUTES  
 
 app.MapGet("/custom-cards-hotels/card/{cardId}", CustomCardHotels.ByCard);
-
 app.MapGet("/custom-cards-hotels/hotel/{hotelId}", CustomCardHotels.ByHotel);
-
 app.MapPost("/custom-cards/hotels/link", CustomCardHotels.Link);
-
 app.MapDelete("/custom-cards/hotels/{cardId}/{hotelId}", CustomCardHotels.Unlink);
 // search method has cardId and *optional term*
 app.MapGet("/custom-cards-hotels/search", CustomCardHotels.Search);
@@ -195,7 +191,7 @@ app.MapGet("/custom-cards-hotels/search", CustomCardHotels.Search);
 
 app.MapGet("/custom-cards-rooms/card/{cardId}", CustomCardsRooms.ByCard);
 app.MapGet("/custom-cards-rooms/room/{roomId}", CustomCardsRooms.ByRoom);
-app.MapPost("/custom-cards/rooms", CustomCardsRooms.Link);
+app.MapPost("/custom-cards/rooms/link", CustomCardsRooms.Link);
 app.MapDelete("/custom-cards/rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
 app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search); // by card id 
 
@@ -212,8 +208,8 @@ app.MapGet("/custom-cards-destinations/search", CustomCardsDestinations.Search);
 
 app.MapGet("/custom-cards-amenities/card/{cardId}", CustomCardsAmenities.ByCard);
 app.MapGet("/custom-cards-amenities/amenity/{amenityId}", CustomCardsAmenities.ByAmenity);
-app.MapPost("/custom-cards/menities", CustomCardsAmenities.Link);
-app.MapDelete("/custom-cards/amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
+app.MapPost("/custom-cards-amenities", CustomCardsAmenities.Link);
+app.MapDelete("/custom-cards-amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
 app.MapGet("/custom-cards-amenities/search", CustomCardsAmenities.Search);
 
 

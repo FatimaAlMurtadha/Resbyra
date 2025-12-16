@@ -2,6 +2,8 @@
 # USER CUSTOM CARD JOURNEY
 # - Create custom card
 # - Link activities
+# - Link amenities
+# - Link destination
 # - Link hotels
 # - Link rooms
 # - Verify all links
@@ -18,6 +20,18 @@
 # TEST A: Create custom card
 #########################################################
 
+
+
+### Verify card exists
+GET http://localhost:5132/custom-cards
+
+### Verify card by id
+GET http://localhost:5132/custom-cards/2
+
+### Search card
+GET http://localhost:5132/custom-cards/search?term=plan
+
+### Create 
 POST http://localhost:5132/custom-cards
 Content-Type: application/json
 
@@ -27,57 +41,211 @@ Content-Type: application/json
   "startDate": "2026-01-10",
   "endDate": "2026-01-17"
 }
+### Need a logged in USER
+http://localhost:5132/login
 
-### Verify card exists
-GET http://localhost:5132/custom-cards
+{
+    
+    "email": "fatima2@gmail.com",
+    "password": "123",
+    "role": "user"
+}
+
+POST AGAIN 
+{
+    "message": "Custom card created successfully."
+}
+
+### Update custom card
+PUT http://localhost:5132/custom-cards/5
+
+{
+  
+  "userId": 3,
+  "title": "My New Title",
+  "budget": 1200.50,
+  "startDate": "2025-01-10",
+  "endDate": "2025-01-20"
+}
+
+{
+    "message": "Custom card updated successfully."
+}
+
+### Delete a card
+DELETE http://localhost:5132/custom-cards/5
+
+{
+    "message": "Custom card deleted successfully."
+}
+
 
 
 #########################################################
 # TEST B: Activities <-> Custom Card
 #########################################################
 
+### Verify activities for card
+GET http://localhost:5132/custom-cards-activities/card/1
+
+### Verify cards for activity
+GET http://localhost:5132/custom-cards-activities/activity/1
+
 ### Link activity to card
 POST http://localhost:5132/custom-cards-activities
 Content-Type: application/json
 
 {
-  "cardId": 5,
+  "cardId": 3,
   "activityId": 2
 }
 
-### Verify activities for card
-GET http://localhost:5132/custom-cards-activities/card/1
+{
+    "message": "Activity linked to custom card."
+}
+
+### Unlink activity to card
+DELETE http://localhost:5132/custom-cards-activities/3/2
+{
+    "message": "Activity unlinked from custom card."
+}
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-activities/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-activities/search?cardId=2&term=Sw
+
+
+
+
+
+#########################################################
+# TEST B: Amenities <-> Custom Card
+#########################################################
+
+### Verify Amenities for card
+GET http://localhost:5132/custom-cards-amenities/card/1
+
+### Verify CustomCards for amenity
+GET http://localhost:5132/custom-cards-amenities/amenity/1
+
+### Link 
+
+POST http://localhost:5132/custom-cards-amenities
+
+{
+  "cardId": 3,
+  "amenityId": 2
+}
+
+### unlink 
+http://localhost:5132/custom-cards-amenities/3/2       
+
+### search with cardId
+GET http://localhost:5132/custom-cards-amenities/search?cardId=3
+
+### search with cardId and term
+GET http://localhost:5132/custom-cards-amenities/search?cardId=3&term=wifi
+
+
+
+
+#########################################################
+# TEST B: Destinations <-> Custom Card
+#########################################################
+
+### Verify destinations for card
+GET http://localhost:5132/custom-cards-destinations/card/1
+
+
+### Verify cards for destinations
+GET http://localhost:5132/custom-cards-destinations/destination/1
+
+### Link destination to card
+POST http://localhost:5132/custom-cards/destinations
+Content-Type: application/json
+
+{
+  "cardId": 3,
+  "destinationId": 2
+}
+
+{
+    "message": "Destination linked to custom card."
+}
+
+### Unlink destination to card
+DELETE http://localhost:5132/custom-cards/destinations/3/2
+{
+    "message": "Destination unlinked from custom card."
+}
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-destinations/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-destinations/search?cardId=1&term=Ga
+
 
 
 #########################################################
 # TEST C: Hotels <-> Custom Card
 #########################################################
 
+
+### Verify hotels for card
+GET http://localhost:5132/custom-cards-hotels/card/1
+
+
+### Verify cards for hotel
+GET http://localhost:5132/custom-cards-hotels/hotel/1
+
 ### Link hotel to card
 POST http://localhost:5132/custom-cards/hotels/link
 Content-Type: application/json
 
 {
-  "cardId": 5,
+  "cardId": 3,
   "hotelId": 2
 }
 
-### Verify hotels for card
-GET http://localhost:5132/custom-cards-hotels/card/1
+### Unlink destination to card
+DELETE http://localhost:5132/custom-cards/hotels/3/2
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-hotels/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-hotels/search?cardId=1&term=Gran
+
 
 
 #########################################################
 # TEST D: Rooms <-> Custom Card
 #########################################################
 
-### Link room to card
+### Verify rooms for card
+GET http://localhost:5132/custom-cards-rooms/card/1
+
+
+### Verify cards for room
+GET http://localhost:5132/custom-cards-rooms/room/1
+
+### Link hotel to card
 POST http://localhost:5132/custom-cards/rooms/link
 Content-Type: application/json
 
 {
   "cardId": 1,
-  "roomId": 1
+  "roomId": 4
 }
 
-### Verify rooms for card
-GET http://localhost:5132/custom-cards-rooms/card/1
+### Unlink destination to card
+DELETE http://localhost:5132/custom-cards/rooms/3/2
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-rooms/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-rooms/search?cardId=1&term=Gran
