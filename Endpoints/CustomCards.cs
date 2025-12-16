@@ -130,22 +130,22 @@ class CustomCards
 
     string query = """
             UPDATE custom_cards
-            SET user_id = @id,
+            SET user_id = @user_id,
                 title = @title,
                 budget = @budget,
-                start_date = @start,
-                end_date = @end
+                start_date = @start_date,
+                end_date = @end_date
             WHERE id = @id
         """;
 
     var parameters = new MySqlParameter[]
     {
             new("@id", card.Id),
-            new("@id", card.UserId),
+            new("@user_id", card.UserId),
             new("@title", card.Title),
             new("@budget", card.Budget),
-            new("@start", card.StartDate?.ToDateTime(TimeOnly.MinValue)),
-            new("@end", card.EndDate?.ToDateTime(TimeOnly.MinValue))
+            new("@start_date", card.StartDate?.ToDateTime(TimeOnly.MinValue)),
+            new("@end_date", card.EndDate?.ToDateTime(TimeOnly.MinValue))
     };
 
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
