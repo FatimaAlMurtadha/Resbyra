@@ -56,7 +56,7 @@ POST AGAIN
     "message": "Custom card created successfully."
 }
 
-### 
+### Update custom card
 PUT http://localhost:5132/custom-cards/5
 
 {
@@ -72,12 +72,13 @@ PUT http://localhost:5132/custom-cards/5
     "message": "Custom card updated successfully."
 }
 
-## 
+### Delete a card
 DELETE http://localhost:5132/custom-cards/5
 
 {
     "message": "Custom card deleted successfully."
 }
+
 
 
 #########################################################
@@ -116,6 +117,9 @@ GET http://localhost:5132/custom-cards-activities/search?cardId=2
 GET http://localhost:5132/custom-cards-activities/search?cardId=2&term=Sw
 
 
+
+
+
 #########################################################
 # TEST B: Amenities <-> Custom Card
 #########################################################
@@ -143,6 +147,47 @@ GET http://localhost:5132/custom-cards-amenities/search?cardId=3
 
 ### search with cardId and term
 GET http://localhost:5132/custom-cards-amenities/search?cardId=3&term=wifi
+
+
+
+
+#########################################################
+# TEST B: Destinations <-> Custom Card
+#########################################################
+
+### Verify destinations for card
+GET http://localhost:5132/custom-cards-destinations/card/1
+
+
+### Verify cards for destinations
+GET http://localhost:5132/custom-cards-destinations/destination/1
+
+### Link destination to card
+POST http://localhost:5132/custom-cards/destinations
+Content-Type: application/json
+
+{
+  "cardId": 3,
+  "destinationId": 2
+}
+
+{
+    "message": "Destination linked to custom card."
+}
+
+### Unlink destination to card
+DELETE http://localhost:5132/custom-cards/destinations/3/2
+{
+    "message": "Destination unlinked from custom card."
+}
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-destinations/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-destinations/search?cardId=1&term=Ga
+
+
 
 #########################################################
 # TEST C: Hotels <-> Custom Card
