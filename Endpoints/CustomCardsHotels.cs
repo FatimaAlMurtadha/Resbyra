@@ -89,12 +89,12 @@ class CustomCardHotels
     while (reader.Read())
     {
       result.Add(new(
-          reader.GetInt32(0),
-          reader.GetInt32(1),
-          reader.GetString(3),
-          reader.IsDBNull(4) ? null : reader.GetDecimal(4),
-          reader.IsDBNull(5) ? null : DateOnly.FromDateTime(reader.GetDateTime(5)),
-          reader.IsDBNull(6) ? null : DateOnly.FromDateTime(reader.GetDateTime(6))
+          reader.GetInt32(0), // id
+          reader.GetInt32(1), // user_id
+          reader.GetString(2), // title
+          reader.IsDBNull(3) ? null : reader.GetDecimal(3),// budget
+          reader.IsDBNull(4) ? null : DateOnly.FromDateTime(reader.GetDateTime(4)),//start date
+          reader.IsDBNull(5) ? null : DateOnly.FromDateTime(reader.GetDateTime(5)) //End date
       ));
     }
 
