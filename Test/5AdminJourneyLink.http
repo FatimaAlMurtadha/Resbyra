@@ -1,5 +1,112 @@
-﻿### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=JetBrains Rider
+﻿#########################################################
+# TEST A: View seeded packages
+#########################################################
 
-###
+### Get all ready packages (seeded)
+GET http://localhost:5132/packages
+
+### Get one package (details)
+GET http://localhost:5132/packages/1
+
+### Search packages
+GET http://localhost:5132/packages/search?term=Tokyo
+
+
+#########################################################
+# TEST B: Package <-> Activities (link + verify + unlink)
+#########################################################
+
+### Link activity to package (ADMIN)
+POST http://localhost:5132/packages/activities/link
+Content-Type: application/json
+
+{
+  "packageId": 1,
+  "activityId": 2
+}
+
+### Verify activities for package
+GET http://localhost:5132/packages/1/activities
+
+### Unlink activity from package (ADMIN)
+DELETE http://localhost:5132/packages/1/activities/2
+
+
+#########################################################
+# TEST C: Package <-> Destinations (link + verify + delete link)
+#########################################################
+
+### Link destination to package
+POST http://localhost:5132/package_destinations
+Content-Type: application/json
+
+{
+  "packageId": 4,
+  "destinationId": 1
+}
+
+### Verify destinations for package
+GET http://localhost:5132/package_destinations/package/1
+
+### Delete link (packageId + destinationId)
+DELETE http://localhost:5132/package_destinations/1/1
+
+
+#########################################################
+# TEST D: Package <-> Amenities (link + unlink)
+#########################################################
+
+### Link amenity to package
+POST http://localhost:5132/packages/amenities/link
+Content-Type: application/json
+
+{
+  "packageId": 4,
+  "amenityId": 1
+}
+
+### Verify amenities for package
+GET http://localhost:5132/packages/1/amenities
+
+### Unlink amenity from package (ADMIN)
+DELETE http://localhost:5132/packages/1/amenities/1
+
+
+#########################################################
+# TEST E: Package <-> Hotels (link + unlink)
+#########################################################
+
+### Link hotel to package
+POST http://localhost:5132/packages/hotels/link
+Content-Type: application/json
+
+{
+  "packageId": 1,
+  "hotelId": 2
+}
+
+### Verify hotels for package
+GET http://localhost:5132/packages/1/hotels
+
+### Unlink hotel from package (ADMIN)
+DELETE http://localhost:5132/packages/1/hotels/2
+
+
+#########################################################
+# TEST F: Package <-> Rooms (link + unlink)
+#########################################################
+
+### Link room to package
+POST http://localhost:5132/packages/rooms/link
+Content-Type: application/json
+
+{
+  "packageId": 1,
+  "roomId": 3
+}
+
+### Verify rooms for package
+GET http://localhost:5132/packages/1/rooms
+
+### Unlink room from package (ADMIN)
+DELETE http://localhost:5132/packages/1/rooms/3
