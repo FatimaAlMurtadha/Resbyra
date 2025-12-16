@@ -56,6 +56,10 @@ class Authentication
     string? role = GetRole(ctx);
     return role == "user";
   }
+
+
+
+
   // A function or method to define the role "Authorization" and authentications
 
   public static IResult? RequireUser(HttpContext ctx)
@@ -73,5 +77,6 @@ class Authentication
   }
 
 }
+
 
 
