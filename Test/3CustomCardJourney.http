@@ -87,16 +87,34 @@ DELETE http://localhost:5132/custom-cards/5
 ### Verify activities for card
 GET http://localhost:5132/custom-cards-activities/card/1
 
-
+### Verify cards for activity
+GET http://localhost:5132/custom-cards-activities/activity/1
 
 ### Link activity to card
 POST http://localhost:5132/custom-cards-activities
 Content-Type: application/json
 
 {
-  "cardId": 5,
+  "cardId": 3,
   "activityId": 2
 }
+
+{
+    "message": "Activity linked to custom card."
+}
+
+
+### Unlink activity to card
+DELETE http://localhost:5132/custom-cards-activities/3/2
+{
+    "message": "Activity unlinked from custom card."
+}
+
+## Search  with cardId
+GET http://localhost:5132/custom-cards-activities/search?cardId=2
+
+## Search with cardId and term
+GET http://localhost:5132/custom-cards-activities/search?cardId=2&term=Sw
 
 
 #########################################################
