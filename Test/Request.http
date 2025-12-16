@@ -16,7 +16,7 @@ Content-Type: application/json
 {
   "email": "http_user1@resbyra.se",
   "password": "Password123!",
-  "role": "admin"
+  "role": "user"
 }
 
 ### Login (as that user)
@@ -26,7 +26,7 @@ Content-Type: application/json
 {
   "email": "http_user1@resbyra.se",
   "password": "Password123!",
-  "role": "admin"
+  "role": "user"
 }
 
 ### Login status (should return true assuming you logged in :))
@@ -284,6 +284,8 @@ Content-Type: application/json
 
 
 
+
+
 #########################################################
 # FEATURE: CUSTOM CARDS <-> hotels
 #########################################################
@@ -300,11 +302,11 @@ GET http://localhost:5132/custom-cards-hotels/search?cardId=1
 
 
 ### LINK: link customCard 2 to hotel 2 (user)
-POST http://localhost:5132/packages/amenities/link
+POST http://localhost:5132/custom-cards/hotels/link
 Content-Type: application/json
 
 {
-  "cardId": 2,
+  "cardId": 1,
   "hotelId": 2
 }
 
@@ -316,6 +318,7 @@ Content-Type: application/json
 
 GET http://localhost:5132/custom-cards-rooms/card/1
 Content-Type: application/json
+
 
 #########################################################
 # FEATURE: CUSTOM CARDS <-> ROOMS
