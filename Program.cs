@@ -230,6 +230,7 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS hotels");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS destinations_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS activities");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS accommodations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS destinations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS cities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS countries");
@@ -631,6 +632,7 @@ async Task db_reset_to_default(Config config)
         FOREIGN KEY (card_id) REFERENCES custom_cards(id),
         FOREIGN KEY (hotel_id) REFERENCES hotels(id)
       );
+      """;
  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
                                          
         string accommodations_table = """
