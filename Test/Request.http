@@ -283,6 +283,22 @@ Content-Type: application/json
 
 
 
+
+#########################################################
+# FEATURE: CUSTOM CARDS <-> hotels
+#########################################################
+
+### CustomCardsHotels – Get hotels for a card
+http://localhost:5132/custom-cards-hotels/card/1
+
+### CustomCardsHotels – Get cards for a hotel
+GET http://localhost:5132/custom-cards-hotels/hotel/1
+
+
+### CustomCardsHotels – Search hotels by cardId
+GET http://localhost:5132/custom-cards-hotels/search?cardId=1
+
+
 #########################################################
 # FEATURE: CUSTOM CARDS <-> Rooms
 #########################################################
