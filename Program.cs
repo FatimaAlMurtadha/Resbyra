@@ -199,6 +199,7 @@ app.MapPost("/custom-cards-rooms", CustomCardsRooms.Link);
 app.MapDelete("/custom-cards-rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
 app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search); // by card id 
 
+app.MapGet("/accommodations", Accommodations.GetAll);
 // CustomCardsDestinations ROUTES
 
 app.MapGet("/custom-cards-destinations/card/{cardId}", CustomCardsDestinations.ByCard);
@@ -244,6 +245,7 @@ async Task db_reset_to_default(Config config)
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS hotels");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS destinations_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS activities");
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS accommodations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS destinations");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS cities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS countries");
@@ -645,9 +647,23 @@ async Task db_reset_to_default(Config config)
         FOREIGN KEY (card_id) REFERENCES custom_cards(id),
         FOREIGN KEY (hotel_id) REFERENCES hotels(id)
       );
-
       """;
-      await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
+ await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_hotels_table);
+                                         
+        string accommodations_table = """
+        CREATE TABLE accommodations (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         name VARCHAR(200) NOT NULL,
+         type VARCHAR(100) NOT NULL,
+         price_per_night DECIMAL(10,2) NOT NULL,
+         destination_id INT NOT NULL,
+        FOREIGN KEY (destination_id) REFERENCES destinations(id)
+        );
+      """;
+       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, accommodations_table);
+      
+      
+     
       // Add Data
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, """
                                                                         INSERT INTO custom_card_hotels
