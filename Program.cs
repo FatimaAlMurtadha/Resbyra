@@ -51,7 +51,7 @@ app.MapDelete("/destinations/{id}", Destinations.Delete);
 app.MapGet("/booking-rooms", BookRoom.GetAll);
 app.MapGet("/bookroom/{id}", BookRoom.Get);
 app.MapPost("/bookroom", BookRoom.Post);
-app.MapPut("/bookroom/{id}", BookRoom.Put);
+app.MapPut("/bookroom", BookRoom.Put);
 app.MapDelete("/bookroom/{id}", BookRoom.Delete);
 
 
@@ -282,18 +282,19 @@ async Task db_reset_to_default(Config config)
 
   // The relation between the bookings and the rooms M:N
   string booking_rooms_table = """
-        CREATE TABLE booking_rooms (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            travel_id INT NOT NULL,
-            room_id INT NOT NULL,
-            check_in DATE NOT NULL,
-            check_out DATE NOT NULL,
-            total_price DECIMAL(10,2) NOT NULL,
-            FOREGIN KEY (user_id) REFERENCES users(id),
-            FOREGIN KEY (room_id) REFERENCES room(id),
-            FOREGIN KEY (travel_id) REFERENCES travelers(id),
-        );
+    CREATE TABLE booking_rooms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    travel_id INT NOT NULL,
+    room_id INT NOT NULL,
+    check_in DATE NOT NULL,
+    check_out DATE NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (room_id) REFERENCES rooms(id),
+    FOREIGN KEY (travel_id) REFERENCES travelers(id)
+    );
+
     """;
 
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booking_rooms_table);
