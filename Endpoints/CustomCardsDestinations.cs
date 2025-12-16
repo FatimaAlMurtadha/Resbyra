@@ -191,24 +191,7 @@ class CustomCardsDestinations
   }
 
 
-}//fatima
+}
 
 
 
-/*
-program.cs
-
-// CustomCardsDestinations ROUTES
-
-app.MapGet("/custom-cards-destinations/card/{cardId}", CustomCardsDestinations.ByCard);
-
-app.MapGet("/custom-cards-destinations/destination/{destinationId}", CustomCardsDestinations.ByDestination);
-
-app.MapPost("/custom-cards-destinations", CustomCardsDestinations.Link);
-
-app.MapDelete("/custom-cards-destinations/{cardId}/{destinationId}", CustomCardsDestinations.Unlink);
-
-app.MapGet("/custom-cards-destinations/search", CustomCardsDestinations.Search);
-
-
-*/

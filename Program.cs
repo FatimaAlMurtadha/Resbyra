@@ -200,6 +200,21 @@ app.MapDelete("/custom-cards-rooms/{cardId}/{roomId}", CustomCardsRooms.Unlink);
 app.MapGet("/custom-cards-rooms/search", CustomCardsRooms.Search); // by card id 
 
 app.MapGet("/accommodations", Accommodations.GetAll);
+// CustomCardsDestinations ROUTES
+
+app.MapGet("/custom-cards-destinations/card/{cardId}", CustomCardsDestinations.ByCard);
+app.MapGet("/custom-cards-destinations/destination/{destinationId}", CustomCardsDestinations.ByDestination);
+app.MapPost("/custom-cards-destinations", CustomCardsDestinations.Link);
+app.MapDelete("/custom-cards-destinations/{cardId}/{destinationId}", CustomCardsDestinations.Unlink);
+app.MapGet("/custom-cards-destinations/search", CustomCardsDestinations.Search);
+
+// CustomCardsAmenities ROUTES
+
+app.MapGet("/custom-cards-amenities/card/{cardId}", CustomCardsAmenities.ByCard);
+app.MapGet("/custom-cards-amenities/amenity/{amenityId}", CustomCardsAmenities.ByAmenity);
+app.MapPost("/custom-cards-amenities", CustomCardsAmenities.Link);
+app.MapDelete("/custom-cards-amenities/{cardId}/{amenityId}", CustomCardsAmenities.Unlink);
+app.MapGet("/custom-cards-amenities/search", CustomCardsAmenities.Search);
 
 
 // special, reset db
