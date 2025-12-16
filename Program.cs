@@ -174,6 +174,7 @@
 
     async Task db_reset_to_default(Config config)
     {
+      Console.WriteLine("Kör tabellerna:");
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS booking_rooms");
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS travelers");
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS bookings");
@@ -267,6 +268,18 @@
           ('Barca Beach', 'BästaStrand + tapas + fotboll', 'Warmt', 1400.00, 3),
           ('Giza', 'Pyramider + bazaars + Nilen tour', 'RIKTIGT varmt', 1100.00, 4);
       """);
+
+            string accommodations_table = """
+        CREATE TABLE accommodations (
+         id INT AUTO_INCREMENT PRIMARY KEY,
+         name VARCHAR(200) NOT NULL,
+         type VARCHAR(100) NOT NULL,
+         price_per_night DECIMAL(10,2) NOT NULL,
+         destination_id INT NOT NULL,
+        FOREIGN KEY (destination_id) REFERENCES destinations(id)
+        );
+      """;
+       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, accommodations_table);
 
       string activities_table = """
         CREATE TABLE activities (
@@ -479,17 +492,6 @@
         );
       """;
       await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, custom_card_activities_table);
-
-      string accommodations_table = """
-        CREATE TABLE accommodations (
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         name VARCHAR(200) NOT NULL,
-         type VARCHAR(100) NOT NULL,
-         price_per_night DECIMAL(10,2) NOT NULL,
-         destination_id INT NOT NULL,
-        FOREIGN KEY (destination_id) REFERENCES destinations(id)
-        );
-      """;
-      await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, accommodations_table);
+ 
     }
       

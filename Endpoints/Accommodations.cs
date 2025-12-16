@@ -14,7 +14,7 @@ class Accommodations
       public static async Task <IResult> GetAll(Config config)
       {
             List<GetAll_Data> result = new();
-            string query = "SELECT id, name, type, price_per_night, destionation_id FROM accommodations";
+            string query = "SELECT id, name, type, price_per_night, destination_id FROM accommodations";
 
             using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
             {
