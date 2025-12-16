@@ -1,5 +1,66 @@
-﻿### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=JetBrains Rider
+﻿#########################################################
+# AUTHENTICATION
+# CHOOSE ONE - ADMIN OR USER
+#########################################################
 
-###
+
+#########################################################
+# OPTION A: USER
+#########################################################
+
+### Register user
+POST http://localhost:5132/register
+Content-Type: application/json
+
+{
+  "email": "walter_white@gmail.com",
+  "password": "JESSIE",
+  "role": "user"
+}
+
+### Login user
+POST http://localhost:5132/login
+Content-Type: application/json
+
+{
+  "email": "walter_white@gmail.com",
+  "password": "JESSIE",
+  "role": "user"
+}
+
+### Login status
+GET http://localhost:5132/login
+
+### Logout
+DELETE http://localhost:5132/login
+
+
+#########################################################
+# OPTION B: ADMIN
+#########################################################
+
+### Register admin
+POST http://localhost:5132/register
+Content-Type: application/json
+
+{
+  "email": "MichaelJacckson@hotmail.com",
+  "password": "HEHE",
+  "role": "admin"
+}
+
+### Login admin
+POST http://localhost:5132/login
+Content-Type: application/json
+
+{
+  "email": "MichaelJacckson@hotmail.com",
+  "password": "HEHE",
+  "role": "admin"
+}
+
+### Login status
+GET http://localhost:5132/login
+
+### Logout
+DELETE http://localhost:5132/login

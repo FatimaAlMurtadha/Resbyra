@@ -84,35 +84,33 @@ class CustomCards
   }
 
   // DTO for POST (creating a new card)
-  public record Post_Args(int UserId, string Title, decimal? Budget, DateOnly? StartDate, DateOnly? EndDate);
+  public record Post_Args(string Title, decimal? Budget, DateOnly? StartDate, DateOnly? EndDate);
 
   // POST /custom-cards
   // Insert a new custom card into the database
   public static async Task<IResult> Post(Post_Args card, Config config, HttpContext ctx)
   {
     var user_authentication = Authentication.RequireUser(ctx);
-
     if (user_authentication is not null)
-    {
       return user_authentication;
-    }
+
+    int current_user_id = Authentication.GetUserId(ctx)!.Value;
 
     string query = """
-            INSERT INTO custom_cards (user_id, title, budget, start_date, end_date)
-            VALUES (@id, @title, @budget, @start, @end)
-        """;
+                     INSERT INTO custom_cards (user_id, title, budget, start_date, end_date)
+                     VALUES (@user_id, @title, @budget, @start, @end)
+                   """;
 
     var parameters = new MySqlParameter[]
     {
-            new("@id", card.UserId),
-            new("@title", card.Title),
-            new("@budget", card.Budget),
-            new("@start", card.StartDate?.ToDateTime(TimeOnly.MinValue)),
-            new("@end", card.EndDate?.ToDateTime(TimeOnly.MinValue))
+      new("@user_id", current_user_id),
+      new("@title", card.Title),
+      new("@budget", card.Budget),
+      new("@start", card.StartDate?.ToDateTime(TimeOnly.MinValue)),
+      new("@end", card.EndDate?.ToDateTime(TimeOnly.MinValue))
     };
 
     await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-
     return Results.Ok(new { message = "Custom card created successfully." });
   }
 
