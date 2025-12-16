@@ -45,11 +45,11 @@ Content-Type: application/json
 http://localhost:5132/login
 
 {
-        "id": 1,
-        "email": "fatima2@gmail.com",
-        "password": "123",
-        "role": "user"
-    }
+    
+    "email": "fatima2@gmail.com",
+    "password": "123",
+    "role": "user"
+}
 
 POST AGAIN 
 {
@@ -103,19 +103,46 @@ Content-Type: application/json
     "message": "Activity linked to custom card."
 }
 
-
 ### Unlink activity to card
 DELETE http://localhost:5132/custom-cards-activities/3/2
 {
     "message": "Activity unlinked from custom card."
 }
 
-## Search  with cardId
+### Search  with cardId
 GET http://localhost:5132/custom-cards-activities/search?cardId=2
 
-## Search with cardId and term
+### Search with cardId and term
 GET http://localhost:5132/custom-cards-activities/search?cardId=2&term=Sw
 
+
+#########################################################
+# TEST B: Amenities <-> Custom Card
+#########################################################
+
+### Verify Amenities for card
+GET http://localhost:5132/custom-cards-amenities/card/1
+
+### Verify CustomCards for amenity
+GET http://localhost:5132/custom-cards-amenities/amenity/1
+
+### Link 
+
+POST http://localhost:5132/custom-cards-amenities
+
+{
+  "cardId": 3,
+  "amenityId": 2
+}
+
+### unlink 
+http://localhost:5132/custom-cards-amenities/3/2       
+
+### search with cardId
+GET http://localhost:5132/custom-cards-amenities/search?cardId=3
+
+### search with cardId and term
+GET http://localhost:5132/custom-cards-amenities/search?cardId=3&term=wifi
 
 #########################################################
 # TEST C: Hotels <-> Custom Card
