@@ -193,17 +193,33 @@ GET http://localhost:5132/custom-cards-destinations/search?cardId=1&term=Ga
 # TEST C: Hotels <-> Custom Card
 #########################################################
 
+
+### Verify hotels for card
+GET http://localhost:5132/custom-cards-hotels/card/1
+
+
+### Verify cards for hotel
+GET http://localhost:5132/custom-cards-hotels/hotel/1
+
 ### Link hotel to card
 POST http://localhost:5132/custom-cards/hotels/link
 Content-Type: application/json
 
 {
-  "cardId": 5,
+  "cardId": 3,
   "hotelId": 2
 }
 
-### Verify hotels for card
-GET http://localhost:5132/custom-cards-hotels/card/1
+
+### Unlink destination to card
+DELETE http://localhost:5132/custom-cards/hotels/3/2
+
+### Search  with cardId
+GET http://localhost:5132/custom-cards-hotels/search?cardId=2
+
+### Search with cardId and term
+GET http://localhost:5132/custom-cards-hotels/search?cardId=1&term=Gran
+
 
 
 #########################################################
