@@ -57,7 +57,7 @@ class Rooms
             {
                 var result = new
                 {
-                    RoomNumber = reader.GetString("room_number"),
+                    RoomNumber = reader.GetInt32("room_number"),
                     Type = reader.GetString("type"),
                     PricePerNight = reader.GetDecimal("price_per_night"),
                     Capacity = reader.GetInt32("capacity"),
@@ -287,7 +287,7 @@ class Rooms
                 var result = new
                 {
                     Id = reader.GetInt32("id"),
-                    RoomNumber = reader.GetString("room_number"),
+                    RoomNumber = reader.GetInt32("room_number"),
                     Type = reader.GetString("type"),
                     PricePerNight = reader.GetDecimal("price_per_night"),
                     Capacity = reader.GetInt32("capacity"),

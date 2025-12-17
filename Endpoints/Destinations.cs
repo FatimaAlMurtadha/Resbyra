@@ -17,19 +17,19 @@ class Destinations
   {
     List<GetAll_Data> result = new();
 
-    string query = "SELECT id, description, climate, average_cost, city_id FROM destinations";
+    string query = "SELECT id, name,description, climate, average_cost, city_id FROM destinations";
 
     using (var reader = await MySqlHelper.ExecuteReaderAsync(config.ConnectionString, query))
     {
       while (reader.Read())
       {
         result.Add(new(
-            reader.GetInt32("id"),
-            reader.GetString("name"),
-            reader.GetString("description"),
-            reader.GetString("climate"),
-            reader.GetDecimal("average_cost"),
-            reader.GetInt32("city_id")
+            reader.GetInt32(0),//id
+            reader.GetString(1),//name
+            reader.GetString(2),//description
+            reader.GetString(3),//climate
+            reader.GetDecimal(4),//avrage_cost
+            reader.GetInt32(5)//city_id
         ));
       }
     }
