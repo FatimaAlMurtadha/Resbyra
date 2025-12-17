@@ -1,5 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
 using server;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.StaticFiles;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +19,21 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+
+var frontendPath = Path.Combine(app.Environment.ContentRootPath, "frontend");
+
+app.UseDefaultFiles(new DefaultFilesOptions
+{
+  FileProvider = new PhysicalFileProvider(frontendPath)
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+  FileProvider = new PhysicalFileProvider(frontendPath)
+});
+
+
 app.UseSession();
 
 // REST routes

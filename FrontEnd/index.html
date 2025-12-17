@@ -1,0 +1,44 @@
+﻿<!doctype html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8" />
+    <!-- Gör så sidan inte ser ut som skräp på mobilen (inte viktigt eftersom vi bara gör demo men om ni gör ett projekt senare så är det super bra habit -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Resbyra</title>
+
+    
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Topbaren: logga i mitten, knappar till höger -->
+<header class="topbar">
+    <!-- Anledningen till en tom div här är basically bara för att få den att se fin ut.  -->
+    <div></div>
+
+    <!-- Namnet på sidan/projektet (vi MÅSTE ändra på detta namnet hahahah) -->
+    <h1 class="logo">Resbyra</h1>
+
+    <!-- Login / Register (gör inget just nu) -->
+    <div class="topbar-actions">
+        <button class="btn" type="button">Login</button>
+        <button class="btn btn-primary" type="button">Register</button>
+    </div>
+</header>
+
+<!-- Huvudinnehåll -->
+<main class="container">
+    <h2 class="section-title">Ready Packages</h2>
+
+    <!-- Visas medan vi hämtar data -->
+    <div id="status" class="status">Loading packages...</div>
+
+    <!-- Här trycker JS in alla paket -->
+    <div id="packages" class="grid"></div>
+</main>
+
+<!-- All JS logiken finns här BAM -->
+<script src="app.js"></script>
+</body>
+</html>
