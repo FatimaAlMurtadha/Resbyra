@@ -7,14 +7,18 @@
 
     <title>Login - Resbyra</title>
 
+    <!-- Bas-styling + login-specifik styling -->
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="login.css" />
 </head>
 <body>
 
 <header class="topbar">
+    <!-- tom div = grid-trick för att loggan ska vara i mitten -->
     <div></div>
+
     <h1 class="logo">Resbyra</h1>
+
     <div class="topbar-actions">
         <!-- tillbaka till startsidan -->
         <button class="btn" type="button" id="backBtn">Back</button>
@@ -24,21 +28,38 @@
 <main class="container">
     <h2 class="section-title">Login</h2>
 
-    <!-- super basic form -->
-    <div class="login-card">
-        <label class="field">
-            <span>Email</span>
-            <input id="email" type="email" placeholder="you@resbyra.se" />
-        </label>
+    <!-- Wrapper som håller login + katten sida vid sida -->
+    <div class="login-container">
 
-        <label class="field">
-            <span>Password</span>
-            <input id="password" type="password" placeholder="••••••••" />
-        </label>
+        <!-- Själva login-kortet -->
+        <div class="login-card">
+            <label class="field">
+                <span>Email</span>
+                <input id="email" type="email" placeholder="HELLO NBI DEMO" />
+            </label>
 
-        <button id="loginBtn" class="btn btn-primary" type="button">Logga in</button>
+            <label class="field">
+                <span>Password</span>
+                <input id="password" type="password" placeholder="••••••••" />
+            </label>
 
-        <div id="status" class="status" style="margin-top:10px;"></div>
+            <button id="loginBtn" class="btn btn-primary" type="button">
+                Logga in
+            </button>
+
+            <!-- Feedback från login.js (fel / success etc) -->
+            <div id="status" class="status" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- Katten...
+             Gör inget funktionellt men höjer moralen med 300%. -->
+        <img
+                src="images/Cat.jpg"
+                alt="Login guardian cat"
+                class="login-cat"
+                id="loginCat"
+        />
+
     </div>
 </main>
 

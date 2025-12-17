@@ -47,7 +47,7 @@ async function doLogin() {
         window.location.href = "/index.html";
     } catch (e) {
         console.error(e);
-        status.textContent = "Något gick fel. Kolla konsolen.";
+        status.textContent = "Något gick fel. Kolla konsolen, fråga INTE Oskar snälla.";
         btn.disabled = false;
     }
 }
@@ -62,3 +62,23 @@ $("backBtn").addEventListener("click", () => {
 $("password").addEventListener("keydown", (e) => {
     if (e.key === "Enter") doLogin();
 });
+
+
+const cat = document.getElementById("loginCat");
+
+if (cat) {
+    setInterval(() => {
+        // 50/50 chance to spin, so it’s not constant chaos
+        if (Math.random() < 0.5) {
+            const direction = Math.random() < 0.5 ? 1 : -1;
+            cat.style.transform = `rotate(${360 * direction}deg)`;
+
+            // reset after animation so next spin works
+            setTimeout(() => {
+                cat.style.transform = "rotate(0deg)";
+            }, 600);
+        }
+    }, 5000);
+}
+
+//cat christmasegg!
