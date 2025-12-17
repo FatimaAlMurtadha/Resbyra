@@ -187,3 +187,5 @@ GET http://localhost:5132/bookings/1
 
 ### Search bookings
 GET http://localhost:5132/bookings/search?term=1
+
+

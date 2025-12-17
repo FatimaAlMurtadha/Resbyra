@@ -44,6 +44,7 @@ app.MapPost("/register", Register.Post);
 app.MapGet("/login", Login.Get);
 app.MapPost("/login", Login.Post);
 app.MapDelete("/login", Login.Delete);
+app.MapGet("/me", Me.Get);
 
 // CRUD examples (user resource)
 app.MapGet("/users", Users.GetAll);

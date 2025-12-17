@@ -2,43 +2,391 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8" />
-    <!-- Gör så sidan inte ser ut som skräp på mobilen (inte viktigt eftersom vi bara gör demo men om ni gör ett projekt senare så är det super bra habit -->
+
+    <!-- Gör så sidan inte ser helt trasig ut på mobil.
+         Inte superviktigt för demo, men extremt bra vana att ha. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Resbyra</title>
 
-    
+    <!-- All vanlig styling ligger här -->
     <link rel="stylesheet" href="styles.css" />
+
+    <style>
+        /* Debug-text som vi använder för att snabbt se origin osv */
+        .debug {
+            font-size: 12px;
+            color: #666;
+            margin: 6px 0 12px;
+        }
+
+        /* Mini-sökbar. I looooove searching. */
+        .searchbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin: 12px 0 18px;
+        }
+
+        /* Själva input-fältet för sök */
+        .searchbar input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* Liten welcome-text i topbar (vänster).
+           Håller den diskret så den inte förstör layouten. */
+        #welcomeText {
+            font-size: 12px;
+            color: #444;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Topbaren: logga i mitten, knappar till höger -->
+<!-- Topbaren högst upp.
+     Grid + tom div gör att loggan faktiskt hamnar i mitten (trust the process). -->
 <header class="topbar">
-    <!-- Anledningen till en tom div här är basically bara för att få den att se fin ut.  -->
-    <div></div>
+    <!-- Vänsterkolumnen: visar vem som är inloggad (om någon är det) -->
+    <div id="welcomeText"></div>
 
-    <!-- Namnet på sidan/projektet (vi MÅSTE ändra på detta namnet hahahah) -->
-    <h1 class="logo">Resbyra</h1>
+    <!-- Namnet på sidan.
+         Basically logga. -->
+    <h1 class="logo">TripCrafter</h1>
 
-    <!-- Login / Register (gör inget just nu) -->
+    <!-- Actions till höger.
+         Inte inloggad = Login/Register.
+         Inloggad = Skapa package. -->
     <div class="topbar-actions">
-        <button class="btn" type="button">Login</button>
-        <button class="btn btn-primary" type="button">Register</button>
+
+        <!-- Syns när man INTE är inloggad -->
+        <button class="btn" type="button" id="loginNavBtn">Login</button>
+        <button class="btn btn-primary" type="button" id="registerNavBtn">Register</button>
+
+        <!-- Syns när man ÄR inloggad -->
+        <button class="btn btn-primary" type="button" id="createPackageBtn" style="display:none;">
+            Skapa package
+        </button>
     </div>
 </header>
 
-<!-- Huvudinnehåll -->
+<!-- Huvudinnehållet -->
 <main class="container">
+
+    <!-- En gemensam sök som påverkar både ready packages och user packages -->
+    <div class="searchbar">
+        <input
+                id="searchTerm"
+                type="text"
+                placeholder="Sök t.ex. 'sto' eller 'spa'..."
+        />
+
+        <!-- Kör filtreringen -->
+        <button id="searchBtn" class="btn btn-primary" type="button">
+            Sök
+        </button>
+
+        <!-- Rensar sök och visar allt igen -->
+        <button id="clearBtn" class="btn" type="button">
+            Rensa
+        </button>
+    </div>
+
+    <!-- READY PACKAGES -->
     <h2 class="section-title">Ready Packages</h2>
 
-    <!-- Visas medan vi hämtar data -->
+    <!-- Bara för debug, asså what the fuck varför fungerar det inte XD!! -->
+    <div class="debug">
+        Origin: <span id="originText"></span>
+    </div>
+
+    <!-- Visas medan vi hämtar data från backend -->
     <div id="status" class="status">Loading packages...</div>
 
-    <!-- Här trycker JS in alla paket -->
+    <!-- Här trycker JS in alla färdiga paket -->
     <div id="packages" class="grid"></div>
+
+    <!-- USER MADE PACKAGES -->
+    <h2 class="section-title" style="margin-top:24px;">
+        User made packages
+    </h2>
+
+    <!-- Loading-text för custom cards -->
+    <div id="customStatus" class="status">
+        Loading user packages...
+    </div>
+
+    <!-- Här hamnar alla custom cards -->
+    <div id="customCards" class="grid"></div>
+
 </main>
 
-<!-- All JS logiken finns här BAM -->
-<script src="app.js"></script>
+<script>
+    // Visar origin i debug-raden (bra när man kör localhost vs prod)
+    document.getElementById("originText").textContent = window.location.origin;
+
+    // Login-knappen går till login-sidan (makes sense)
+    document.getElementById("loginNavBtn")
+        ?.addEventListener("click", () => {
+            window.location.href = "/login.html";
+        });
+
+    // Register-knapp: vi hookar upp senare (just now = vibes)
+    document.getElementById("registerNavBtn")
+        ?.addEventListener("click", () => {
+            window.location.href = "/register.html";
+        });
+
+    // Skapa package: går till create-page (vi bygger den sen)
+    document.getElementById("createPackageBtn")
+        ?.addEventListener("click", () => {
+            window.location.href = "/create-package.html";
+        });
+
+    // Minimal XSS-skydd.
+    // Inte NASA security, men w/e.
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    // Wrapper runt fetch som:
+    // - skickar cookies (sessions)
+    // - ger riktiga error-meddelanden vid fail (tack, framtida jag)
+    async function fetchJson(url) {
+        const res = await fetch(url, { credentials: "include" });
+
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(url + " -> " + res.status + " " + txt);
+        }
+
+        return await res.json();
+    }
+
+    // Cache:
+    // Vi hämtar ALL data en gång.
+    // Sen filtrerar vi lokalt → perfekt för demo + liten datamängd.
+    let allReadyPackages = [];
+    let allCustomCards = [];
+
+    // Hjälpfunktioner för sök
+    function normalize(str) {
+        return String(str ?? "").toLowerCase().trim();
+    }
+
+    function matchesTerm(text, term) {
+        if (!term) return true;
+        return normalize(text).includes(term);
+    }
+
+    // Renderar ready packages
+    function renderReadyPackages(list) {
+        const status = document.getElementById("status");
+        const grid = document.getElementById("packages");
+
+        if (!list || list.length === 0) {
+            status.textContent = "Inga paket hittades.";
+            grid.innerHTML = "";
+            return;
+        }
+
+        status.textContent = "";
+        grid.innerHTML = "";
+
+        for (const p of list) {
+            const name = p.name ?? p.Name ?? "Unnamed package";
+            const price = Number(p.totalPrice ?? p.TotalPrice ?? 0);
+            const days = Number(p.durationDays ?? p.DurationDays ?? 0);
+            const desc = p.description ?? p.Description ?? "";
+
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <h3>${escapeHtml(name)}</h3>
+                <div class="meta">${days} dagar • ${price.toFixed(0)} SEK</div>
+                <p class="small">${escapeHtml(desc)}</p>
+            `;
+            grid.appendChild(card);
+        }
+    }
+
+    // Renderar user-made packages
+    function renderCustomCards(list) {
+        const status = document.getElementById("customStatus");
+        const grid = document.getElementById("customCards");
+
+        if (!list || list.length === 0) {
+            status.textContent = "Inga user packages hittades.";
+            grid.innerHTML = "";
+            return;
+        }
+
+        status.textContent = "";
+        grid.innerHTML = "";
+
+        for (const c of list) {
+            const title = c.title ?? c.Title ?? "Untitled";
+            const budget = (c.budget === null || c.budget === undefined)
+                ? null
+                : Number(c.budget);
+
+            const startDate = c.startDate ?? c.StartDate;
+            const endDate = c.endDate ?? c.EndDate;
+
+            const budgetText = budget === null
+                ? "No budget"
+                : budget.toFixed(0) + " SEK";
+
+            const dateText = (startDate && endDate)
+                ? (startDate + " → " + endDate)
+                : "No dates";
+
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                <h3>${escapeHtml(title)}</h3>
+                <div class="meta">
+                    ${escapeHtml(budgetText)} • ${escapeHtml(dateText)}
+                </div>
+                <p class="small">
+                    By user ${escapeHtml(c.userId ?? c.UserId ?? "?")}
+                </p>
+            `;
+            grid.appendChild(card);
+        }
+    }
+
+    // Kör sökningen och uppdaterar båda listorna
+    function applySearch() {
+        const term = normalize(document.getElementById("searchTerm").value);
+
+        // Ready packages: match på namn + beskrivning
+        const readyFiltered = allReadyPackages.filter(p => {
+            const name = p.name ?? p.Name ?? "";
+            const desc = p.description ?? p.Description ?? "";
+            return matchesTerm(name + " " + desc, term);
+        });
+
+        // Custom cards: match på title + lite extra info
+        const customFiltered = allCustomCards.filter(c => {
+            const title = c.title ?? c.Title ?? "";
+            const extra =
+                (c.description ?? c.Description ?? "") + " " +
+                (c.startDate ?? c.StartDate ?? "") + " " +
+                (c.endDate ?? c.EndDate ?? "") + " " +
+                (c.budget ?? c.Budget ?? "");
+
+            return matchesTerm(title + " " + extra, term);
+        });
+
+        renderReadyPackages(readyFiltered);
+        renderCustomCards(customFiltered);
+    }
+
+    // Hämtar vem som är inloggad (om någon är det) och:
+    // - skriver welcome-text
+    // - togglar knapparna i topbar (login/register vs skapa package) riktigt niceee
+    async function loadMe() {
+        const welcome = document.getElementById("welcomeText");
+
+        const loginBtn = document.getElementById("loginNavBtn");
+        const registerBtn = document.getElementById("registerNavBtn");
+        const createBtn = document.getElementById("createPackageBtn");
+
+        try {
+            const res = await fetch("/me", { credentials: "include" });
+
+            // Inte inloggad (401) = visa login/register
+            if (!res.ok) {
+                if (welcome) welcome.textContent = "";
+
+                if (loginBtn) loginBtn.style.display = "";
+                if (registerBtn) registerBtn.style.display = "";
+                if (createBtn) createBtn.style.display = "none";
+                return;
+            }
+
+            // Inloggad = visa skapa package AAA JAG ÄR SÅ TRÖTT ZZZZZ
+            const me = await res.json();
+
+            const email = me.email ?? me.Email ?? "?";
+            const role = me.role ?? me.Role ?? "?";
+
+            if (welcome) {
+                welcome.textContent = "Welcome " + email + ", your role is " + role;
+            }
+
+            if (loginBtn) loginBtn.style.display = "none";
+            if (registerBtn) registerBtn.style.display = "none";
+            if (createBtn) createBtn.style.display = "";
+        } catch (e) {
+            // Om något failar här vill vi inte bricka sidan.
+            // Bara fallbacka till "inte inloggad" UI.
+            if (welcome) welcome.textContent = "";
+            if (loginBtn) loginBtn.style.display = "";
+            if (registerBtn) registerBtn.style.display = "";
+            if (createBtn) createBtn.style.display = "none";
+        }
+    }
+
+    // Init körs när sidan laddas
+    async function init() {
+        // Ladda welcome + knappar 
+        loadMe();
+
+        try {
+            // Hämta alla ready packages
+            allReadyPackages = await fetchJson("/packages");
+        } catch (e) {
+            console.error(e);
+            document.getElementById("status").textContent =
+                "Error: " + e.message;
+            allReadyPackages = [];
+        }
+
+        try {
+            // Hämta alla custom cards
+            allCustomCards = await fetchJson("/custom-cards");
+        } catch (e) {
+            console.error(e);
+            document.getElementById("customStatus").textContent =
+                "Error: " + e.message;
+            allCustomCards = [];
+        }
+
+        // Visa allt direkt när sidan laddas
+        renderReadyPackages(allReadyPackages);
+        renderCustomCards(allCustomCards);
+
+        // Klick på sök-knappen
+        document.getElementById("searchBtn")
+            .addEventListener("click", applySearch);
+
+        // Rensa sök
+        document.getElementById("clearBtn")
+            .addEventListener("click", () => {
+                document.getElementById("searchTerm").value = "";
+                applySearch();
+            });
+
+        // Enter i input = sök (för att det känns rätt)
+        document.getElementById("searchTerm")
+            .addEventListener("keydown", (e) => {
+                if (e.key === "Enter") applySearch();
+            });
+    }
+
+    init();
+</script>
+
 </body>
 </html>

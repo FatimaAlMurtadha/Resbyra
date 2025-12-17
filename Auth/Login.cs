@@ -64,6 +64,7 @@ class Login
           // Save session
           ctx.Session.SetInt32("user_id", id);
           ctx.Session.SetString("role", role);
+          ctx.Session.SetString("email", credentials.Email);
           result = true;
         }
       }

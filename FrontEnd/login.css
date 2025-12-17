@@ -1,0 +1,26 @@
+﻿/* En liten “card” så det ser ut som en riktig sida, inte ett formulär från 2006 */
+.login-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 14px;
+    max-width: 520px;
+}
+
+.field {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.field span {
+    font-size: 13px;
+    color: #444;
+}
+
+.field input {
+    padding: 10px 12px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size: 14px;
+}
