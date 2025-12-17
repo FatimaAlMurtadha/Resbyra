@@ -51,7 +51,7 @@ class Hotels
     {
         Get_Data? result = null;
 
-        string query = "SELECT name, phone_number, address, description, destination_id FROM hotels WHERE id = @id";
+        string query = "SELECT name, phone_number, rating ,address, description, destination_id FROM hotels WHERE id = @id";
 
         var parameters = new MySqlParameter[]
         {
