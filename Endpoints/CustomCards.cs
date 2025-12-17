@@ -110,8 +110,18 @@ class CustomCards
       new("@end", card.EndDate?.ToDateTime(TimeOnly.MinValue))
     };
 
-    await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, query, parameters);
-    return Results.Ok(new { message = "Custom card created successfully." });
+    // VIKTIGT sorry för ändringen
+    await using var conn = new MySqlConnection(config.ConnectionString);
+    await conn.OpenAsync();
+
+    await using var cmd = new MySqlCommand(query, conn);
+    cmd.Parameters.AddRange(parameters);
+
+    await cmd.ExecuteNonQueryAsync();
+
+    int newId = (int)cmd.LastInsertedId;
+
+    return Results.Ok(new { id = newId, message = "Custom card created successfully." });
   }
 
   // DTO for PUT (updating an existing card)

@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8" />
+    <!-- Mobil-vett. Vi är inte monster. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Create package - TripCrafter</title>
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="create-package.css" />
+</head>
+<body>
+
+<header class="topbar">
+    <!-- Vänster: lite status -->
+    <div id="whoami" class="whoami"></div>
+
+    <!-- Center: logga/namn -->
+    <h1 class="logo">TripCrafter</h1>
+
+    <!-- Höger: navigation -->
+    <div class="topbar-actions">
+        <button class="btn" type="button" id="backBtn">Back</button>
+    </div>
+</header>
+
+<main class="container">
+
+    <h2 class="section-title">Skapa package</h2>
+    <div id="pageStatus" class="status">Checking login...</div>
+
+    <!-- STEG 1: Skapa själva kortet -->
+    <div class="panel">
+        <h3 class="panel-title">1) Grundinfo</h3>
+
+        <div class="form-grid">
+            <label class="field">
+                <span>Title</span>
+                <input id="titleInput" type="text" placeholder="My Dream Trip" />
+            </label>
+
+            <label class="field">
+                <span>Budget (SEK)</span>
+                <input id="budgetInput" type="number" placeholder="5000" />
+            </label>
+
+            <label class="field">
+                <span>Start date</span>
+                <input id="startInput" type="date" />
+            </label>
+
+            <label class="field">
+                <span>End date</span>
+                <input id="endInput" type="date" />
+            </label>
+
+            <label class="field field-wide">
+                <span>Description</span>
+                <textarea id="descInput" rows="3" placeholder="What’s the vibe?"></textarea>
+            </label>
+        </div>
+
+        <div class="actions">
+            <button id="createBtn" class="btn btn-primary" type="button">Create</button>
+            <div class="hint">
+                CardId: <span id="cardIdText">-</span>
+            </div>
+        </div>
+
+        <div id="createStatus" class="status"></div>
+    </div>
+
+    <!-- STEG 2: Länka saker (låst tills card är skapat) -->
+    <div class="panel">
+        <h3 class="panel-title">2) Länka content</h3>
+
+        <div class="split">
+            <!-- DESTINATION -->
+            <div class="box">
+                <div class="box-head">
+                    <h4>Destination (1 st)</h4>
+                    <button id="linkDestinationBtn" class="btn btn-primary" type="button" disabled>Link selected</button>
+                </div>
+                <div id="destStatus" class="status">Loading destinations...</div>
+                <div id="destList" class="list"></div>
+            </div>
+
+            <!-- ACTIVITIES -->
+            <div class="box">
+                <div class="box-head">
+                    <h4>Activities (multi)</h4>
+                    <button id="linkActivitiesBtn" class="btn btn-primary" type="button" disabled>Link selected</button>
+                </div>
+                <div id="actStatus" class="status">Loading activities...</div>
+                <div id="actList" class="list"></div>
+            </div>
+
+            <!-- AMENITIES -->
+            <div class="box">
+                <div class="box-head">
+                    <h4>Amenities (multi)</h4>
+                    <button id="linkAmenitiesBtn" class="btn btn-primary" type="button" disabled>Link selected</button>
+                </div>
+                <div id="amenStatus" class="status">Loading amenities...</div>
+                <div id="amenList" class="list"></div>
+            </div>
+        </div>
+
+        <div id="linkStatus" class="status"></div>
+
+        <div class="actions" style="margin-top:14px;">
+            <button id="doneBtn" class="btn" type="button" disabled>Done (back to home)</button>
+        </div>
+    </div>
+
+</main>
+
+<script src="create-package.js"></script>
+</body>
+</html>
