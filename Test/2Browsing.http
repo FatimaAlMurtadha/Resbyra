@@ -163,7 +163,7 @@ GET http://localhost:5132/custom-cards-hotels/search?cardId=1
 GET http://localhost:5132/custom-cards-rooms/search?cardId=1
 
 ### Search custom card destinations
-GET http://localhost:5132/custom-cards-destinations/search?term=1
+GET http://localhost:5132/custom-cards-destinations/search?cardId=1&term=Ga
 
 
 
