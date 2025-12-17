@@ -1,9 +1,9 @@
-### ---------------------- Resbyra ----------------------------------
+### ---------------------- TripCrafter ----------------------------------
 
 
 ### Project Overview
 
-Resbyra is a group-based school project developed as part of an agile software development assignment (MAI25, Malmö). The goal of the project is to plan, develop, and deliver a REST API as an agile team, following SCRUM principles.
+TripCrafter is a group-based school project developed as part of an agile software development assignment (MAI25, Malmö). The goal of the project is to plan, develop, and deliver a REST API as an agile team, following SCRUM principles.
 
 The application represents a travel agency booking system with moderate complexity. 
 
@@ -37,7 +37,7 @@ Collaborate and deliver code using Git and GitHub.
 
 ### Application Concept
 
-Resbyra is a travel booking platform where travelers can:
+TripCrafter is a travel booking platform where travelers can:
 
 Create custom travel packages.
 
@@ -54,7 +54,7 @@ The system also supports administrative functionality for managing the travel ag
 
 ## Traveler Features:
 
-User authentication (account registeration & login).
+User authentication (account registration & login).
 
 Search for destinations, ready-made packages, activities...ect.
 
@@ -66,9 +66,9 @@ View search results as lists and detailed views.
 
 ## Administrator Features:
 
-Browes users.
+Browse users.
 
-Manage destinations, packages, activities ...ect, but not the custom-cards plan "Only a registed user".
+Manage destinations, packages, activities ...ect, but not the custom-cards plan "Only a registered user".
 
 View bookings in both list and detailed form.
 
@@ -115,11 +115,13 @@ Resbyra/
 
 ---
 
-### Requierments to use this package:
+### Requirements to use this package:
 In order to use this system you need the following: 
-1. Visual Stadio Code "1.104.2".
-2. .NET "10.0.100".
-3. Git installed and configured.
+1. Visual Studio Code "1.104.2" or JetBrains Rider 2025.3.0.3
+2. .NET "10.0.100". 
+3. Postman 2025 or HTTPIE 2025.2.0
+5. MySQL DataBase
+6. Git installed and configured.
 
 ---
 
@@ -130,23 +132,23 @@ If you are using Windows you need to:
 - Open "git bash" or "WindowsPowerShell".
 - Write this command : "git clone https:the link of the project on GitHub".
 
-2. Go in the application by this command : cd Resbra
+2. Go in the application by this command : cd Resbyra
 
 3. Run the application using this command : dotnet run 
 4. Once the application is run: you will find all the instruction about what to do as you run the previous command
-5. There will be a choice at the end of the program letting you to close it  
+5. There will be a choice at the end of the program letting you close it  
 
 ### Cntribution Guide
 
 1. Fork the repository.
 
-2. Clone the repository:  on Git bash or WindowsPoerShell and write "git clone https://github.com/FatimaAlMurtadha/Resbyra".
+2. Clone the repository:  on Git bash or WindowsPowerShell and write "git clone https://github.com/FatimaAlMurtadha/Resbyra".
 
 3. Create a new branch using this command: "git switch -c your-new-branch-name".
 
 4. Make your Changes.
 
-5. Commit and push using following command on orderd:
+5. Commit and push using following command on order:
 - "git add .".
 - "git commit -m "Your commit message" ".
 - git push origin your-new-branch-name.
@@ -215,3 +217,13 @@ This project is developed for educational purposes only as part of a school assi
 ### Team & Collaboration
 
 The project is developed collaboratively by a student team using agile values, shared responsibility, and continuous communication via GitHub.
+
+### Contact Us
+
+This project was created and developed by a team of 5. If you have any questions feel free to write to us
+
+Fatima Al-Murtadha: https://github.com/FatimaAlMurtadha / https://www.linkedin.com/in/fatima-al-murtadha-8a19b9294/
+Oskar Gyllenör / https://github.com/OskarUNLEASHED / www.linkedin.com/in/oskar-gyllenör-40778a291
+Arbaz Shah: https://github.com/arbazshah52 / http://linkedin.com/in/syed-arbaz-hussain-shah-788921100
+Ali Reza Merzai: https://github.com/alireza8850 / https://www.linkedin.com/in/ali-reza-merzai-235960190/
+Samir Polozen:
