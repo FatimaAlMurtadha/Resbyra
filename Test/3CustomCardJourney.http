@@ -94,15 +94,15 @@ GET http://localhost:5132/custom-cards-activities/activity/1
 ### Link activity to card
 POST http://localhost:5132/custom-cards-activities
 Content-Type: application/json
+Accept: application/json
 
 {
   "cardId": 3,
   "activityId": 2
 }
 
-{
-    "message": "Activity linked to custom card."
-}
+### Expected:
+# { "message": "Activity linked to custom card." }
 
 ### Unlink activity to card
 DELETE http://localhost:5132/custom-cards-activities/3/2
@@ -165,15 +165,15 @@ GET http://localhost:5132/custom-cards-destinations/destination/1
 ### Link destination to card
 POST http://localhost:5132/custom-cards/destinations
 Content-Type: application/json
+Accept: application/json
 
 {
   "cardId": 3,
   "destinationId": 2
 }
 
-{
-    "message": "Destination linked to custom card."
-}
+### Expected:
+# { "message": "Destination linked to custom card." }
 
 ### Unlink destination to card
 DELETE http://localhost:5132/custom-cards/destinations/3/2
