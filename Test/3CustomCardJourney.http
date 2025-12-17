@@ -82,7 +82,7 @@ DELETE http://localhost:5132/custom-cards/5
 
 
 #########################################################
-# TEST B: Activities <-> Custom Card
+# TEST B: Activities <-> Custom Card!
 #########################################################
 
 ### Verify activities for card
