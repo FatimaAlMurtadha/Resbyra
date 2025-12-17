@@ -54,8 +54,8 @@ POST http://localhost:5132/login
 Content-Type: application/json
 
 {
-  "email": "MichaelJacckson@hotmail.com",
-  "password": "HEHE",
+  "email": "fatima@gmail.com",
+  "password": "123",
   "role": "admin"
 }
 
@@ -64,3 +64,10 @@ GET http://localhost:5132/login
 
 ### Logout
 DELETE http://localhost:5132/login
+
+#########################################################
+# USERS
+#########################################################
+
+### Users - Get all
+GET http://localhost:5132/users

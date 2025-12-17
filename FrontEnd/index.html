@@ -20,8 +20,7 @@
             margin: 6px 0 12px;
         }
 
-        /* Mini-sökbar.I looooove searching
-          . */
+        /* Mini-sökbar. I looooove searching. */
         .searchbar {
             display: flex;
             gap: 8px;
@@ -37,6 +36,14 @@
             border-radius: 8px;
             font-size: 14px;
         }
+
+        /* Liten welcome-text i topbar (vänster).
+           Håller den diskret så den inte förstör layouten. */
+        #welcomeText {
+            font-size: 12px;
+            color: #444;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -44,17 +51,26 @@
 <!-- Topbaren högst upp.
      Grid + tom div gör att loggan faktiskt hamnar i mitten (trust the process). -->
 <header class="topbar">
-    <div></div>
+    <!-- Vänsterkolumnen: visar vem som är inloggad (om någon är det) -->
+    <div id="welcomeText"></div>
 
     <!-- Namnet på sidan.
-         Basically loga. -->
+         Basically logga. -->
     <h1 class="logo">TripCrafter</h1>
 
-    <!-- Login / Register.
-         Kommer lägga till funktion idag senare". -->
+    <!-- Actions till höger.
+         Inte inloggad = Login/Register.
+         Inloggad = Skapa package. -->
     <div class="topbar-actions">
-        <button class="btn" type="button">Login</button>
-        <button class="btn btn-primary" type="button">Register</button>
+
+        <!-- Syns när man INTE är inloggad -->
+        <button class="btn" type="button" id="loginNavBtn">Login</button>
+        <button class="btn btn-primary" type="button" id="registerNavBtn">Register</button>
+
+        <!-- Syns när man ÄR inloggad -->
+        <button class="btn btn-primary" type="button" id="createPackageBtn" style="display:none;">
+            Skapa package
+        </button>
     </div>
 </header>
 
@@ -113,6 +129,24 @@
     // Visar origin i debug-raden (bra när man kör localhost vs prod)
     document.getElementById("originText").textContent = window.location.origin;
 
+    // Login-knappen går till login-sidan (makes sense)
+    document.getElementById("loginNavBtn")
+        ?.addEventListener("click", () => {
+            window.location.href = "/login.html";
+        });
+
+    // Register-knapp: vi hookar upp senare (just now = vibes)
+    document.getElementById("registerNavBtn")
+        ?.addEventListener("click", () => {
+            window.location.href = "/register.html";
+        });
+
+    // Skapa package: går till create-page (vi bygger den sen)
+    document.getElementById("createPackageBtn")
+        ?.addEventListener("click", () => {
+            window.location.href = "/create-package.html";
+        });
+
     // Minimal XSS-skydd.
     // Inte NASA security, men w/e.
     function escapeHtml(str) {
@@ -125,8 +159,8 @@
     }
 
     // Wrapper runt fetch som:
-    // Debugginggggggg
-    // - ger riktiga error-meddelanden vid fail
+    // - skickar cookies (sessions)
+    // - ger riktiga error-meddelanden vid fail (tack, framtida jag)
     async function fetchJson(url) {
         const res = await fetch(url, { credentials: "include" });
 
@@ -140,7 +174,7 @@
 
     // Cache:
     // Vi hämtar ALL data en gång.
-    // Debuggignggggggg
+    // Sen filtrerar vi lokalt → perfekt för demo + liten datamängd.
     let allReadyPackages = [];
     let allCustomCards = [];
 
@@ -258,8 +292,57 @@
         renderCustomCards(customFiltered);
     }
 
+    // Hämtar vem som är inloggad (om någon är det) och:
+    // - skriver welcome-text
+    // - togglar knapparna i topbar (login/register vs skapa package) riktigt niceee
+    async function loadMe() {
+        const welcome = document.getElementById("welcomeText");
+
+        const loginBtn = document.getElementById("loginNavBtn");
+        const registerBtn = document.getElementById("registerNavBtn");
+        const createBtn = document.getElementById("createPackageBtn");
+
+        try {
+            const res = await fetch("/me", { credentials: "include" });
+
+            // Inte inloggad (401) = visa login/register
+            if (!res.ok) {
+                if (welcome) welcome.textContent = "";
+
+                if (loginBtn) loginBtn.style.display = "";
+                if (registerBtn) registerBtn.style.display = "";
+                if (createBtn) createBtn.style.display = "none";
+                return;
+            }
+
+            // Inloggad = visa skapa package AAA JAG ÄR SÅ TRÖTT ZZZZZ
+            const me = await res.json();
+
+            const email = me.email ?? me.Email ?? "?";
+            const role = me.role ?? me.Role ?? "?";
+
+            if (welcome) {
+                welcome.textContent = "Welcome " + email + ", your role is " + role;
+            }
+
+            if (loginBtn) loginBtn.style.display = "none";
+            if (registerBtn) registerBtn.style.display = "none";
+            if (createBtn) createBtn.style.display = "";
+        } catch (e) {
+            // Om något failar här vill vi inte bricka sidan.
+            // Bara fallbacka till "inte inloggad" UI.
+            if (welcome) welcome.textContent = "";
+            if (loginBtn) loginBtn.style.display = "";
+            if (registerBtn) registerBtn.style.display = "";
+            if (createBtn) createBtn.style.display = "none";
+        }
+    }
+
     // Init körs när sidan laddas
     async function init() {
+        // Ladda welcome + knappar 
+        loadMe();
+
         try {
             // Hämta alla ready packages
             allReadyPackages = await fetchJson("/packages");

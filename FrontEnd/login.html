@@ -1,0 +1,47 @@
+﻿<!doctype html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8" />
+    <!-- Mobil-vett, standard vana -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login - Resbyra</title>
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+
+<header class="topbar">
+    <div></div>
+    <h1 class="logo">Resbyra</h1>
+    <div class="topbar-actions">
+        <!-- tillbaka till startsidan -->
+        <button class="btn" type="button" id="backBtn">Back</button>
+    </div>
+</header>
+
+<main class="container">
+    <h2 class="section-title">Login</h2>
+
+    <!-- super basic form -->
+    <div class="login-card">
+        <label class="field">
+            <span>Email</span>
+            <input id="email" type="email" placeholder="you@resbyra.se" />
+        </label>
+
+        <label class="field">
+            <span>Password</span>
+            <input id="password" type="password" placeholder="••••••••" />
+        </label>
+
+        <button id="loginBtn" class="btn btn-primary" type="button">Logga in</button>
+
+        <div id="status" class="status" style="margin-top:10px;"></div>
+    </div>
+</main>
+
+<script src="login.js"></script>
+</body>
+</html>
