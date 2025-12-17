@@ -1,4 +1,4 @@
-### Resbyra ##############
+----------------------------- Resbyra ----------------------------------
 
 ### Project Overview
 
@@ -113,6 +113,42 @@ Resbyra/
 
 
 ---
+
+### Requierments to use this package:
+In order to use this system you need the following: 
+1. Visual Stadio Code "1.104.2".
+2. .NET "10.0.100".
+3. Git installed and configured.
+
+---
+
+### How to use:
+If you are using Windows you need to:
+
+1. Clone the repository:
+- Open "git bash" or "WindowsPowerShell".
+- Write this command : "git clone https:the link of the project on GitHub".
+
+2. Go in the application by this command : cd Resbra
+
+3. Run the application using this command : dotnet run 
+4. Once the application is run: you will find all the instruction about what to do as you run the previous command
+5. There will be a choice at the end of the program letting you to close it  
+
+### Cntribution Guide
+
+1. Fork the repository.
+
+2. Clone the repository:  on Git bash or WindowsPoerShell and write "git clone https://github.com/FatimaAlMurtadha/Resbyra".
+
+3. Create a new branch using this command: "git switch -c your-new-branch-name".
+
+4. Make your Changes.
+
+5. Commit and push using following command on orderd:
+- "git add .".
+- "git commit -m "Your commit message" ".
+- git push origin your-new-branch-name.
 
 ### Branching Strategy
 
