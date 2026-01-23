@@ -237,7 +237,12 @@ app.MapGet("/booking-rooms/{id}", BookRoom.Get);
 app.MapPost("/booking-rooms", BookRoom.Post);
 app.MapPut("/booking-rooms/{id}", BookRoom.Put);
 app.MapDelete("/booking-rooms/{id}", BookRoom.Delete);
-
+// Book Activity
+app.MapGet("/booked-activities", BookActivities.GetAll);
+app.MapGet("/booked-activities/{id}", BookActivities.Get);
+app.MapPost("/booked-activities",  BookActivities.Post);
+app.MapPut("/booked-activities/{id}", BookActivities.Put);
+app.MapDelete("/booked-activities/{id}", BookActivities.Delete);
 // special, reset db
 app.MapDelete("/db", db_reset_to_default);
 
@@ -245,6 +250,7 @@ app.Run();
 
 async Task db_reset_to_default(Config config)
 {
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS booked_activities");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS booking_rooms");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS travelers");
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, "DROP TABLE IF EXISTS bookings");
@@ -619,6 +625,24 @@ async Task db_reset_to_default(Config config)
     );
   """;
   await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booking_rooms_table);
+
+  
+  string booked_activites_table = """
+    CREATE TABLE booked_activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    booking_id INT NOT NULL,
+    activity_id INT NOT NULL,
+    booked_date DATE NOT NULL,
+    booked_time TIME NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (activity_id) REFERENCES activities(id),
+    FOREIGN KEY (booking_id) REFERENCES travelers(id)
+  );
+  """;
+  await MySqlHelper.ExecuteNonQueryAsync(config.ConnectionString, booked_activites_table );
+
 
   string custom_cards_table = """
     CREATE TABLE custom_cards (
