@@ -1,0 +1,115 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET_githubaction
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install .NET 10 SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # Cache NuGet
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build backend
+        run: dotnet build --no-restore
+
+      # Node 24
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: |
+            frontend/package-lock.json
+            Testing/package-lock.json
+
+      # Install frontend deps
+
+
+      # Publish backend
+      - name: Publish backend
+        run: dotnet publish endpoint/endpoint.csproj -c Release -o out --no-restore
+
+      # Upload backend artifact
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-publish
+          path: out/
+
+      #
+  
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+     
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Download frontend dist
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore .NET dependencies
+        run: dotnet restore
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+          cache-dependency-path: Testing/package-lock.json
+
+     
+      - name: Publish pipeline summary
+        run: |
+          echo "## CI Rapport" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Build-jobb: klart" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Testmatris: endast API körs just nu" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Nedladdade artefakter:" >> "$GITHUB_STEP_SUMMARY"
+          find artifacts -type f | sed 's/^/- /' >> "$GITHUB_STEP_SUMMARY"
